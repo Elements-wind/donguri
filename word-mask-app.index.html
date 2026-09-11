@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>単語マスク</title>
+
+<!-- iOS: add to home screen behaves like a standalone app -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="単語マスク">
+<meta name="theme-color" content="#2f5d46">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAC2klEQVR4nO3dwW0UQRBAURuRAhdL3LggEQShEwQSFzIgCQ5ckPA3a6/p7WreC2BmVPqe1Yy37PuH9w938Jg3t74A9iUOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJg/T2Vif+/u3rrU490YePn9af9H79v9SQxYstTmT1x4oyrrF4ekvjUMb1Vs5wXRzKeC3LJulphbQoDreN17Vmnu4cJHGQxEESB2lRHDd5+3uwNfN05yCti8PN47Usm+TSO4c+rrdyhqs/VvRxjcXTu8Gv7H/xzvRZ/pfvczCFpxWSOEjiIImDJA6SOEjiIImDNHvj7cr3hu8+b/Qu/8eX7V4Zn7Dx9oJEtsrid1slcsLG23OPuW0Zd5td2yEbb5cfeavpP2qfKzxn4+2S4+8z96dtcp2eVkhHbbw9fZZNfhwvtMPVunOQxEESB0kcpKM23p4+y1YvH/9qh6t15yCds/F2yfF3+HG8xCbXecjG2+VH3mTuT9jnCk/YeHvuMfeZ/p+2urbZG2++z/FP2XgjeVohiYMkDpI4SOIgiYMkDpI4SLM33mYZ98fyTth4m2VQIidsvM0yaAKHbLzNMmUO52y8zTJiGp5WSEdtvM2y/0zcOUjiIImDJA7SURtvs+w/E3cO0jkbb7OMmMYhG2+zTJnDCRtvswyawOyNt1kGZfGLjTeSpxWSOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImD9BMI7oiP/BeRoQAAAABJRU5ErkJggg==">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAC2klEQVR4nO3dwW0UQRBAURuRAhdL3LggEQShEwQSFzIgCQ5ckPA3a6/p7WreC2BmVPqe1Yy37PuH9w938Jg3t74A9iUOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJg/T2Vif+/u3rrU490YePn9af9H79v9SQxYstTmT1x4oyrrF4ekvjUMb1Vs5wXRzKeC3LJulphbQoDreN17Vmnu4cJHGQxEESB2lRHDd5+3uwNfN05yCti8PN47Usm+TSO4c+rrdyhqs/VvRxjcXTu8Gv7H/xzvRZ/pfvczCFpxWSOEjiIImDJA6SOEjiIImDNHvj7cr3hu8+b/Qu/8eX7V4Zn7Dx9oJEtsrid1slcsLG23OPuW0Zd5td2yEbb5cfeavpP2qfKzxn4+2S4+8z96dtcp2eVkhHbbw9fZZNfhwvtMPVunOQxEESB0kcpKM23p4+y1YvH/9qh6t15yCds/F2yfF3+HG8xCbXecjG2+VH3mTuT9jnCk/YeHvuMfeZ/p+2urbZG2++z/FP2XgjeVohiYMkDpI4SOIgiYMkDpI4SLM33mYZ98fyTth4m2VQIidsvM0yaAKHbLzNMmUO52y8zTJiGp5WSEdtvM2y/0zcOUjiIImDJA7SURtvs+w/E3cO0jkbb7OMmMYhG2+zTJnDCRtvswyawOyNt1kGZfGLjTeSpxWSOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImD9BMI7oiP/BeRoQAAAABJRU5ErkJggg==">
+<link rel="apple-touch-startup-image" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAu4AAAU2CAIAAABFtaRRAAAW70lEQVR4nO3WQQ3AIADAwDH/1jBBgg888CFN7hT02TH3+gAAmv7XAQAA96wMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDMygAAYVYGAAizMgBAmJUBAMKsDAAQZmUAgDArAwCEWRkAIMzKAABhVgYACLMyAECYlQEAwqwMABBmZQCAMCsDAIRZGQAgzMoAAGFWBgAIszIAQJiVAQDCrAwAEGZlAIAwKwMAhFkZACDsAAeSDQBFY2mIAAAAAElFTkSuQmCC" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
+<style>
+  :root{
+    --ink: #1a1d1a;
+    --paper: #cde5e2;
+    --panel: #ffffff;
+    --line: #dedad0;
+    --accent: #2f5d46;
+    --accent-soft: #e4ede7;
+    --warn: #a3432c;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html{background:var(--paper);}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    min-height:100vh;
+    min-height:100dvh;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:18px 14px 40px;
+  }
+  header{
+    padding:4px 2px 18px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:16px;
+  }
+  h1{
+    font-size:19px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    margin:0 0 4px;
+  }
+  .sub{
+    font-size:13px;
+    color:#63665f;
+    line-height:1.5;
+    margin:0;
+  }
+
+  /* upload zone */
+  #dropzone{
+    border:1.5px dashed #b9b4a4;
+    border-radius:10px;
+    padding:28px 16px;
+    text-align:center;
+    background:var(--panel);
+    color:#63665f;
+    font-size:14px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  #dropzone.drag{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  #dropzone strong{
+    display:block;
+    color:var(--ink);
+    font-size:15px;
+    margin-bottom:6px;
+  }
+  #fileInput{display:none;}
+
+  /* stage */
+  #stage{
+    display:none;
+  }
+  #stage.active{display:block;}
+
+  .canvas-shell{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    touch-action:none;
+    margin-bottom:14px;
+  }
+  #imgCanvas{
+    display:block;
+    width:100%;
+    height:auto;
+    touch-action:none;
+    -webkit-user-select:none;
+    user-select:none;
+    transform-origin:0 0;
+  }
+
+  .zoom-reset{
+    position:absolute;
+    top:8px;
+    right:8px;
+    background:rgba(26,29,26,0.78);
+    color:#fff;
+    border:none;
+    border-radius:16px;
+    padding:7px 13px;
+    font-size:11.5px;
+    font-weight:600;
+    cursor:pointer;
+    display:none;
+    z-index:5;
+  }
+  .zoom-reset.show{display:block;}
+
+  /* magnifier loupe */
+  #loupe{
+    position:fixed;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:3px solid var(--panel);
+    box-shadow:0 4px 16px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.15);
+    overflow:hidden;
+    pointer-events:none;
+    display:none;
+    z-index:50;
+  }
+  #loupe.show{display:block;}
+  #loupeCanvas{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+  .loupe-cross{
+    position:absolute;
+    top:65%; left:80%;
+    width:14px; height:14px;
+    transform:translate(-50%,-50%);
+    border:2px solid var(--accent);
+    border-radius:50%;
+    pointer-events:none;
+  }
+
+  /* save overlay */
+  #saveOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(26,29,26,0.88);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  #saveOverlay.show{display:flex;}
+  .save-card{
+    background:var(--panel);
+    border-radius:14px;
+    padding:16px;
+    max-width:460px;
+    width:100%;
+    max-height:88vh;
+    overflow:auto;
+    text-align:center;
+  }
+  #saveImg{
+    max-width:100%;
+    max-height:52vh;
+    border-radius:8px;
+    border:1px solid var(--line);
+    display:block;
+    margin:0 auto 12px;
+  }
+  .save-hint{
+    font-size:12.5px;
+    color:#63665f;
+    margin:0 0 14px;
+    line-height:1.5;
+  }
+  .save-actions{
+    display:flex;
+    gap:8px;
+  }
+  .save-actions .btn{
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  #pressRing{
+    position:absolute;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:2px solid var(--accent);
+    pointer-events:none;
+    transform:translate(-50%,-50%) scale(0.3);
+    opacity:0;
+    display:none;
+  }
+  #pressRing.growing{
+    display:block;
+    transition:transform .45s cubic-bezier(.2,.7,.2,1), opacity .45s ease;
+    transform:translate(-50%,-50%) scale(1);
+    opacity:1;
+  }
+
+  #selectionBox{
+    position:absolute;
+    border:2px dashed rgba(26,29,26,0.75);
+    background:rgba(26,29,26,0.18);
+    pointer-events:none;
+    display:none;
+  }
+
+  /* status row */
+  #statusRow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    color:#63665f;
+    margin-bottom:14px;
+    min-height:18px;
+  }
+  .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:#b9b4a4;
+    flex:none;
+  }
+  .dot.busy{background:#c99a3c;animation:pulse 1s infinite ease-in-out;}
+  .dot.ready{background:var(--accent);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+  #progressTrack{
+    flex:1;
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    overflow:hidden;
+    display:none;
+  }
+  #progressTrack.show{display:block;}
+  #progressBar{
+    height:100%;
+    width:0%;
+    background:var(--accent);
+    transition:width .2s ease;
+  }
+
+  /* toolbar */
+  .toolbar{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .tb-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .tb-row:last-child{margin-bottom:0;}
+  .tb-label{
+    font-size:12px;
+    color:#63665f;
+    width:52px;
+    flex:none;
+  }
+  .swatches{
+    display:flex;
+    gap:8px;
+    flex:1;
+    flex-wrap:wrap;
+  }
+  .swatch{
+    width:30px;height:30px;
+    border-radius:8px;
+    border:2px solid transparent;
+    cursor:pointer;
+    padding:0;
+    flex:none;
+  }
+  .swatch.selected{
+    border-color:var(--ink);
+    box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--ink);
+  }
+  #customColor{
+    width:30px;height:30px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    padding:0;
+    background:none;
+    flex:none;
+  }
+  .swatch.saved-swatch{
+    position:relative;
+  }
+
+  .seg{
+    display:flex;
+    flex:1;
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .seg button{
+    flex:1;
+    border:none;
+    background:var(--panel);
+    color:#63665f;
+    font-size:12.5px;
+    padding:8px 4px;
+    cursor:pointer;
+    border-left:1px solid var(--line);
+  }
+  .seg button:first-child{border-left:none;}
+  .seg button.on{
+    background:var(--accent);
+    color:#fff;
+  }
+
+  input[type="range"]{
+    flex:1;
+    accent-color:var(--accent);
+  }
+  #opacityVal{
+    font-size:12px;
+    color:#63665f;
+    width:32px;
+    text-align:right;
+    flex:none;
+  }
+
+  /* actions */
+  .actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .btn{
+    flex:1 1 calc(50% - 4px);
+    padding:12px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .btn.ghost{
+    color:#63665f;
+    font-weight:500;
+  }
+  .btn:disabled{
+    opacity:0.4;
+    cursor:default;
+  }
+  .btn-new{
+    width:100%;
+    text-align:center;
+    background:none;
+    border:none;
+    color:#63665f;
+    font-size:12.5px;
+    padding:10px;
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+
+  #toast{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%) translateY(12px);
+    background:var(--ink);
+    color:#fff;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:20px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+    max-width:88%;
+    text-align:center;
+  }
+  #toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>単語マスク</h1>
+    <p class="sub">マスクしたい単語を指でなぞって囲むと、その部分だけ色で塗りつぶされます。2本指でつまむと拡大でき、細かい部分も正確に狙えます。</p>
+  </header>
+
+  <div id="dropzone">
+    <strong>タップして画像を選択</strong>
+    PNG または JPG
+    <input type="file" id="fileInput" accept="image/png, image/jpeg">
+  </div>
+
+  <div id="stage">
+    <div id="statusRow">
+      <div class="dot" id="statusDot"></div>
+      <span id="statusText">画像を選択してください</span>
+      <div id="progressTrack"><div id="progressBar"></div></div>
+    </div>
+
+    <div class="canvas-shell" id="canvasShell">
+      <canvas id="imgCanvas"></canvas>
+      <div id="pressRing"></div>
+      <div id="selectionBox"></div>
+      <button id="zoomResetBtn" class="zoom-reset">ズームを戻す</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="tb-row">
+        <span class="tb-label">色</span>
+        <div class="swatches" id="swatchesRow">
+          <button class="swatch selected" style="background:#1a1d1a" data-color="#1a1d1a"></button>
+          <button class="swatch" style="background:#a9c6e8" data-color="#a9c6e8"></button>
+          <button class="swatch" style="background:#a7ddc5" data-color="#a7ddc5"></button>
+          <button class="swatch" style="background:#b9c4ef" data-color="#b9c4ef"></button>
+          <button class="swatch" style="background:#cbb6e3" data-color="#cbb6e3"></button>
+          <input type="color" id="customColor" value="#1a1d1a">
+        </div>
+      </div>
+      <div class="tb-row">
+        <span class="tb-label">濃さ</span>
+        <input type="range" id="opacitySlider" min="20" max="100" value="100">
+        <span id="opacityVal">100%</span>
+      </div>
+      <div class="tb-row">
+        <span class="tb-label">感度</span>
+        <div class="seg" id="sensSeg">
+          <button class="on" data-sens="tight">単語のみ</button>
+          <button data-sens="normal">標準</button>
+          <button data-sens="loose">広め</button>
+        </div>
+      </div>
+      <div class="tb-row" style="margin-bottom:0;">
+        <span class="tb-label">操作</span>
+        <div class="seg" id="modeSeg">
+          <button class="on" data-mode="draw">マスクを描く</button>
+          <button data-mode="move">画像を動かす</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="undoBtn" disabled>元に戻す</button>
+      <button class="btn ghost" id="redoBtn" disabled>やり直す</button>
+      <button class="btn ghost" id="clearBtn" disabled>すべて解除</button>
+      <button class="btn primary" id="downloadBtn" disabled>保存</button>
+    </div>
+    <button class="btn-new" id="newImageBtn">別の画像を選ぶ</button>
+  </div>
+</div>
+
+<div id="loupe">
+  <canvas id="loupeCanvas" width="140" height="140"></canvas>
+  <div class="loupe-cross"></div>
+</div>
+
+<div id="saveOverlay">
+  <div class="save-card">
+    <img id="saveImg" alt="マスク済み画像">
+    <p class="save-hint">画像を長押しして「写真に保存」を選ぶと保存できます。うまくいかない場合は下のボタンから保存してください。</p>
+    <div class="save-actions">
+      <a id="saveDownloadLink" class="btn primary" download="masked-image.png">ダウンロード</a>
+      <button class="btn ghost" id="saveCloseBtn" type="button">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('imgCanvas');
+  const canvasShell = document.getElementById('canvasShell');
+  const ctx = canvas.getContext('2d');
+  const pressRing = document.getElementById('pressRing');
+  const selectionBox = document.getElementById('selectionBox');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const progressTrack = document.getElementById('progressTrack');
+  const progressBar = document.getElementById('progressBar');
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const newImageBtn = document.getElementById('newImageBtn');
+  const opacitySlider = document.getElementById('opacitySlider');
+  const opacityVal = document.getElementById('opacityVal');
+  const sensSeg = document.getElementById('sensSeg');
+  const modeSeg = document.getElementById('modeSeg');
+  const customColor = document.getElementById('customColor');
+  const swatchesRow = document.getElementById('swatchesRow');
+  const zoomResetBtn = document.getElementById('zoomResetBtn');
+  const loupe = document.getElementById('loupe');
+  const loupeCanvas = document.getElementById('loupeCanvas');
+  const loupeCtx = loupeCanvas.getContext('2d');
+  const saveOverlay = document.getElementById('saveOverlay');
+  const saveImg = document.getElementById('saveImg');
+  const saveDownloadLink = document.getElementById('saveDownloadLink');
+  const saveCloseBtn = document.getElementById('saveCloseBtn');
+  const toast = document.getElementById('toast');
+
+  let baseImage = null;      // the original loaded image (Image object)
+  let words = [];            // {x0,y0,x1,y1} in natural image pixel coords
+  let maskHistory = [];      // stack of {x0,y0,x1,y1,color,opacity}
+  let redoStack = [];        // masks popped by undo, restorable via redo
+  let currentColor = '#1a1d1a';
+  let currentOpacity = 1.0;
+  let sensitivity = 'tight';
+  let interactionMode = 'draw'; // 'draw' | 'move'
+  let ocrReady = false;
+  let toastTimer = null;
+  let zoomScale = 1, panX = 0, panY = 0;
+  let savedColors = [];
+  const MAX_SAVED_COLORS = 8;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 2200);
+  }
+
+  function setStatus(text, mode){
+    statusText.textContent = text;
+    statusDot.className = 'dot' + (mode ? ' ' + mode : '');
+  }
+
+  // ---------- file loading ----------
+  dropzone.addEventListener('click', ()=>fileInput.click());
+  dropzone.addEventListener('dragover', e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e=>{
+    e.preventDefault();
+    dropzone.classList.remove('drag');
+    if(e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', e=>{
+    if(e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+  });
+  newImageBtn.addEventListener('click', ()=>{
+    stage.classList.remove('active');
+    fileInput.value = '';
+    words = [];
+    maskHistory = [];
+    redoStack = [];
+    baseImage = null;
+    updateButtons();
+  });
+
+  function handleFile(file){
+    if(!/^image\/(png|jpeg|jpg)$/.test(file.type)){
+      showToast('PNGまたはJPG画像を選んでください');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = new Image();
+      img.onload = ()=> onImageLoaded(img);
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function onImageLoaded(img){
+    baseImage = img;
+    words = [];
+    maskHistory = [];
+    redoStack = [];
+    stage.classList.add('active');
+
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    ctx.drawImage(img, 0, 0);
+
+    zoomScale = 1; panX = 0; panY = 0;
+    applyTransform(false);
+
+    updateButtons();
+    setStatus('指でなぞって単語を囲むとマスクできます', 'ready');
+
+    // Automatic word detection is a background bonus only — the app is
+    // already fully usable without it (drag-to-select works regardless).
+    tryBackgroundOCR(img);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // ---------- OCR (best-effort background enhancement) ----------
+  function tryBackgroundOCR(img){
+    ocrReady = false;
+    if(typeof Tesseract === 'undefined'){
+      return; // library didn't load at all — stay in manual-only mode, silently
+    }
+    progressTrack.classList.add('show');
+    progressBar.style.width = '4%';
+
+    const OCR_TIMEOUT_MS = 20000;
+    const timeout = new Promise((_, reject)=> setTimeout(()=>reject(new Error('timeout')), OCR_TIMEOUT_MS));
+
+    Promise.race([
+      Tesseract.recognize(img, 'eng+jpn', {
+        logger: m=>{
+          if(m.status === 'recognizing text' && typeof m.progress === 'number'){
+            progressBar.style.width = Math.max(4, Math.round(m.progress*100)) + '%';
+          }
+        }
+      }),
+      timeout
+    ]).then(result=>{
+      if(!result || !result.data) return;
+      words = (result.data.words || [])
+        .filter(w => w.text && w.text.trim().length > 0 && w.bbox)
+        .map(w => ({ x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 }));
+      progressTrack.classList.remove('show');
+      if(words.length > 0){
+        ocrReady = true;
+        setStatus('単語を検出しました。タップだけでも自動で合わせてマスクします', 'ready');
+      }
+    }).catch(()=>{
+      // Network/CDN restrictions can block this silently — that's fine,
+      // manual drag-select still does the job, so no error is shown.
+      progressTrack.classList.remove('show');
+    });
+  }
+
+  // ---------- coordinate mapping ----------
+  function getCanvasPoint(clientX, clientY){
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  // A thin strip along the right edge where a NEW single-finger press is
+  // ignored — fingers landing right at the physical screen edge tend to
+  // trigger accidental drags there. A drag already in progress can still
+  // move through this strip normally; only starting one here is blocked.
+  const EDGE_DEADZONE_PX = 16;
+  function isInRightDeadzone(clientX){
+    const rect = canvas.getBoundingClientRect();
+    return (rect.right - clientX) < EDGE_DEADZONE_PX;
+  }
+
+  // ---------- pinch-to-zoom ----------
+  function applyTransform(withTransition){
+    canvas.style.transition = withTransition ? 'transform .25s ease' : 'none';
+    canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
+    zoomResetBtn.classList.toggle('show', zoomScale > 1.02);
+  }
+  zoomResetBtn.addEventListener('click', ()=>{
+    zoomScale = 1; panX = 0; panY = 0;
+    applyTransform(true);
+  });
+
+  function clampPan(pan, containerSize, renderedSize){
+    if(renderedSize <= containerSize) return (containerSize - renderedSize) / 2;
+    return Math.min(0, Math.max(containerSize - renderedSize, pan));
+  }
+
+  function touchDist(t0, t1){
+    const dx = t1.clientX - t0.clientX, dy = t1.clientY - t0.clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+  function touchMid(t0, t1){
+    return {x:(t0.clientX + t1.clientX)/2, y:(t0.clientY + t1.clientY)/2};
+  }
+
+  let pinchActive = false;
+  let pinchStartDist = 1;
+  let pinchStartScale = 1;
+  let pinchAnchor = {x:0, y:0};
+
+  function beginPinch(t0, t1){
+    pinchActive = true;
+    clearTimeout(pressTimer);
+    pressStart = null;
+    isDragging = false;
+    hideSelectionBox();
+
+    const shellRect = canvasShell.getBoundingClientRect();
+    const mid = touchMid(t0, t1);
+    const midLocal = {x: mid.x - shellRect.left, y: mid.y - shellRect.top};
+    pinchStartDist = touchDist(t0, t1) || 1;
+    pinchStartScale = zoomScale;
+    pinchAnchor = {
+      x: (midLocal.x - panX) / zoomScale,
+      y: (midLocal.y - panY) / zoomScale
+    };
+  }
+
+  function updatePinch(t0, t1){
+    const shellRect = canvasShell.getBoundingClientRect();
+    const mid = touchMid(t0, t1);
+    const midLocal = {x: mid.x - shellRect.left, y: mid.y - shellRect.top};
+    const dist = touchDist(t0, t1);
+    const rawScale = pinchStartScale * (dist / pinchStartDist);
+    const newScale = Math.min(5, Math.max(1, rawScale));
+
+    const renderedW = shellRect.width * newScale;
+    const renderedH = shellRect.width * (canvas.height / canvas.width) * newScale;
+
+    let newPanX = midLocal.x - pinchAnchor.x * newScale;
+    let newPanY = midLocal.y - pinchAnchor.y * newScale;
+    newPanX = clampPan(newPanX, shellRect.width, renderedW);
+    newPanY = clampPan(newPanY, shellRect.height, renderedH);
+
+    zoomScale = newScale;
+    panX = newScale <= 1.001 ? 0 : newPanX;
+    panY = newScale <= 1.001 ? 0 : newPanY;
+    applyTransform(false);
+  }
+
+  function endPinch(){
+    pinchActive = false;
+  }
+
+  // ---------- single-finger pan (move mode) ----------
+  let panStartTouch = null; // {x,y} client coords where the pan drag began
+  let panStartXY = null;    // {x,y} panX/panY at that moment
+
+  function beginPanDrag(clientX, clientY){
+    panStartTouch = {x: clientX, y: clientY};
+    panStartXY = {x: panX, y: panY};
+  }
+  function updatePanDrag(clientX, clientY){
+    if(!panStartTouch) return;
+    const shellRect = canvasShell.getBoundingClientRect();
+    const dx = clientX - panStartTouch.x;
+    const dy = clientY - panStartTouch.y;
+    const renderedW = shellRect.width * zoomScale;
+    const renderedH = shellRect.width * (canvas.height / canvas.width) * zoomScale;
+    panX = clampPan(panStartXY.x + dx, shellRect.width, renderedW);
+    panY = clampPan(panStartXY.y + dy, shellRect.height, renderedH);
+    applyTransform(false);
+  }
+  function endPanDrag(){
+    panStartTouch = null;
+    panStartXY = null;
+  }
+
+  modeSeg.addEventListener('click', e=>{
+    const btn = e.target.closest('button[data-mode]');
+    if(!btn) return;
+    modeSeg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    interactionMode = btn.dataset.mode;
+    hideSelectionBox();
+    hideLoupe();
+  });
+
+  // ---------- magnifier loupe ----------
+  const LOUPE_MAG = 2.8;
+  const LOUPE_SIZE = 120;    // matches #loupe CSS width/height
+  const LOUPE_GAP = 76;      // ~2cm at standard 96dpi CSS px, clears the fingertip
+  const LOUPE_MARGIN = 10;   // keep the loupe fully on screen
+  const LOUPE_X_PAD = 0.80; // point's horizontal position within the loupe (fraction from left) — lower shows more to the right, higher shows more to the left
+  const LOUPE_Y_PAD = 0.65; // point's vertical position within the loupe (fraction from top) — lower shows more below, higher shows more above
+
+  function updateLoupe(clientX, clientY){
+    if(!baseImage) return;
+    const pt = getCanvasPoint(clientX, clientY);
+    const srcSize = loupeCanvas.width / LOUPE_MAG;
+    // Sample so the current point sits toward the lower-right of the loupe,
+    // revealing more of the upper-left area around it — helpful since
+    // that's usually where the rest of the shape you're outlining sits.
+    const srcX = pt.x - srcSize * LOUPE_X_PAD;
+    const srcY = pt.y - srcSize * LOUPE_Y_PAD;
+    loupeCtx.clearRect(0, 0, loupeCanvas.width, loupeCanvas.height);
+    loupeCtx.drawImage(canvas, srcX, srcY, srcSize, srcSize, 0, 0, loupeCanvas.width, loupeCanvas.height);
+
+    // Draw the in-progress selection rectangle as a black/white "marching
+    // ants" dashed outline, so it stays visible no matter the image's own
+    // colors (a plain-colored line can disappear against a dark photo).
+    if(isDragging && pressStart){
+      const a = getCanvasPoint(pressStart.x, pressStart.y);
+      const bx0 = Math.min(a.x, pt.x), by0 = Math.min(a.y, pt.y);
+      const bx1 = Math.max(a.x, pt.x), by1 = Math.max(a.y, pt.y);
+      const scale = loupeCanvas.width / srcSize;
+      const lx0 = (bx0 - srcX) * scale, ly0 = (by0 - srcY) * scale;
+      const lw = (bx1 - bx0) * scale, lh = (by1 - by0) * scale;
+
+      loupeCtx.save();
+      loupeCtx.lineWidth = 2;
+      loupeCtx.setLineDash([5, 5]);
+      loupeCtx.strokeStyle = '#ffffff';
+      loupeCtx.lineDashOffset = 0;
+      loupeCtx.strokeRect(lx0, ly0, lw, lh);
+      loupeCtx.strokeStyle = '#000000';
+      loupeCtx.lineDashOffset = 5;
+      loupeCtx.strokeRect(lx0, ly0, lw, lh);
+      loupeCtx.restore();
+    }
+
+    const vw = window.innerWidth, vh = window.innerHeight;
+
+    // Prefer showing above the finger; flip below when there isn't room
+    // (e.g. touching near the top of the image).
+    let top = clientY - LOUPE_GAP - LOUPE_SIZE;
+    if(top < LOUPE_MARGIN){
+      top = clientY + LOUPE_GAP;
+    }
+    top = Math.max(LOUPE_MARGIN, Math.min(vh - LOUPE_SIZE - LOUPE_MARGIN, top));
+
+    let left = clientX - LOUPE_SIZE/2;
+    left = Math.max(LOUPE_MARGIN, Math.min(vw - LOUPE_SIZE - LOUPE_MARGIN, left));
+
+    loupe.style.left = left + 'px';
+    loupe.style.top = top + 'px';
+    loupe.classList.add('show');
+  }
+  function hideLoupe(){
+    loupe.classList.remove('show');
+  }
+
+  // ---------- saved colors ----------
+  function renderSavedColors(){
+    swatchesRow.querySelectorAll('.saved-swatch').forEach(el=>el.remove());
+    savedColors.forEach(hex=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'swatch saved-swatch';
+      b.style.background = hex;
+      b.dataset.color = hex;
+      b.addEventListener('click', ()=>{
+        document.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));
+        b.classList.add('selected');
+        currentColor = hex;
+        customColor.value = hex;
+      });
+      swatchesRow.appendChild(b);
+    });
+  }
+
+  function registerColor(hex){
+    hex = hex.toLowerCase();
+    savedColors = savedColors.filter(c => c !== hex);
+    savedColors.unshift(hex);
+    if(savedColors.length > MAX_SAVED_COLORS) savedColors.length = MAX_SAVED_COLORS;
+    renderSavedColors();
+  }
+
+  function padFor(sens){
+    if(sens === 'tight') return 0;
+    if(sens === 'loose') return 14;
+    return 5;
+  }
+
+  function findWordAt(px, py){
+    const pad = padFor(sensitivity);
+    let best = null;
+    let bestArea = Infinity;
+    for(const w of words){
+      const x0 = w.x0 - pad, y0 = w.y0 - pad, x1 = w.x1 + pad, y1 = w.y1 + pad;
+      if(px >= x0 && px <= x1 && py >= y0 && py <= y1){
+        const area = (x1-x0) * (y1-y0);
+        if(area < bestArea){
+          bestArea = area;
+          best = w;
+        }
+      }
+    }
+    return best;
+  }
+
+  // fallback box when no OCR word matches: a reasonable word-sized box
+  // around the point, sized according to the sensitivity setting so
+  // "word only" actually gives a noticeably tighter box.
+  function fallbackBoxSize(sens){
+    if(sens === 'tight') return {w: canvas.width * 0.075, h: canvas.height * 0.02};
+    if(sens === 'loose') return {w: canvas.width * 0.20, h: canvas.height * 0.05};
+    return {w: canvas.width * 0.13, h: canvas.height * 0.033};
+  }
+  function fallbackBox(px, py){
+    const {w, h} = fallbackBoxSize(sensitivity);
+    return {
+      x0: px - w/2, y0: py - h/2, x1: px + w/2, y1: py + h/2
+    };
+  }
+
+  // ---------- masking ----------
+  function applyMask(box){
+    maskHistory.push({...box, color: currentColor, opacity: currentOpacity});
+    redoStack = []; // a fresh action invalidates any pending redo
+    redraw();
+    updateButtons();
+  }
+
+  function redraw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(baseImage, 0, 0);
+    for(const m of maskHistory){
+      ctx.save();
+      ctx.globalAlpha = m.opacity;
+      ctx.fillStyle = m.color;
+      ctx.fillRect(m.x0, m.y0, m.x1 - m.x0, m.y1 - m.y0);
+      ctx.restore();
+    }
+  }
+
+  function updateButtons(){
+    undoBtn.disabled = maskHistory.length === 0;
+    redoBtn.disabled = redoStack.length === 0;
+    clearBtn.disabled = maskHistory.length === 0;
+    downloadBtn.disabled = !baseImage;
+  }
+
+  undoBtn.addEventListener('click', ()=>{
+    const removed = maskHistory.pop();
+    if(removed) redoStack.push(removed);
+    redraw();
+    updateButtons();
+  });
+  redoBtn.addEventListener('click', ()=>{
+    const restored = redoStack.pop();
+    if(restored) maskHistory.push(restored);
+    redraw();
+    updateButtons();
+  });
+  clearBtn.addEventListener('click', ()=>{
+    maskHistory = [];
+    redoStack = [];
+    redraw();
+    updateButtons();
+  });
+  downloadBtn.addEventListener('click', ()=>{
+    if(!baseImage) return;
+    const dataUrl = canvas.toDataURL('image/png');
+    saveImg.src = dataUrl;
+    saveDownloadLink.href = dataUrl;
+    saveOverlay.classList.add('show');
+  });
+  saveCloseBtn.addEventListener('click', ()=> saveOverlay.classList.remove('show'));
+  saveOverlay.addEventListener('click', e=>{
+    if(e.target === saveOverlay) saveOverlay.classList.remove('show');
+  });
+
+  // ---------- color & opacity controls ----------
+  document.querySelectorAll('.swatch').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.swatch').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentColor = btn.dataset.color;
+      customColor.value = currentColor;
+    });
+  });
+  customColor.addEventListener('input', ()=>{
+    document.querySelectorAll('.swatch').forEach(b=>b.classList.remove('selected'));
+    currentColor = customColor.value;
+  });
+  customColor.addEventListener('change', ()=>{
+    registerColor(customColor.value);
+  });
+  opacitySlider.addEventListener('input', ()=>{
+    currentOpacity = opacitySlider.value / 100;
+    opacityVal.textContent = opacitySlider.value + '%';
+  });
+  sensSeg.addEventListener('click', e=>{
+    const btn = e.target.closest('button[data-sens]');
+    if(!btn) return;
+    sensSeg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    sensitivity = btn.dataset.sens;
+  });
+
+  // ---------- press / drag-to-select on canvas ----------
+  // Two ways to place a mask:
+  //  1. Drag: press, move a bit, release — draws a rectangle exactly where dragged.
+  //  2. Hold in place (no drag): places a mask at that point — snapped to a
+  //     detected word if OCR happened to succeed, otherwise a default size.
+  const LONG_PRESS_MS = 380;
+  const DRAG_START_PX = 10; // movement beyond this switches into drag-to-draw mode
+
+  let pressStart = null;   // {x,y} client coords where the touch/click began
+  let pressTimer = null;   // timer for the "hold in place" mask
+  let isDragging = false;  // true once movement has exceeded DRAG_START_PX
+
+  function ringAt(clientX, clientY){
+    const shellRect = canvasShell.getBoundingClientRect();
+    pressRing.style.left = (clientX - shellRect.left) + 'px';
+    pressRing.style.top = (clientY - shellRect.top) + 'px';
+    pressRing.classList.remove('growing');
+    void pressRing.offsetWidth; // restart animation
+    pressRing.classList.add('growing');
+  }
+  function hideRing(){
+    pressRing.classList.remove('growing');
+  }
+
+  function selectionColorStyle(){
+    // currentColor as translucent fill + solid dashed border
+    const hex = currentColor.replace('#','');
+    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
+    return {
+      border: currentColor,
+      fill: `rgba(${r},${g},${b},0.25)`
+    };
+  }
+
+  function showSelectionBox(startClientX, startClientY, curClientX, curClientY){
+    const shellRect = canvasShell.getBoundingClientRect();
+    const x0 = Math.min(startClientX, curClientX) - shellRect.left;
+    const y0 = Math.min(startClientY, curClientY) - shellRect.top;
+    const w = Math.abs(curClientX - startClientX);
+    const h = Math.abs(curClientY - startClientY);
+    const style = selectionColorStyle();
+    selectionBox.style.display = 'block';
+    selectionBox.style.left = x0 + 'px';
+    selectionBox.style.top = y0 + 'px';
+    selectionBox.style.width = w + 'px';
+    selectionBox.style.height = h + 'px';
+    selectionBox.style.borderColor = style.border;
+    selectionBox.style.background = style.fill;
+  }
+  function hideSelectionBox(){
+    selectionBox.style.display = 'none';
+  }
+
+  function onPressStart(clientX, clientY){
+    if(!baseImage) return;
+    pressStart = {x: clientX, y: clientY};
+    isDragging = false;
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(()=>{
+      if(!pressStart || isDragging) return;
+      const pt = getCanvasPoint(clientX, clientY);
+      const word = ocrReady ? findWordAt(pt.x, pt.y) : null;
+      const box = word || fallbackBox(pt.x, pt.y);
+      ringAt(clientX, clientY);
+      applyMask(box);
+      if(navigator.vibrate) navigator.vibrate(15);
+      pressStart = null;
+      setTimeout(hideRing, 460);
+    }, LONG_PRESS_MS);
+  }
+
+  function onPressMove(clientX, clientY){
+    if(!pressStart) return;
+    const dx = clientX - pressStart.x;
+    const dy = clientY - pressStart.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(!isDragging && dist > DRAG_START_PX){
+      isDragging = true;
+      clearTimeout(pressTimer); // movement means this isn't a hold-in-place tap
+    }
+    if(isDragging){
+      showSelectionBox(pressStart.x, pressStart.y, clientX, clientY);
+    }
+  }
+
+  function onPressEnd(clientX, clientY){
+    clearTimeout(pressTimer);
+    if(isDragging && pressStart && clientX !== undefined){
+      const a = getCanvasPoint(pressStart.x, pressStart.y);
+      const b = getCanvasPoint(clientX, clientY);
+      const box = {
+        x0: Math.min(a.x, b.x), y0: Math.min(a.y, b.y),
+        x1: Math.max(a.x, b.x), y1: Math.max(a.y, b.y)
+      };
+      hideSelectionBox();
+      // ignore accidental near-zero-size drags
+      if((box.x1 - box.x0) > 4 && (box.y1 - box.y0) > 4){
+        applyMask(box);
+        if(navigator.vibrate) navigator.vibrate(15);
+      }
+    }
+    pressStart = null;
+    isDragging = false;
+  }
+
+  canvas.addEventListener('touchstart', e=>{
+    if(e.touches.length === 2){
+      e.preventDefault();
+      hideLoupe();
+      beginPinch(e.touches[0], e.touches[1]);
+      return;
+    }
+    if(e.touches.length !== 1 || pinchActive) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    if(isInRightDeadzone(t.clientX)) return;
+    if(interactionMode === 'move'){
+      beginPanDrag(t.clientX, t.clientY);
+      return;
+    }
+    updateLoupe(t.clientX, t.clientY);
+    onPressStart(t.clientX, t.clientY);
+  }, {passive:false});
+  canvas.addEventListener('touchmove', e=>{
+    if(e.touches.length === 2){
+      e.preventDefault();
+      hideLoupe();
+      if(pinchActive) updatePinch(e.touches[0], e.touches[1]);
+      return;
+    }
+    if(e.touches.length !== 1 || pinchActive) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    if(interactionMode === 'move'){
+      updatePanDrag(t.clientX, t.clientY);
+      return;
+    }
+    updateLoupe(t.clientX, t.clientY);
+    onPressMove(t.clientX, t.clientY);
+  }, {passive:false});
+  canvas.addEventListener('touchend', e=>{
+    if(e.touches.length >= 1){
+      if(pinchActive && e.touches.length === 1) endPinch();
+      return;
+    }
+    hideLoupe();
+    if(pinchActive){ endPinch(); return; }
+    if(interactionMode === 'move'){ endPanDrag(); return; }
+    const t = e.changedTouches[0];
+    onPressEnd(t ? t.clientX : undefined, t ? t.clientY : undefined);
+  });
+  canvas.addEventListener('touchcancel', ()=>{
+    pinchActive = false;
+    hideLoupe();
+    endPanDrag();
+    onPressEnd();
+  });
+  canvas.addEventListener('contextmenu', e=> e.preventDefault());
+
+  // desktop mouse: press, drag, release
+  canvas.addEventListener('mousedown', e=>{
+    if(interactionMode === 'move'){ beginPanDrag(e.clientX, e.clientY); return; }
+    onPressStart(e.clientX, e.clientY);
+  });
+  window.addEventListener('mousemove', e=>{
+    if(interactionMode === 'move'){ updatePanDrag(e.clientX, e.clientY); return; }
+    onPressMove(e.clientX, e.clientY);
+  });
+  window.addEventListener('mouseup', e=>{
+    if(interactionMode === 'move'){ endPanDrag(); return; }
+    onPressEnd(e.clientX, e.clientY);
+  });
+
+})();
+</script>
+</body>
+</html>
