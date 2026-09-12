@@ -457,6 +457,22 @@
     <div class="workspace">
       <div class="sidebar">
         <div class="sb-group">
+          <span class="sb-label">操作</span>
+          <div class="seg seg-vert" id="modeSeg">
+            <button class="on" data-mode="draw">描く</button>
+            <button data-mode="move">動かす</button>
+            <button data-mode="erase">消す</button>
+          </div>
+        </div>
+
+        <div class="sb-group sb-actions">
+          <button class="btn ghost" id="undoBtn" disabled>元に戻す</button>
+          <button class="btn ghost" id="redoBtn" disabled>やり直す</button>
+          <button class="btn ghost" id="clearBtn" disabled>すべて解除</button>
+          <button class="btn primary" id="downloadBtn" disabled>保存</button>
+        </div>
+
+        <div class="sb-group">
           <span class="sb-label">色</span>
           <div class="swatches" id="swatchesRow">
             <button class="swatch selected" style="background:#1a1d1a" data-color="#1a1d1a"></button>
@@ -472,31 +488,6 @@
           <span class="sb-label">濃さ</span>
           <input type="range" id="opacitySlider" min="20" max="100" value="100">
           <span id="opacityVal">100%</span>
-        </div>
-
-        <div class="sb-group">
-          <span class="sb-label">感度</span>
-          <div class="seg seg-vert" id="sensSeg">
-            <button class="on" data-sens="tight">単語</button>
-            <button data-sens="normal">標準</button>
-            <button data-sens="loose">広め</button>
-          </div>
-        </div>
-
-        <div class="sb-group">
-          <span class="sb-label">操作</span>
-          <div class="seg seg-vert" id="modeSeg">
-            <button class="on" data-mode="draw">描く</button>
-            <button data-mode="move">動かす</button>
-            <button data-mode="erase">消す</button>
-          </div>
-        </div>
-
-        <div class="sb-group sb-actions">
-          <button class="btn ghost" id="undoBtn" disabled>元に戻す</button>
-          <button class="btn ghost" id="redoBtn" disabled>やり直す</button>
-          <button class="btn ghost" id="clearBtn" disabled>すべて解除</button>
-          <button class="btn primary" id="downloadBtn" disabled>保存</button>
         </div>
       </div>
 
@@ -553,7 +544,6 @@
   const newImageBtn = document.getElementById('newImageBtn');
   const opacitySlider = document.getElementById('opacitySlider');
   const opacityVal = document.getElementById('opacityVal');
-  const sensSeg = document.getElementById('sensSeg');
   const modeSeg = document.getElementById('modeSeg');
   const customColor = document.getElementById('customColor');
   const swatchesRow = document.getElementById('swatchesRow');
@@ -1103,13 +1093,6 @@
   opacitySlider.addEventListener('input', ()=>{
     currentOpacity = opacitySlider.value / 100;
     opacityVal.textContent = opacitySlider.value + '%';
-  });
-  sensSeg.addEventListener('click', e=>{
-    const btn = e.target.closest('button[data-sens]');
-    if(!btn) return;
-    sensSeg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-    btn.classList.add('on');
-    sensitivity = btn.dataset.sens;
   });
 
   // ---------- press / drag-to-select on canvas ----------
