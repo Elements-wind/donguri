@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>プロンプト単語検索</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="単語検索">
+<meta name="theme-color" content="#cde5e2">
+
+<style>
+  :root{
+    --ink: #1a1d1a;
+    --paper: #cde5e2;
+    --panel: #ffffff;
+    --line: #dedad0;
+    --accent: #2f5d46;
+    --accent-soft: #e4ede7;
+    --warn: #a3432c;
+  }
+  *{box-sizing:border-box;}
+  html{background:var(--paper);}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    min-height:100vh;
+    min-height:100dvh;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:16px 14px 100px;
+  }
+  header{
+    padding:4px 2px 14px;
+    border-bottom:1px solid rgba(26,29,26,0.12);
+    margin-bottom:14px;
+  }
+  h1{
+    font-size:19px;
+    font-weight:700;
+    margin:0 0 4px;
+  }
+  .sub{
+    font-size:12.5px;
+    color:#3f4a45;
+    line-height:1.5;
+    margin:0;
+  }
+
+  /* view tabs */
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .tabs button{
+    flex:1;
+    padding:10px 8px;
+    border-radius:9px;
+    border:1px solid rgba(26,29,26,0.15);
+    background:var(--panel);
+    color:#3f4a45;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .tabs button.on{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* search box */
+  .search-box{
+    position:relative;
+    margin-bottom:12px;
+  }
+  #queryInput{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    font-size:15px;
+    color:var(--ink);
+  }
+  #queryInput:focus{outline:2px solid var(--accent); outline-offset:1px;}
+
+  .chip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-bottom:14px;
+  }
+  .chip{
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:#3f4a45;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .chip.on{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  /* result cards */
+  #resultsList{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .result-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px 12px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    cursor:pointer;
+  }
+  .result-card.picked{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .result-check{
+    width:20px;height:20px;
+    border-radius:6px;
+    border:2px solid var(--line);
+    flex:none;
+    margin-top:1px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:#fff;
+  }
+  .result-card.picked .result-check{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .result-body{flex:1; min-width:0;}
+  .result-phrase{
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink);
+    word-break:break-word;
+  }
+  .result-translation{
+    font-size:11.5px;
+    line-height:1.4;
+    color:#63665f;
+    margin-top:2px;
+  }
+  .result-tags{
+    margin-top:5px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+  }
+  .result-tag{
+    font-size:10.5px;
+    color:#3f4a45;
+    background:rgba(26,29,26,0.06);
+    border-radius:5px;
+    padding:2px 6px;
+  }
+  #emptyState{
+    text-align:center;
+    color:#63665f;
+    font-size:13px;
+    padding:30px 10px;
+  }
+
+  /* sticky selected-prompt bar */
+  #selectedBar{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background:var(--panel);
+    border-top:1px solid var(--line);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    display:none;
+    z-index:50;
+  }
+  #selectedBar.show{display:block;}
+  #selectedPreview{
+    font-size:12px;
+    color:#3f4a45;
+    line-height:1.4;
+    max-height:54px;
+    overflow-y:auto;
+    margin-bottom:8px;
+    padding:8px 10px;
+    background:var(--paper);
+    border-radius:8px;
+  }
+  .selected-actions{
+    display:flex;
+    gap:8px;
+  }
+
+  /* buttons */
+  .btn{
+    padding:11px 10px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+    flex:1;
+  }
+  .btn.ghost{
+    color:#63665f;
+    font-weight:500;
+  }
+  .btn:disabled{opacity:0.4; cursor:default;}
+  .btn:active{transform:scale(0.98);}
+
+  /* manage view */
+  .form-block{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .form-block h2{
+    font-size:14px;
+    margin:0 0 10px;
+  }
+  .form-row{margin-bottom:10px;}
+  .form-row:last-child{margin-bottom:0;}
+  .form-row label{
+    display:block;
+    font-size:11.5px;
+    color:#63665f;
+    margin-bottom:5px;
+  }
+  .form-row textarea,
+  .form-row input[type="text"]{
+    width:100%;
+    padding:9px 11px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    font-size:13.5px;
+    font-family:inherit;
+    background:#fdfdfb;
+    color:var(--ink);
+  }
+  .form-row textarea{resize:vertical; min-height:56px;}
+  .form-hint{font-size:11px; color:#8a8d84; margin-top:4px;}
+
+  .manage-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .manage-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px 12px;
+  }
+  .manage-phrase{
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:6px;
+  }
+  .manage-tag-input{
+    width:100%;
+    padding:6px 9px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    font-size:12px;
+    margin-bottom:8px;
+    background:#fdfdfb;
+  }
+  .manage-row-actions{
+    display:flex;
+    gap:8px;
+  }
+  .manage-row-actions .btn{
+    flex:1;
+    padding:7px 6px;
+    font-size:12px;
+  }
+
+  #toast{
+    position:fixed;
+    left:50%;
+    bottom:90px;
+    transform:translateX(-50%) translateY(12px);
+    background:var(--ink);
+    color:#fff;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:20px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+    max-width:88%;
+    text-align:center;
+    z-index:100;
+  }
+  #toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>プロンプト単語検索</h1>
+    <p class="sub">出したい効果からAIイラスト用の英語プロンプトを探して、まとめてコピーできます。</p>
+  </header>
+
+  <div class="tabs">
+    <button class="on" data-tab="search">検索</button>
+    <button data-tab="manage">登録・管理</button>
+  </div>
+
+  <!-- 検索ビュー -->
+  <div class="view active" id="view-search">
+    <div class="search-box">
+      <input type="text" id="queryInput" placeholder="例：躍動感を出したい、光を印象的に">
+    </div>
+    <div class="chip-row" id="categoryChips"></div>
+    <div id="resultsList"></div>
+    <div id="emptyState" style="display:none;">条件に合う単語がまだ登録されていません。「登録・管理」から追加できます。</div>
+  </div>
+
+  <!-- 登録・管理ビュー -->
+  <div class="view" id="view-manage">
+    <div class="form-block">
+      <h2>1件ずつ追加</h2>
+      <div class="form-row">
+        <label>英語フレーズ（1つだけ）</label>
+        <textarea id="addPhrase" placeholder="例：dynamic camera angle"></textarea>
+      </div>
+      <div class="form-row">
+        <label>日本語訳（任意）</label>
+        <input type="text" id="addTranslation" placeholder="例：ダイナミックなカメラアングル">
+      </div>
+      <div class="form-row">
+        <label>カテゴリ（カンマ区切り、複数OK）</label>
+        <input type="text" id="addTags" placeholder="例：構図, カメラ">
+      </div>
+      <button class="btn primary" id="addOneBtn" style="width:100%;">追加する</button>
+    </div>
+
+    <div class="form-block">
+      <h2>まとめて追加（1行＝1件）</h2>
+      <div class="form-row">
+        <textarea id="bulkPhrase" placeholder="1行に1フレーズずつ貼り付け" style="min-height:90px;"></textarea>
+        <p class="form-hint">カテゴリは未設定で登録されます。下の一覧から後でタグ付けできます。</p>
+      </div>
+      <button class="btn primary" id="addBulkBtn" style="width:100%;">まとめて追加する</button>
+    </div>
+
+    <div class="form-block">
+      <h2>バックアップ</h2>
+      <div class="selected-actions">
+        <button class="btn ghost" id="exportBtn" style="flex:1;">書き出す</button>
+        <button class="btn ghost" id="importBtn" style="flex:1;">読み込む</button>
+      </div>
+      <p class="form-hint">機種変更やブラウザが変わる前に「書き出す」でバックアップしておくと安心です。</p>
+    </div>
+
+    <h2 style="font-size:14px; margin:4px 0 10px;">登録済み一覧（<span id="totalCount">0</span>件）</h2>
+    <div class="manage-list" id="manageList"></div>
+  </div>
+</div>
+
+<div id="selectedBar">
+  <div id="selectedPreview"></div>
+  <div class="selected-actions">
+    <button class="btn primary" id="copyBtn">コピーする</button>
+    <button class="btn ghost" id="clearSelectedBtn">選択解除</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'promptWordEntries_v1';
+
+  const queryInput = document.getElementById('queryInput');
+  const categoryChips = document.getElementById('categoryChips');
+  const resultsList = document.getElementById('resultsList');
+  const emptyState = document.getElementById('emptyState');
+  const manageList = document.getElementById('manageList');
+  const totalCount = document.getElementById('totalCount');
+  const selectedBar = document.getElementById('selectedBar');
+  const selectedPreview = document.getElementById('selectedPreview');
+  const copyBtn = document.getElementById('copyBtn');
+  const clearSelectedBtn = document.getElementById('clearSelectedBtn');
+  const addPhrase = document.getElementById('addPhrase');
+  const addTranslation = document.getElementById('addTranslation');
+  const addTags = document.getElementById('addTags');
+  const addOneBtn = document.getElementById('addOneBtn');
+  const bulkPhrase = document.getElementById('bulkPhrase');
+  const addBulkBtn = document.getElementById('addBulkBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const toast = document.getElementById('toast');
+
+  let entries = [];
+  let activeCategory = null; // null = すべて
+  let selectedIds = new Set();
+  let toastTimer = null;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 2000);
+  }
+
+  function uid(){
+    return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  }
+
+  // ---------- persistence ----------
+  const SEED_VERSION = 3; // bump when the baseline entry set changes below
+  const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
+
+  function loadEntries(){
+    let raw = null;
+    try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){ /* ignore */ }
+    entries = raw ? JSON.parse(raw) : [];
+
+    let storedVersion = 0;
+    try{ storedVersion = parseInt(localStorage.getItem(SEED_VERSION_KEY) || '0', 10); }catch(e){ /* ignore */ }
+
+    if(storedVersion < SEED_VERSION){
+      // Replace the built-in baseline entries with the current set —
+      // anything the user added themselves has no "seeded" flag, so it's
+      // never touched here.
+      entries = entries.filter(e => !e.seeded);
+      entries = entries.concat(defaultSeed());
+      try{ localStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION)); }catch(e){ /* ignore */ }
+      saveEntries();
+    } else if(raw === null){
+      saveEntries();
+    }
+  }
+  function saveEntries(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }catch(e){
+      showToast('保存に失敗しました（ストレージの空き容量を確認してください）');
+    }
+  }
+
+  function defaultSeed(){
+    // [英語フレーズ, 日本語訳, カテゴリ配列]
+    const rows = [
+      // デザイン性・シルエット
+      ['stylish', 'スタイリッシュ', ['デザイン性']],
+      ['character-specific action-game outfit', 'キャラクター専用のアクションゲーム風衣装', ['デザイン性']],
+      ['distinctive silhouette', '特徴的なシルエット', ['デザイン性','シルエット']],
+      ['intricate costume design', '精巧な衣装デザイン', ['デザイン性']],
+      ['ornate details', '装飾的なディテール', ['デザイン性']],
+      ['flowing cape', 'なびくマント', ['デザイン性']],
+      ['elegant silhouette', '優雅なシルエット', ['デザイン性','シルエット']],
+      // エフェクト
+      ['dynamic splash art', 'ダイナミックなスプラッシュアート', ['エフェクト']],
+      ['wind-element effects', '風属性のエフェクト', ['エフェクト','属性']],
+      ['flowing hair', 'なびく髪', ['エフェクト','動き']],
+      ['wind effect', '風のエフェクト', ['エフェクト']],
+      ['motion blur', 'モーションブラー', ['エフェクト','動き']],
+      ['speed lines', 'スピード線', ['エフェクト','動き']],
+      ['cherry blossoms falling', '舞い散る桜', ['エフェクト','背景']],
+      ['rain effect', '雨のエフェクト', ['エフェクト','背景']],
+      ['wet reflections', '濡れた路面の反射', ['エフェクト','背景']],
+      // 動き
+      ['strong sense of motion', '強い躍動感', ['動き']],
+      ['fluid movement', '滑らかな動き', ['動き']],
+      ['captured at the peak of action', 'アクションの最高潮を捉えた瞬間', ['動き']],
+      ['dynamic action pose', 'ダイナミックなアクションポーズ', ['動き']],
+      ['mid-jump', 'ジャンプの最中', ['動き']],
+      ['gravity-defying pose', '重力を感じさせないポーズ', ['動き']],
+      // 構図・カメラ
+      ['dynamic camera angle', 'ダイナミックなカメラアングル', ['構図','カメラ']],
+      ['cinematic composition', '映画のような構図', ['構図']],
+      ['strong visual hierarchy', '明確な視線誘導', ['構図']],
+      ['clear focal point', 'はっきりした焦点', ['構図']],
+      ['close-up shot', 'クローズアップショット', ['構図','カメラ']],
+      ['portrait framing', 'ポートレート構図', ['構図']],
+      ['wide shot', 'ワイドショット', ['構図','カメラ']],
+      ['full body view', '全身が見える構図', ['構図']],
+      ["bird's eye view", '俯瞰視点', ['構図','カメラ']],
+      ['aerial perspective', '上空からの視点', ['構図','カメラ']],
+      ['low angle shot', 'ローアングルショット', ['構図','カメラ']],
+      ['dramatic perspective', 'ドラマチックな遠近感', ['構図']],
+      ['shallow depth of field', '浅い被写界深度', ['構図']],
+      ['bokeh background', 'ぼかした背景', ['構図','背景']],
+      // ライティング・雰囲気
+      ['dramatic lighting', 'ドラマチックな照明', ['ライティング']],
+      ['heroic character key visual', '英雄的なキャラクターのキービジュアル', ['雰囲気']],
+      ['soft lighting', '柔らかい照明', ['ライティング']],
+      ['rim lighting', 'リムライト（縁光）', ['ライティング']],
+      ['golden hour', 'ゴールデンアワー（夕暮れ時）', ['ライティング']],
+      ['warm sunset glow', '温かい夕焼けの輝き', ['ライティング','雰囲気']],
+      ['volumetric lighting', 'ボリュームライト（光の筋が見える照明）', ['ライティング']],
+      ['god rays', '木漏れ日のような光線', ['ライティング']],
+      ['backlighting', '逆光', ['ライティング']],
+      ['glowing silhouette', '光るシルエット', ['ライティング','雰囲気']],
+      // 画質
+      ['masterpiece', '傑作', ['画質']],
+      ['best quality', '最高品質', ['画質']],
+      ['highly detailed', '高精細', ['画質']],
+      ['ultra-detailed', '超高精細', ['画質']],
+      ['intricate details', '精巧なディテール', ['画質']],
+      ['sharp focus', 'シャープなピント', ['画質']],
+      ['professional artwork', 'プロ品質の作品', ['画質']],
+      // スタイル（絵柄）
+      ['anime style', 'アニメ風', ['スタイル']],
+      ['cel shading', 'セルシェーディング', ['スタイル']],
+      ['watercolor painting texture', '水彩画のテクスチャ', ['スタイル']],
+      ['digital painting', 'デジタルペイント', ['スタイル']],
+      ['concept art', 'コンセプトアート', ['スタイル']],
+      ['flat color', 'フラットカラー', ['スタイル']],
+      ['vector art style', 'ベクターアート風', ['スタイル']],
+      ['chibi style', 'デフォルメ（ちびキャラ）風', ['スタイル']],
+      ['semi-realistic style', 'セミリアル調', ['スタイル']],
+      ['thick paint style', '厚塗り', ['スタイル']],
+      ['ukiyo-e style', '浮世絵風', ['スタイル']],
+      ['manga style', '漫画風', ['スタイル']],
+      ['screentone shading', 'スクリーントーン風の陰影', ['スタイル']],
+      ['american comic book style', 'アメコミ風', ['スタイル']],
+      ['ghibli-inspired style', 'ジブリ風', ['スタイル']],
+      ['pixel art style', 'ドット絵風', ['スタイル']],
+      ['line art', '線画', ['スタイル']],
+      ['pop art style', 'ポップアート風', ['スタイル']],
+      // 色彩
+      ['vibrant colors', '鮮やかな色彩', ['色彩']],
+      ['high saturation', '高い彩度', ['色彩']],
+      ['pastel color palette', 'パステルカラー', ['色彩']],
+      ['soft tones', '柔らかいトーン', ['色彩']],
+      ['high contrast', '高いコントラスト', ['色彩']],
+      ['bold colors', '大胆な色使い', ['色彩']],
+      ['monochrome', 'モノクロ', ['色彩']],
+      ['limited color palette', '限定的な色数', ['色彩']],
+      // 背景
+      ['detailed fantasy background', '精巧なファンタジー背景', ['背景']],
+      ['starry night sky', '星空', ['背景']],
+      // 表情
+      ['gentle smile', '優しい微笑み', ['表情']],
+      ['soft expression', '柔らかい表情', ['表情']],
+      ['fierce expression', '鋭い表情', ['表情']],
+      ['intense gaze', '強い眼差し', ['表情']]
+    ];
+    return rows.map(([phrase, translation, categories])=>({
+      id: uid(), phrase, translation, categories, keywords: '', seeded: true
+    }));
+  }
+
+  // ---------- tabs ----------
+  document.querySelectorAll('.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      const tab = btn.dataset.tab;
+      document.getElementById('view-search').classList.toggle('active', tab==='search');
+      document.getElementById('view-manage').classList.toggle('active', tab==='manage');
+      if(tab === 'manage') renderManageList();
+    });
+  });
+
+  // ---------- category chips ----------
+  function allCategories(){
+    const set = new Set();
+    entries.forEach(e => (e.categories||[]).forEach(c => set.add(c)));
+    return Array.from(set).sort();
+  }
+
+  function renderChips(){
+    const cats = allCategories();
+    categoryChips.innerHTML = '';
+    const allChip = document.createElement('button');
+    allChip.className = 'chip' + (activeCategory === null ? ' on' : '');
+    allChip.textContent = 'すべて';
+    allChip.addEventListener('click', ()=>{ activeCategory = null; renderChips(); renderResults(); });
+    categoryChips.appendChild(allChip);
+
+    cats.forEach(cat=>{
+      const chip = document.createElement('button');
+      chip.className = 'chip' + (activeCategory === cat ? ' on' : '');
+      chip.textContent = cat;
+      chip.addEventListener('click', ()=>{
+        activeCategory = (activeCategory === cat) ? null : cat;
+        renderChips();
+        renderResults();
+      });
+      categoryChips.appendChild(chip);
+    });
+  }
+
+  // ---------- search + results ----------
+  function matchesQuery(entry, q){
+    if(!q) return true;
+    const hay = (entry.categories||[]).join(' ') + ' ' + (entry.keywords||'') + ' ' + entry.phrase + ' ' + (entry.translation||'');
+    const hayLower = hay.toLowerCase();
+    // split on spaces/commas, match if ANY token is found
+    const tokens = q.toLowerCase().split(/[\s,、]+/).filter(Boolean);
+    return tokens.some(t => hayLower.includes(t));
+  }
+
+  function renderResults(){
+    const q = queryInput.value.trim();
+    const filtered = entries.filter(e=>{
+      const catOk = !activeCategory || (e.categories||[]).includes(activeCategory);
+      return catOk && matchesQuery(e, q);
+    });
+
+    resultsList.innerHTML = '';
+    emptyState.style.display = filtered.length ? 'none' : 'block';
+
+    filtered.forEach(entry=>{
+      const card = document.createElement('div');
+      card.className = 'result-card' + (selectedIds.has(entry.id) ? ' picked' : '');
+      card.innerHTML = `
+        <div class="result-check">${selectedIds.has(entry.id) ? '✓' : ''}</div>
+        <div class="result-body">
+          <div class="result-phrase">${escapeHtml(entry.phrase)}</div>
+          ${entry.translation ? `<div class="result-translation">${escapeHtml(entry.translation)}</div>` : ''}
+          <div class="result-tags">${(entry.categories||[]).map(c=>`<span class="result-tag">${escapeHtml(c)}</span>`).join('')}</div>
+        </div>
+      `;
+      card.addEventListener('click', ()=>{
+        if(selectedIds.has(entry.id)) selectedIds.delete(entry.id);
+        else selectedIds.add(entry.id);
+        renderResults();
+        renderSelectedBar();
+      });
+      resultsList.appendChild(card);
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  queryInput.addEventListener('input', renderResults);
+
+  // ---------- selected bar ----------
+  function renderSelectedBar(){
+    if(selectedIds.size === 0){
+      selectedBar.classList.remove('show');
+      return;
+    }
+    selectedBar.classList.add('show');
+    const phrases = entries.filter(e => selectedIds.has(e.id)).map(e => e.phrase);
+    selectedPreview.textContent = phrases.join(', ');
+  }
+
+  copyBtn.addEventListener('click', ()=>{
+    const phrases = entries.filter(e => selectedIds.has(e.id)).map(e => e.phrase);
+    const text = phrases.join(', ');
+    navigator.clipboard.writeText(text).then(()=>{
+      showToast('コピーしました');
+    }).catch(()=>{
+      // fallback for contexts where clipboard API is blocked
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand('copy'); showToast('コピーしました'); }
+      catch(e){ showToast('コピーできませんでした'); }
+      ta.remove();
+    });
+  });
+  clearSelectedBtn.addEventListener('click', ()=>{
+    selectedIds.clear();
+    renderResults();
+    renderSelectedBar();
+  });
+
+  // ---------- add single ----------
+  addOneBtn.addEventListener('click', ()=>{
+    const phrase = addPhrase.value.trim();
+    if(!phrase){ showToast('フレーズを入力してください'); return; }
+    const translation = addTranslation.value.trim();
+    const categories = addTags.value.split(/[,、]+/).map(s=>s.trim()).filter(Boolean);
+    entries.push({ id: uid(), phrase, translation, categories, keywords: '' });
+    saveEntries();
+    addPhrase.value = '';
+    addTranslation.value = '';
+    addTags.value = '';
+    showToast('追加しました');
+    renderChips();
+    renderResults();
+    renderManageList();
+  });
+
+  // ---------- bulk add ----------
+  addBulkBtn.addEventListener('click', ()=>{
+    const lines = bulkPhrase.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    if(lines.length === 0){ showToast('フレーズを入力してください'); return; }
+    lines.forEach(line=>{
+      entries.push({ id: uid(), phrase: line, categories: [], keywords: '' });
+    });
+    saveEntries();
+    bulkPhrase.value = '';
+    showToast(lines.length + '件追加しました');
+    renderChips();
+    renderResults();
+    renderManageList();
+  });
+
+  // ---------- manage list ----------
+  function renderManageList(){
+    totalCount.textContent = entries.length;
+    manageList.innerHTML = '';
+    // newest first
+    const ordered = entries.slice().reverse();
+    ordered.forEach(entry=>{
+      const card = document.createElement('div');
+      card.className = 'manage-card';
+      const tagStr = (entry.categories||[]).join(', ');
+      card.innerHTML = `
+        <div class="manage-phrase">${escapeHtml(entry.phrase)}</div>
+        <input type="text" class="manage-tag-input" value="${escapeHtml(entry.translation||'')}" placeholder="日本語訳（任意）">
+        <input type="text" class="manage-tag-input" value="${escapeHtml(tagStr)}" placeholder="カテゴリ（カンマ区切り）">
+        <div class="manage-row-actions">
+          <button class="btn ghost save-tag-btn">保存</button>
+          <button class="btn ghost delete-entry-btn">削除</button>
+        </div>
+      `;
+      const inputs = card.querySelectorAll('.manage-tag-input');
+      const translationInput = inputs[0];
+      const tagInput = inputs[1];
+      card.querySelector('.save-tag-btn').addEventListener('click', ()=>{
+        entry.translation = translationInput.value.trim();
+        entry.categories = tagInput.value.split(/[,、]+/).map(s=>s.trim()).filter(Boolean);
+        saveEntries();
+        showToast('更新しました');
+        renderChips();
+        renderResults();
+      });
+      card.querySelector('.delete-entry-btn').addEventListener('click', ()=>{
+        entries = entries.filter(e => e.id !== entry.id);
+        selectedIds.delete(entry.id);
+        saveEntries();
+        renderChips();
+        renderResults();
+        renderSelectedBar();
+        renderManageList();
+      });
+      manageList.appendChild(card);
+    });
+  }
+
+  // ---------- export / import ----------
+  exportBtn.addEventListener('click', ()=>{
+    const text = JSON.stringify(entries, null, 2);
+    navigator.clipboard.writeText(text).then(()=>{
+      showToast('データをコピーしました。メモ等に貼って保存してください');
+    }).catch(()=>{
+      showToast('コピーできませんでした');
+    });
+  });
+  importBtn.addEventListener('click', ()=>{
+    const text = prompt('書き出したJSONデータを貼り付けてください（既存のデータは置き換わります）');
+    if(!text) return;
+    try{
+      const parsed = JSON.parse(text);
+      if(!Array.isArray(parsed)) throw new Error('not an array');
+      entries = parsed.map(e=>({
+        id: e.id || uid(),
+        phrase: e.phrase || '',
+        categories: Array.isArray(e.categories) ? e.categories : [],
+        keywords: e.keywords || ''
+      }));
+      saveEntries();
+      showToast('読み込みました');
+      renderChips();
+      renderResults();
+      renderManageList();
+    }catch(e){
+      showToast('データの形式が正しくありません');
+    }
+  });
+
+  // ---------- init ----------
+  loadEntries();
+  renderChips();
+  renderResults();
+  renderManageList();
+})();
+</script>
+</body>
+</html>
