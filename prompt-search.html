@@ -448,7 +448,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 3; // bump when the baseline entry set changes below
+  const SEED_VERSION = 4; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   function loadEntries(){
@@ -576,7 +576,41 @@
       ['gentle smile', '優しい微笑み', ['表情']],
       ['soft expression', '柔らかい表情', ['表情']],
       ['fierce expression', '鋭い表情', ['表情']],
-      ['intense gaze', '強い眼差し', ['表情']]
+      ['intense gaze', '強い眼差し', ['表情']],
+      // 光表現
+      ['glowing light particles', '光の粒子が輝く', ['光']],
+      ['ethereal glow', '幻想的な輝き', ['光']],
+      ['light bloom effect', '光がにじむブルーム効果', ['光']],
+      ['shimmering light rays', '揺らめく光線', ['光']],
+      ['luminous aura', '発光するオーラ', ['光']],
+      ['soft glow effect', '柔らかな発光', ['光']],
+      // キラキラ表現
+      ['sparkling particles', 'キラキラ輝く粒子', ['キラキラ']],
+      ['glittering highlights', 'キラキラしたハイライト', ['キラキラ']],
+      ['twinkling stars effect', '瞬く星のようなエフェクト', ['キラキラ']],
+      ['sparkle effect', 'きらめきのエフェクト', ['キラキラ']],
+      ['shimmering bokeh', 'きらめくボケ', ['キラキラ']],
+      ['crystal-like sparkle', '結晶のようなきらめき', ['キラキラ']],
+      // 透明感表現
+      ['translucent skin', '透明感のある肌', ['透明感']],
+      ['glass-like transparency', 'ガラスのような透明感', ['透明感']],
+      ['semi-transparent fabric', '半透明の布地', ['透明感']],
+      ['ethereal transparency', '幻想的な透明感', ['透明感']],
+      ['iridescent sheen', '虹色に輝く光沢', ['透明感']],
+      ['glossy translucent texture', 'つやのある半透明の質感', ['透明感']],
+      // 儚さ
+      ['ephemeral beauty', '儚い美しさ', ['儚さ']],
+      ['fragile and delicate atmosphere', '儚く繊細な雰囲気', ['儚さ']],
+      ['fleeting moment', '儚い一瞬', ['儚さ']],
+      ['melancholic and fragile mood', '物悲しく儚い雰囲気', ['儚さ']],
+      ['delicate, fading light', '儚く消えゆく光', ['儚さ','光']],
+      ['wistful atmosphere', 'もの寂しい雰囲気', ['儚さ']],
+      // 細い線画
+      ['delicate thin line art', '繊細な細い線画', ['線画']],
+      ['fine line work', '繊細な線の描写', ['線画']],
+      ['minimal line art', 'ミニマルな線画', ['線画']],
+      ['hairline-thin details', '髪の毛のように細い線', ['線画']],
+      ['elegant thin outlines', '優美な細い輪郭線', ['線画']]
     ];
     return rows.map(([phrase, translation, categories])=>({
       id: uid(), phrase, translation, categories, keywords: '', seeded: true
