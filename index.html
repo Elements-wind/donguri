@@ -475,12 +475,11 @@
         <div class="sb-group">
           <span class="sb-label">色</span>
           <div class="swatches" id="swatchesRow">
-            <button class="swatch selected" style="background:#1a1d1a" data-color="#1a1d1a"></button>
-            <button class="swatch" style="background:#a9c6e8" data-color="#a9c6e8"></button>
-            <button class="swatch" style="background:#a7ddc5" data-color="#a7ddc5"></button>
-            <button class="swatch" style="background:#b9c4ef" data-color="#b9c4ef"></button>
-            <button class="swatch" style="background:#cbb6e3" data-color="#cbb6e3"></button>
-            <input type="color" id="customColor" value="#1a1d1a">
+            <button class="swatch" style="background:#1a1d1a" data-color="#1a1d1a"></button>
+            <button class="swatch selected" style="background:#83bfb5" data-color="#83bfb5"></button>
+            <button class="swatch" style="background:#d3d3d3" data-color="#d3d3d3"></button>
+            <button class="swatch" style="background:#91b2d2" data-color="#91b2d2"></button>
+            <input type="color" id="customColor" value="#83bfb5">
           </div>
         </div>
 
@@ -561,7 +560,7 @@
   let words = [];            // {x0,y0,x1,y1} in natural image pixel coords
   let maskHistory = [];      // stack of {x0,y0,x1,y1,color,opacity}
   let redoStack = [];        // masks popped by undo, restorable via redo
-  let currentColor = '#1a1d1a';
+  let currentColor = '#83bfb5';
   let currentOpacity = 1.0;
   let sensitivity = 'tight';
   let interactionMode = 'draw'; // 'draw' | 'move'
