@@ -979,7 +979,7 @@
   // a sliver of the letter visible at the edge once masked. Expand the
   // matched box outward by a small physical margin (not the hit-test
   // padding above, which only affects whether a tap counts as a hit).
-  const MASK_EXPAND_MM = 2;
+  const MASK_EXPAND_MM = 1;
   const MM_TO_CSS_PX = 96 / 25.4; // ≈3.78 CSS px per mm at standard density
   function expandWordBox(word){
     const rect = canvas.getBoundingClientRect();
