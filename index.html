@@ -232,6 +232,15 @@
     display:none;
   }
 
+  #wordHighlight{
+    position:absolute;
+    border:2.5px solid var(--accent);
+    background:rgba(47,93,70,0.16);
+    border-radius:3px;
+    pointer-events:none;
+    display:none;
+  }
+
   /* status row */
   #statusRow{
     display:flex;
@@ -267,36 +276,46 @@
     transition:width .2s ease;
   }
 
-  /* toolbar */
-  .toolbar{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:14px;
-    margin-bottom:12px;
-  }
-  .tb-row{
+  /* workspace: fixed left sidebar + canvas */
+  .workspace{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:10px;
     margin-bottom:12px;
   }
-  .tb-row:last-child{margin-bottom:0;}
-  .tb-label{
-    font-size:12px;
+  .sidebar{
+    flex:0 0 108px;
+    width:108px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 8px;
+  }
+  .canvas-shell{
+    flex:1;
+    min-width:0;
+  }
+  .sb-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .sb-label{
+    font-size:11px;
     color:#63665f;
-    width:52px;
-    flex:none;
+    font-weight:600;
   }
   .swatches{
     display:flex;
-    gap:8px;
-    flex:1;
     flex-wrap:wrap;
+    gap:6px;
   }
   .swatch{
-    width:30px;height:30px;
-    border-radius:8px;
+    width:24px;height:24px;
+    border-radius:7px;
     border:2px solid transparent;
     cursor:pointer;
     padding:0;
@@ -307,8 +326,8 @@
     box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--ink);
   }
   #customColor{
-    width:30px;height:30px;
-    border-radius:8px;
+    width:24px;height:24px;
+    border-radius:7px;
     border:1px solid var(--line);
     padding:0;
     background:none;
@@ -318,56 +337,50 @@
     position:relative;
   }
 
-  .seg{
+  .seg-vert{
     display:flex;
-    flex:1;
+    flex-direction:column;
     border:1px solid var(--line);
     border-radius:8px;
     overflow:hidden;
   }
-  .seg button{
-    flex:1;
+  .seg-vert button{
     border:none;
+    border-top:1px solid var(--line);
     background:var(--panel);
     color:#63665f;
-    font-size:12.5px;
+    font-size:12px;
     padding:8px 4px;
     cursor:pointer;
-    border-left:1px solid var(--line);
   }
-  .seg button:first-child{border-left:none;}
-  .seg button.on{
+  .seg-vert button:first-child{border-top:none;}
+  .seg-vert button.on{
     background:var(--accent);
     color:#fff;
   }
 
   input[type="range"]{
-    flex:1;
+    width:100%;
     accent-color:var(--accent);
   }
   #opacityVal{
-    font-size:12px;
+    font-size:11px;
     color:#63665f;
-    width:32px;
-    text-align:right;
-    flex:none;
   }
 
-  /* actions */
-  .actions{
-    display:flex;
-    flex-wrap:wrap;
+  /* actions (inside sidebar) */
+  .sb-actions{
     gap:8px;
-    margin-bottom:8px;
+    margin-top:2px;
   }
   .btn{
-    flex:1 1 calc(50% - 4px);
-    padding:12px 10px;
+    width:100%;
+    padding:10px 6px;
     border-radius:8px;
     border:1px solid var(--line);
     background:var(--panel);
     color:var(--ink);
-    font-size:13.5px;
+    font-size:12px;
     font-weight:600;
     cursor:pointer;
   }
@@ -441,53 +454,61 @@
       <div id="progressTrack"><div id="progressBar"></div></div>
     </div>
 
-    <div class="canvas-shell" id="canvasShell">
-      <canvas id="imgCanvas"></canvas>
-      <div id="pressRing"></div>
-      <div id="selectionBox"></div>
-      <button id="zoomResetBtn" class="zoom-reset">ズームを戻す</button>
+    <div class="workspace">
+      <div class="sidebar">
+        <div class="sb-group">
+          <span class="sb-label">色</span>
+          <div class="swatches" id="swatchesRow">
+            <button class="swatch selected" style="background:#1a1d1a" data-color="#1a1d1a"></button>
+            <button class="swatch" style="background:#a9c6e8" data-color="#a9c6e8"></button>
+            <button class="swatch" style="background:#a7ddc5" data-color="#a7ddc5"></button>
+            <button class="swatch" style="background:#b9c4ef" data-color="#b9c4ef"></button>
+            <button class="swatch" style="background:#cbb6e3" data-color="#cbb6e3"></button>
+            <input type="color" id="customColor" value="#1a1d1a">
+          </div>
+        </div>
+
+        <div class="sb-group">
+          <span class="sb-label">濃さ</span>
+          <input type="range" id="opacitySlider" min="20" max="100" value="100">
+          <span id="opacityVal">100%</span>
+        </div>
+
+        <div class="sb-group">
+          <span class="sb-label">感度</span>
+          <div class="seg seg-vert" id="sensSeg">
+            <button class="on" data-sens="tight">単語</button>
+            <button data-sens="normal">標準</button>
+            <button data-sens="loose">広め</button>
+          </div>
+        </div>
+
+        <div class="sb-group">
+          <span class="sb-label">操作</span>
+          <div class="seg seg-vert" id="modeSeg">
+            <button class="on" data-mode="draw">描く</button>
+            <button data-mode="move">動かす</button>
+            <button data-mode="erase">消す</button>
+          </div>
+        </div>
+
+        <div class="sb-group sb-actions">
+          <button class="btn ghost" id="undoBtn" disabled>元に戻す</button>
+          <button class="btn ghost" id="redoBtn" disabled>やり直す</button>
+          <button class="btn ghost" id="clearBtn" disabled>すべて解除</button>
+          <button class="btn primary" id="downloadBtn" disabled>保存</button>
+        </div>
+      </div>
+
+      <div class="canvas-shell" id="canvasShell">
+        <canvas id="imgCanvas"></canvas>
+        <div id="pressRing"></div>
+        <div id="selectionBox"></div>
+        <div id="wordHighlight"></div>
+        <button id="zoomResetBtn" class="zoom-reset">ズームを戻す</button>
+      </div>
     </div>
 
-    <div class="toolbar">
-      <div class="tb-row">
-        <span class="tb-label">色</span>
-        <div class="swatches" id="swatchesRow">
-          <button class="swatch selected" style="background:#1a1d1a" data-color="#1a1d1a"></button>
-          <button class="swatch" style="background:#a9c6e8" data-color="#a9c6e8"></button>
-          <button class="swatch" style="background:#a7ddc5" data-color="#a7ddc5"></button>
-          <button class="swatch" style="background:#b9c4ef" data-color="#b9c4ef"></button>
-          <button class="swatch" style="background:#cbb6e3" data-color="#cbb6e3"></button>
-          <input type="color" id="customColor" value="#1a1d1a">
-        </div>
-      </div>
-      <div class="tb-row">
-        <span class="tb-label">濃さ</span>
-        <input type="range" id="opacitySlider" min="20" max="100" value="100">
-        <span id="opacityVal">100%</span>
-      </div>
-      <div class="tb-row">
-        <span class="tb-label">感度</span>
-        <div class="seg" id="sensSeg">
-          <button class="on" data-sens="tight">単語のみ</button>
-          <button data-sens="normal">標準</button>
-          <button data-sens="loose">広め</button>
-        </div>
-      </div>
-      <div class="tb-row" style="margin-bottom:0;">
-        <span class="tb-label">操作</span>
-        <div class="seg" id="modeSeg">
-          <button class="on" data-mode="draw">マスクを描く</button>
-          <button data-mode="move">画像を動かす</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn ghost" id="undoBtn" disabled>元に戻す</button>
-      <button class="btn ghost" id="redoBtn" disabled>やり直す</button>
-      <button class="btn ghost" id="clearBtn" disabled>すべて解除</button>
-      <button class="btn primary" id="downloadBtn" disabled>保存</button>
-    </div>
     <button class="btn-new" id="newImageBtn">別の画像を選ぶ</button>
   </div>
 </div>
@@ -520,6 +541,7 @@
   const ctx = canvas.getContext('2d');
   const pressRing = document.getElementById('pressRing');
   const selectionBox = document.getElementById('selectionBox');
+  const wordHighlight = document.getElementById('wordHighlight');
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
   const progressTrack = document.getElementById('progressTrack');
@@ -786,6 +808,22 @@
     panStartXY = null;
   }
 
+  // ---------- erase mode: tap a specific mask to remove just it ----------
+  let eraseStartTouch = null;
+
+  function beginEraseTap(clientX, clientY){
+    eraseStartTouch = {x: clientX, y: clientY};
+  }
+  function endEraseTap(clientX, clientY){
+    if(!eraseStartTouch) return;
+    const dx = clientX - eraseStartTouch.x;
+    const dy = clientY - eraseStartTouch.y;
+    if(Math.sqrt(dx*dx + dy*dy) <= DRAG_START_PX){
+      eraseMaskAt(clientX, clientY);
+    }
+    eraseStartTouch = null;
+  }
+
   modeSeg.addEventListener('click', e=>{
     const btn = e.target.closest('button[data-mode]');
     if(!btn) return;
@@ -794,6 +832,8 @@
     interactionMode = btn.dataset.mode;
     hideSelectionBox();
     hideLoupe();
+    hideWordTarget();
+    eraseStartTouch = null;
   });
 
   // ---------- magnifier loupe ----------
@@ -837,6 +877,25 @@
       loupeCtx.lineDashOffset = 5;
       loupeCtx.strokeRect(lx0, ly0, lw, lh);
       loupeCtx.restore();
+    } else if(!isDragging && ocrReady){
+      // Not dragging: show which word (if any) is currently under the
+      // finger, so aiming a long-press stops being a guessing game.
+      const word = findWordAt(pt.x, pt.y);
+      if(word){
+        const box = expandWordBox(word);
+        const scale = loupeCanvas.width / srcSize;
+        const lx0 = (box.x0 - srcX) * scale, ly0 = (box.y0 - srcY) * scale;
+        const lw = (box.x1 - box.x0) * scale, lh = (box.y1 - box.y0) * scale;
+
+        loupeCtx.save();
+        loupeCtx.lineWidth = 2.5;
+        loupeCtx.strokeStyle = '#ffffff';
+        loupeCtx.strokeRect(lx0, ly0, lw, lh);
+        loupeCtx.lineWidth = 1.5;
+        loupeCtx.strokeStyle = '#2f5d46';
+        loupeCtx.strokeRect(lx0, ly0, lw, lh);
+        loupeCtx.restore();
+      }
     }
 
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -888,13 +947,19 @@
   }
 
   function padFor(sens){
-    if(sens === 'tight') return 0;
-    if(sens === 'loose') return 14;
-    return 5;
+    // Values are in CSS pixels (screen space); findWordAt scales this to
+    // canvas-pixel space at the point of use, so the forgiveness stays
+    // consistent with actual finger precision regardless of the photo's
+    // resolution or the current zoom level.
+    if(sens === 'tight') return 4;
+    if(sens === 'loose') return 20;
+    return 10;
   }
 
   function findWordAt(px, py){
-    const pad = padFor(sensitivity);
+    const rect = canvas.getBoundingClientRect();
+    const scale = canvas.width / rect.width; // canvas px per CSS px
+    const pad = padFor(sensitivity) * scale;
     let best = null;
     let bestArea = Infinity;
     for(const w of words){
@@ -908,6 +973,22 @@
       }
     }
     return best;
+  }
+
+  // OCR bounding boxes are often cropped tight to the ink, which can leave
+  // a sliver of the letter visible at the edge once masked. Expand the
+  // matched box outward by a small physical margin (not the hit-test
+  // padding above, which only affects whether a tap counts as a hit).
+  const MASK_EXPAND_MM = 2;
+  const MM_TO_CSS_PX = 96 / 25.4; // ≈3.78 CSS px per mm at standard density
+  function expandWordBox(word){
+    const rect = canvas.getBoundingClientRect();
+    const scale = canvas.width / rect.width; // canvas px per CSS px
+    const margin = MASK_EXPAND_MM * MM_TO_CSS_PX * scale;
+    return {
+      x0: word.x0 - margin, y0: word.y0 - margin,
+      x1: word.x1 + margin, y1: word.y1 + margin
+    };
   }
 
   // fallback box when no OCR word matches: a reasonable word-sized box
@@ -945,6 +1026,24 @@
     }
   }
 
+  // Remove one specific mask (the topmost one under the tap point),
+  // without touching any of the others — for fixing a single spot.
+  function eraseMaskAt(clientX, clientY){
+    const pt = getCanvasPoint(clientX, clientY);
+    for(let i = maskHistory.length - 1; i >= 0; i--){
+      const m = maskHistory[i];
+      if(pt.x >= m.x0 && pt.x <= m.x1 && pt.y >= m.y0 && pt.y <= m.y1){
+        const [removed] = maskHistory.splice(i, 1);
+        redoStack.push({mask: removed, index: i});
+        redraw();
+        updateButtons();
+        if(navigator.vibrate) navigator.vibrate(15);
+        return true;
+      }
+    }
+    return false;
+  }
+
   function updateButtons(){
     undoBtn.disabled = maskHistory.length === 0;
     redoBtn.disabled = redoStack.length === 0;
@@ -954,13 +1053,16 @@
 
   undoBtn.addEventListener('click', ()=>{
     const removed = maskHistory.pop();
-    if(removed) redoStack.push(removed);
+    if(removed) redoStack.push({mask: removed, index: maskHistory.length});
     redraw();
     updateButtons();
   });
   redoBtn.addEventListener('click', ()=>{
     const restored = redoStack.pop();
-    if(restored) maskHistory.push(restored);
+    if(restored){
+      const idx = Math.min(restored.index, maskHistory.length);
+      maskHistory.splice(idx, 0, restored.mask);
+    }
     redraw();
     updateButtons();
   });
@@ -1063,6 +1165,43 @@
     selectionBox.style.display = 'none';
   }
 
+  // ---------- live word-target highlight (aiming feedback for long-press) ----------
+  function canvasBoxToShellRect(x0, y0, x1, y1){
+    const canvasRect = canvas.getBoundingClientRect();
+    const shellRect = canvasShell.getBoundingClientRect();
+    const scaleX = canvasRect.width / canvas.width;
+    const scaleY = canvasRect.height / canvas.height;
+    return {
+      left: canvasRect.left - shellRect.left + x0 * scaleX,
+      top: canvasRect.top - shellRect.top + y0 * scaleY,
+      width: (x1 - x0) * scaleX,
+      height: (y1 - y0) * scaleY
+    };
+  }
+
+  function updateWordTarget(clientX, clientY){
+    if(!ocrReady || !baseImage){
+      wordHighlight.style.display = 'none';
+      return;
+    }
+    const pt = getCanvasPoint(clientX, clientY);
+    const word = findWordAt(pt.x, pt.y);
+    if(!word){
+      wordHighlight.style.display = 'none';
+      return;
+    }
+    const box = expandWordBox(word);
+    const r = canvasBoxToShellRect(box.x0, box.y0, box.x1, box.y1);
+    wordHighlight.style.display = 'block';
+    wordHighlight.style.left = r.left + 'px';
+    wordHighlight.style.top = r.top + 'px';
+    wordHighlight.style.width = r.width + 'px';
+    wordHighlight.style.height = r.height + 'px';
+  }
+  function hideWordTarget(){
+    wordHighlight.style.display = 'none';
+  }
+
   function onPressStart(clientX, clientY){
     if(!baseImage) return;
     pressStart = {x: clientX, y: clientY};
@@ -1072,7 +1211,8 @@
       if(!pressStart || isDragging) return;
       const pt = getCanvasPoint(clientX, clientY);
       const word = ocrReady ? findWordAt(pt.x, pt.y) : null;
-      const box = word || fallbackBox(pt.x, pt.y);
+      const box = word ? expandWordBox(word) : fallbackBox(pt.x, pt.y);
+      hideWordTarget();
       ringAt(clientX, clientY);
       applyMask(box);
       if(navigator.vibrate) navigator.vibrate(15);
@@ -1119,6 +1259,7 @@
     if(e.touches.length === 2){
       e.preventDefault();
       hideLoupe();
+      hideWordTarget();
       beginPinch(e.touches[0], e.touches[1]);
       return;
     }
@@ -1130,13 +1271,19 @@
       beginPanDrag(t.clientX, t.clientY);
       return;
     }
+    if(interactionMode === 'erase'){
+      beginEraseTap(t.clientX, t.clientY);
+      return;
+    }
     updateLoupe(t.clientX, t.clientY);
+    updateWordTarget(t.clientX, t.clientY);
     onPressStart(t.clientX, t.clientY);
   }, {passive:false});
   canvas.addEventListener('touchmove', e=>{
     if(e.touches.length === 2){
       e.preventDefault();
       hideLoupe();
+      hideWordTarget();
       if(pinchActive) updatePinch(e.touches[0], e.touches[1]);
       return;
     }
@@ -1147,7 +1294,13 @@
       updatePanDrag(t.clientX, t.clientY);
       return;
     }
+    if(interactionMode === 'erase') return;
     updateLoupe(t.clientX, t.clientY);
+    if(isDragging){
+      hideWordTarget();
+    } else {
+      updateWordTarget(t.clientX, t.clientY);
+    }
     onPressMove(t.clientX, t.clientY);
   }, {passive:false});
   canvas.addEventListener('touchend', e=>{
@@ -1156,15 +1309,22 @@
       return;
     }
     hideLoupe();
+    hideWordTarget();
     if(pinchActive){ endPinch(); return; }
     if(interactionMode === 'move'){ endPanDrag(); return; }
     const t = e.changedTouches[0];
+    if(interactionMode === 'erase'){
+      if(t) endEraseTap(t.clientX, t.clientY);
+      return;
+    }
     onPressEnd(t ? t.clientX : undefined, t ? t.clientY : undefined);
   });
   canvas.addEventListener('touchcancel', ()=>{
     pinchActive = false;
     hideLoupe();
+    hideWordTarget();
     endPanDrag();
+    eraseStartTouch = null;
     onPressEnd();
   });
   canvas.addEventListener('contextmenu', e=> e.preventDefault());
@@ -1172,14 +1332,17 @@
   // desktop mouse: press, drag, release
   canvas.addEventListener('mousedown', e=>{
     if(interactionMode === 'move'){ beginPanDrag(e.clientX, e.clientY); return; }
+    if(interactionMode === 'erase'){ beginEraseTap(e.clientX, e.clientY); return; }
     onPressStart(e.clientX, e.clientY);
   });
   window.addEventListener('mousemove', e=>{
     if(interactionMode === 'move'){ updatePanDrag(e.clientX, e.clientY); return; }
+    if(interactionMode === 'erase') return;
     onPressMove(e.clientX, e.clientY);
   });
   window.addEventListener('mouseup', e=>{
     if(interactionMode === 'move'){ endPanDrag(); return; }
+    if(interactionMode === 'erase'){ endEraseTap(e.clientX, e.clientY); return; }
     onPressEnd(e.clientX, e.clientY);
   });
 
