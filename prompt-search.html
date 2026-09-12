@@ -79,6 +79,21 @@
     border-color:var(--accent);
     color:#fff;
   }
+  .tab-badge{
+    display:inline-block;
+    min-width:18px;
+    padding:1px 5px;
+    border-radius:999px;
+    background:rgba(26,29,26,0.1);
+    color:#3f4a45;
+    font-size:10.5px;
+    font-weight:700;
+    vertical-align:middle;
+  }
+  .tabs button.on .tab-badge{
+    background:rgba(255,255,255,0.28);
+    color:#fff;
+  }
 
   .view{display:none;}
   .view.active{display:block;}
@@ -342,7 +357,7 @@
 
   <div class="tabs">
     <button class="on" data-tab="search">検索</button>
-    <button data-tab="manage">登録・管理</button>
+    <button data-tab="manage">登録・管理 <span class="tab-badge" id="tabBadge">0</span></button>
   </div>
 
   <!-- 検索ビュー -->
@@ -417,6 +432,7 @@
   const emptyState = document.getElementById('emptyState');
   const manageList = document.getElementById('manageList');
   const totalCount = document.getElementById('totalCount');
+  const tabBadge = document.getElementById('tabBadge');
   const selectedBar = document.getElementById('selectedBar');
   const selectedPreview = document.getElementById('selectedPreview');
   const copyBtn = document.getElementById('copyBtn');
@@ -448,7 +464,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 4; // bump when the baseline entry set changes below
+  const SEED_VERSION = 11; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   function loadEntries(){
@@ -610,7 +626,326 @@
       ['fine line work', '繊細な線の描写', ['線画']],
       ['minimal line art', 'ミニマルな線画', ['線画']],
       ['hairline-thin details', '髪の毛のように細い線', ['線画']],
-      ['elegant thin outlines', '優美な細い輪郭線', ['線画']]
+      ['elegant thin outlines', '優美な細い輪郭線', ['線画']],
+      // 背景（絵本・童話風）
+      ['storybook illustration background', '絵本のような背景', ['背景']],
+      ['fairytale forest', 'おとぎ話のような森', ['背景']],
+      ['whimsical fairytale setting', '幻想的なおとぎ話の世界観', ['背景']],
+      ['enchanted forest background', '魔法にかかった森の背景', ['背景']],
+      ['picture book style scenery', '絵本風の風景', ['背景']],
+      ['magical cottage in the woods', '森の中の魔法の小屋', ['背景']],
+      // 背景（シンプルスタイリッシュ）
+      ['minimalist background', 'ミニマルな背景', ['背景']],
+      ['simple gradient background', 'シンプルなグラデーション背景', ['背景']],
+      ['clean flat background', 'すっきりしたフラットな背景', ['背景']],
+      ['abstract geometric background', '抽象的な幾何学模様の背景', ['背景']],
+      ['solid color backdrop', '単色の背景', ['背景']],
+      // 背景（その他一般）
+      ['urban cityscape at night', '夜の都市の街並み', ['背景']],
+      ['traditional Japanese garden', '日本庭園', ['背景']],
+      ['cherry blossom street', '桜並木', ['背景']],
+      ['misty mountain landscape', '霧に包まれた山の風景', ['背景']],
+      ['cozy interior room', '居心地の良い室内', ['背景']],
+      ['vast open sky', '広がる大空', ['背景']],
+      ['underwater scene', '水中の情景', ['背景']],
+      ['cluttered bookshelf background', '本棚が並ぶ背景', ['背景']],
+      ['abandoned ruins', '廃墟', ['背景']],
+      ['floating islands in the sky', '空に浮かぶ島々', ['背景']],
+      // 服（かっこいい系）
+      ['sharp tailored suit', 'シャープな仕立てのスーツ', ['服']],
+      ['military-inspired uniform', 'ミリタリー風の制服', ['服']],
+      ['leather jacket with straps', 'ベルト付きのレザージャケット', ['服']],
+      ['battle-worn armor', '使い込まれた鎧', ['服']],
+      ['high-collar coat', 'ハイカラーのコート', ['服']],
+      // 服（ひらひら系・男性向け）
+      ['flowing long coat', '風になびくロングコート', ['服']],
+      ['billowing cape', '風にひらめくマント', ['服']],
+      ['wind-swept cloak', '風になびくクローク', ['服']],
+      ['loose flowing robe', 'ゆったりとなびくローブ', ['服']],
+      ['fluttering fabric trim', 'ひらひらとなびく布の装飾', ['服']],
+      // 透明感（追加）
+      ['crystal clear transparency', '水晶のように澄んだ透明感', ['透明感']],
+      ['transparent glass texture', 'ガラスのような透明な質感', ['透明感']],
+      ['see-through fabric', '透け感のある布地', ['透明感']],
+      ['watery transparency', '水のような透明感', ['透明感']],
+      ['frosted glass effect', 'すりガラスのような効果', ['透明感']],
+      ['jelly-like translucency', 'ゼリーのような半透明感', ['透明感']],
+      ['prismatic transparency', 'プリズムのような透明感', ['透明感']],
+      ['diaphanous quality', '薄く透き通るような質感', ['透明感']],
+      // サイバー系
+      ['cyberpunk aesthetic', 'サイバーパンク風', ['サイバー']],
+      ['neon-lit cityscape', 'ネオンに照らされた街並み', ['サイバー','背景']],
+      ['futuristic technology', '未来的なテクノロジー', ['サイバー']],
+      ['holographic display', 'ホログラムディスプレイ', ['サイバー']],
+      ['glowing circuit patterns', '光る回路模様', ['サイバー']],
+      ['mechanical cybernetic parts', '機械的なサイボーグパーツ', ['サイバー']],
+      ['high-tech armor', 'ハイテクな装甲', ['サイバー','服']],
+      ['digital glitch effect', 'デジタルグリッチエフェクト', ['サイバー']],
+      ['neon color palette', 'ネオンカラー', ['サイバー','色彩']],
+      ['chrome and metal texture', 'クロームと金属の質感', ['サイバー']],
+      ['futuristic HUD interface', '未来的なHUDインターフェース', ['サイバー']],
+      ['dystopian sci-fi setting', 'ディストピア的なSF世界観', ['サイバー','背景']],
+      ['led light strips', 'LEDライトのライン', ['サイバー']],
+      ['augmented reality visor', '拡張現実のバイザー', ['サイバー']],
+      ['robotic exoskeleton', 'ロボット外骨格', ['サイバー']],
+      // デザイン性（幻想的な衣装）
+      ['ornate translucent robes', '装飾的な透ける衣', ['デザイン性','透明感']],
+      ['gem-encrusted fantasy attire', '宝石をちりばめた幻想的な衣装', ['デザイン性']],
+      ['flowing sheer fabric layers', '幾重にも重なる薄い布', ['デザイン性','透明感']],
+      ['delicate face veil', '繊細なフェイスベール', ['デザイン性']],
+      ['elvish ethereal design', 'エルフのような幻想的なデザイン', ['デザイン性']],
+      ['merman character design', '人魚のキャラクターデザイン', ['デザイン性']],
+      ['iridescent fish scale tail', '虹色に輝く魚の尾びれ', ['デザイン性','透明感']],
+      // 光・エフェクト（追加）
+      ['firefly-lit forest', '蛍が舞う森', ['光','背景']],
+      ['floating light orbs', '浮遊する光の玉', ['光','キラキラ']],
+      ['moonlit forest clearing', '月明かりの森の空き地', ['光','背景']],
+      ['dappled light reflections', '揺らめく木漏れ日の反射', ['光']],
+      // 背景（追加）
+      ['sunlit glass conservatory', '陽光差し込むガラスの温室', ['背景']],
+      ['botanical greenhouse setting', '植物に囲まれた温室', ['背景']],
+      ['misty birch forest', '霧に包まれた白樺の森', ['背景']],
+      ['forest stream', '森の小川', ['背景']],
+      ['festival night with fireworks', '花火が上がる祭りの夜', ['背景']],
+      ['fireworks reflected on water', '水面に映る花火', ['背景','光']],
+      ['full moon backdrop', '満月を背景に', ['背景']],
+      // 表情・雰囲気（追加）
+      ['melancholic teary eyes', '物悲しく涙を浮かべた瞳', ['表情','儚さ']],
+      ['wistful lonely atmosphere', 'もの寂しい孤独な雰囲気', ['雰囲気','儚さ']],
+      ['tearful upward gaze', '涙ぐんで見上げる視線', ['表情']],
+      ['comforting gesture', '相手を気遣う仕草', ['表情']],
+      ['gentle hand on shoulder', '肩にそっと添えられた手', ['表情']],
+      ['protective embrace', '守るように包み込む抱擁', ['表情']],
+      // 服・小物（追加）
+      ['oversized cozy sweater', 'ゆったりした暖かいセーター', ['服']],
+      ['wrapped in a soft blanket', '柔らかい毛布にくるまる', ['服']],
+      ['traditional yukata', '伝統的な浴衣', ['服']],
+      // 背景（温室・書斎・水辺）
+      ['glass-domed library', 'ガラスドーム型の書斎', ['背景']],
+      ['cluttered alchemist workshop', '道具が並ぶ錬金術師の工房', ['背景']],
+      ['riverside birch grove', '川辺の白樺林', ['背景']],
+      ['floating flower petals on water', '水面に浮かぶ花びら', ['背景']],
+      ['red spider lily field', '彼岸花畑', ['背景']],
+      ['glowing lantern-lit pathway', 'ランタンの灯る小道', ['背景','光']],
+      ['vine-covered greenhouse interior', '蔦に覆われた温室の内部', ['背景']],
+      // デザイン性（翼・花冠・装飾）
+      ['feathered angel wings', '羽根の生えた天使の翼', ['デザイン性']],
+      ['glass-like wing design', 'ガラスのような翼のデザイン', ['デザイン性','透明感']],
+      ['flower crown', '花冠', ['デザイン性']],
+      ['wreath of autumn leaves', '紅葉のリース', ['デザイン性']],
+      ['butterfly motif', '蝶のモチーフ', ['デザイン性']],
+      ['layered chain jewelry', '幾重にも連なるチェーンアクセサリー', ['デザイン性']],
+      ['ornate collar detail', '装飾的な襟のディテール', ['デザイン性']],
+      // 動き・仕草（追加）
+      ['looking up at the sky', '空を見上げる', ['動き']],
+      ['offering an open hand', '手のひらを差し出す仕草', ['動き']],
+      ['glancing over the shoulder', '肩越しに振り返る視線', ['動き']],
+      ['catching falling petals', '舞い落ちる花びらを受け止める', ['動き']],
+      // 天候・光（追加）
+      ['light rain with prism glare', '虹色に光る雨のきらめき', ['光']],
+      ['reflection in a puddle', '水たまりに映る反射', ['光']],
+      ['soft diffused daylight', '柔らかく拡散する陽光', ['光']],
+      // 構図・表情（クローズアップ）
+      ['close-up portrait', 'クローズアップの肖像', ['構図']],
+      ['detailed facial expression', '精巧な表情の描写', ['表情']],
+      ['subtle emotional expression', '控えめな感情表現', ['表情']],
+      ['teary eyes and trembling lips', '涙目で震える唇', ['表情']],
+      ['calm but intense gaze', '穏やかだが強い眼差し', ['表情']],
+      ['soft melancholic smile', '柔らかく物悲しい微笑み', ['表情','儚さ']],
+      ['extreme close-up of the eyes', '瞳の超クローズアップ', ['構図']],
+      ['focus on detailed eyes', '瞳のディテールに焦点を当てる', ['構図']],
+      ['sparkling eyes in close-up', 'きらめく瞳のクローズアップ', ['構図','キラキラ']],
+      ['teary eyes with glossy highlights', 'つやのあるハイライトが入った涙目', ['表情']],
+      ['reflection visible in the eyes', '瞳に映り込む反射', ['構図','光']],
+      ['close-up of hands', '手元のクローズアップ', ['構図']],
+      ["focus on the character's hands", 'キャラクターの手に焦点を当てる', ['構図']],
+      ['hands tightly gripping a sword', '剣を強く握る手', ['動き']],
+      ['delicate fingers holding a flower', '花を持つ繊細な指先', ['デザイン性']],
+      ['close-up of a hand reaching forward', '前に差し出す手のクローズアップ', ['構図','動き']],
+      ['detailed hands with soft lighting', '柔らかい光に照らされた精巧な手', ['構図','ライティング']],
+      // 瞳（基本）
+      ['jewel-like eyes', '宝石のような瞳', ['瞳']],
+      ['transparent layered irises', '幾重にも透き通る虹彩', ['瞳','透明感']],
+      ['radial iris pattern', '放射状の虹彩模様', ['瞳']],
+      ['bright catchlights', '明るいキャッチライト', ['瞳','光']],
+      ['clear dark pupils', 'はっきりとした黒い瞳孔', ['瞳']],
+      ['subtle shadow from the upper eyelid', 'まぶたが落とす繊細な影', ['瞳']],
+      ['glossy eye highlights', 'つやのある瞳のハイライト', ['瞳']],
+      ['emotional gaze', '感情のこもった眼差し', ['瞳','表情']],
+      // 瞳（構図）
+      ['eyes as the focal point', '瞳を主役にした構図', ['瞳','構図']],
+      ['tight framing around the face', '顔をタイトに切り取る構図', ['構図']],
+      ['one-eye close-up composition', '片目のクローズアップ構図', ['瞳','構図']],
+      ['intense eye contact close-up', '強い視線のクローズアップ', ['瞳','構図']],
+      // 瞳（色）
+      ['deep blue luminous eyes', '深く発光する青い瞳', ['瞳']],
+      ['vivid crimson eyes', '鮮やかな紅色の瞳', ['瞳']],
+      ['mystical violet eyes', '神秘的な紫の瞳', ['瞳']],
+      ['golden divine eyes', '神々しい金色の瞳', ['瞳']],
+      ['emerald green eyes', 'エメラルドグリーンの瞳', ['瞳']],
+      ['soft pink sparkling eyes', '柔らかくきらめくピンクの瞳', ['瞳','キラキラ']],
+      ['silver-white eyes', '銀白色の瞳', ['瞳']],
+      ['deep black reflective eyes', '深く反射する黒い瞳', ['瞳']],
+      // 瞳（宝石感）
+      ['gemstone eyes', '宝石のような瞳（ジェムストーン）', ['瞳']],
+      ['faceted jewel eyes', 'カットされた宝石のような瞳', ['瞳']],
+      ['crystal-like irises', '水晶のような虹彩', ['瞳','透明感']],
+      ['prismatic eye highlights', 'プリズムのような瞳のハイライト', ['瞳','キラキラ']],
+      ['diamond-cut iris reflections', 'ダイヤモンドカットの虹彩の反射', ['瞳']],
+      ['transparent gemstone irises', '透明な宝石のような虹彩', ['瞳','透明感']],
+      ['sharp jewel-like highlights', 'シャープな宝石のようなハイライト', ['瞳']],
+      ['multi-faceted eye reflections', '多面的にきらめく瞳の反射', ['瞳','キラキラ']],
+      // 瞳（銀河・星空）
+      ['starry eyes', '星が瞬く瞳', ['瞳','キラキラ']],
+      ['galaxy eyes', '銀河のような瞳', ['瞳']],
+      ['cosmic eyes', '宇宙のような瞳', ['瞳']],
+      ['stars reflected in the eyes', '瞳に映る星々', ['瞳','キラキラ']],
+      ['tiny galaxies inside the irises', '虹彩の中の小さな銀河', ['瞳']],
+      ['constellation-like eye highlights', '星座のような瞳のハイライト', ['瞳','キラキラ']],
+      ['universe inside the eyes', '瞳の中の宇宙', ['瞳']],
+      ['deep space-like irises', '深宇宙のような虹彩', ['瞳']],
+      // 瞳（潤み・涙）
+      ['watery eyes', '潤んだ瞳', ['瞳']],
+      ['teary eyes', '涙目', ['瞳','表情']],
+      ['moist glossy eyes', 'しっとりとつやのある瞳', ['瞳']],
+      ['wet eye highlights', '濡れたような瞳のハイライト', ['瞳']],
+      ['tearful sparkling eyes', '涙できらめく瞳', ['瞳','キラキラ']],
+      ['soft tears gathering in the eyes', '瞳に浮かぶ涙', ['瞳','表情']],
+      ['emotional watery gaze', '感情的に潤んだ眼差し', ['瞳','表情']],
+      ['glossy lower eyelid', 'つやのある下まぶた', ['瞳']],
+      // 瞳（陰影）
+      ['soft eyelid shadow over the eyes', 'まぶたが落とす柔らかい影', ['瞳']],
+      ['eyelash shadows on the iris', '虹彩に落ちるまつ毛の影', ['瞳']],
+      ['iris partly shaded by the upper eyelid', 'まぶたに一部隠れる虹彩', ['瞳']],
+      ['natural eyelid shadow', '自然なまぶたの影', ['瞳']],
+      ['soft shadow on the top of the eyes', '瞳上部の柔らかい影', ['瞳']],
+      ['realistic eye shading', 'リアルな瞳の陰影', ['瞳']],
+      // 瞳（縁取り・リムライト）
+      ['dark outer iris ring', '虹彩の外側の暗いリング', ['瞳']],
+      ['defined iris rim', 'はっきりとした虹彩の縁', ['瞳']],
+      ['limbal ring effect', 'リンバルリング効果', ['瞳']],
+      ['clear iris outline', 'はっきりした虹彩の輪郭', ['瞳']],
+      ['deep rim around the iris', '虹彩を囲む深い縁', ['瞳']],
+      ['sharp circular iris edge', 'シャープな円形の虹彩の縁', ['瞳']],
+      ['dark ring around luminous eyes', '発光する瞳を囲む暗いリング', ['瞳','光']],
+      // 瞳孔
+      ['sharp pupils', 'シャープな瞳孔', ['瞳']],
+      ['deep black pupils', '深い黒色の瞳孔', ['瞳']],
+      ['strong pupil contrast', '強いコントラストの瞳孔', ['瞳']],
+      ['focused gaze', '焦点の合った眼差し', ['瞳','表情']],
+      ['intense eye contact', '強いアイコンタクト', ['瞳','表情']],
+      ['sharp gaze with clear pupils', 'はっきりした瞳孔の鋭い眼差し', ['瞳']],
+      ['pupils clearly visible', 'はっきり見える瞳孔', ['瞳']],
+      // 虹彩のテクスチャ
+      ['detailed iris texture', '精巧な虹彩のテクスチャ', ['瞳']],
+      ['intricate iris details', '緻密な虹彩のディテール', ['瞳']],
+      ['radiating lines in the iris', '虹彩に広がる放射状の線', ['瞳']],
+      ['layered iris colors', '幾重にも重なる虹彩の色', ['瞳']],
+      ['complex iris structure', '複雑な虹彩の構造', ['瞳']],
+      ['fine iris fibers', '繊細な虹彩の繊維模様', ['瞳']],
+      ['iris with tiny sparkling details', '小さなきらめきのある虹彩', ['瞳','キラキラ']],
+      // キャッチライト
+      ['bright catchlights in the eyes', '瞳の中の明るいキャッチライト', ['瞳','光']],
+      ['small catchlight in the eyes', '瞳の中の小さなキャッチライト', ['瞳','光']],
+      ['clear white eye highlights', 'はっきりした白いハイライト', ['瞳']],
+      ['sparkling catchlights', 'きらめくキャッチライト', ['瞳','キラキラ']],
+      ['soft window-shaped catchlight', '柔らかい窓形のキャッチライト', ['瞳']],
+      ['star-shaped catchlight', '星形のキャッチライト', ['瞳','キラキラ']],
+      ['multiple tiny eye highlights', '複数の小さな瞳のハイライト', ['瞳']],
+      ['catchlight reflected in the pupils', '瞳孔に映るキャッチライト', ['瞳']],
+      // 瞳（奥行き・まとめ）
+      ['gemstone-like eyes', '宝石のような瞳（類似表現）', ['瞳']],
+      ['sparkling detailed eyes', '精巧できらめく瞳', ['瞳','キラキラ']],
+      ['deep luminous eyes', '深く発光する瞳', ['瞳']],
+      ['crystal-clear eyes', '水晶のように澄んだ瞳', ['瞳','透明感']],
+      ['eyes with depth and light', '奥行きと光のある瞳', ['瞳','光']],
+      ['mesmerizing eyes', '魅惑的な瞳', ['瞳']],
+      // クローズアップ（追加）
+      ['highly detailed eyes', '高精細な瞳', ['瞳']],
+      ['delicate eyelashes', '繊細なまつ毛', ['瞳']],
+      ['soft skin texture', '柔らかい肌の質感', ['画質']],
+      ['fine hair strands', '繊細な髪の毛の一本一本', ['画質']],
+      ['crystal-clear tears', '水晶のように澄んだ涙', ['瞳','透明感']],
+      ['detailed fabric texture', '精巧な布地の質感', ['画質']],
+      ['sharp metallic details', 'シャープな金属のディテール', ['画質']],
+      ['intense close-up shot', '強烈なクローズアップショット', ['構図']],
+      ['claustrophobic framing', '息詰まるような構図', ['構図']],
+      ['dramatic close-up', 'ドラマチックなクローズアップ', ['構図']],
+      ['tense atmosphere', '緊迫した雰囲気', ['雰囲気']],
+      ['sharp gaze in close-up', 'クローズアップでの鋭い眼差し', ['構図','瞳']],
+      ['blurred background', 'ぼやけた背景', ['構図']],
+      ['sharp focus on the face', '顔にシャープなピント', ['構図']],
+      ['sharp focus on the eyes', '瞳にシャープなピント', ['構図','瞳']],
+      ['background softly out of focus', '柔らかくぼけた背景', ['構図']],
+      ['extreme close-up', '超クローズアップ', ['構図']],
+      // 多重露光
+      ['double exposure portrait', '多重露光のポートレート', ['多重露光']],
+      ['clear silhouette', 'はっきりしたシルエット', ['多重露光']],
+      ['transparent landscape inside the figure', '人物の中に透ける風景', ['多重露光']],
+      ['soft layered opacity', '柔らかく重なる不透明度', ['多重露光']],
+      ['blended but readable composition', '馴染みながらも読み取れる構図', ['多重露光','構図']],
+      ['multiple exposure effect', '多重露光エフェクト', ['多重露光']],
+      ['transparent layered poses of the same character', '同じキャラクターの透ける重なったポーズ', ['多重露光']],
+      ['subtle afterimage', 'かすかな残像', ['多重露光']],
+      ['readable main figure', '読み取りやすい主体', ['多重露光']],
+      ['clean composition', 'すっきりした構図', ['構図']],
+      ['slightly offset layered duplicates', '少しずれて重なる複製', ['多重露光']],
+      ['echo-like repeated silhouette', 'こだまのように繰り返すシルエット', ['多重露光']],
+      ['subtle ghost images around the main figure', '主体の周りにかすかな残像', ['多重露光']],
+      ['shifted overlapping versions of the same character', 'ずれて重なる同じキャラクターのバージョン', ['多重露光']],
+      ['afterimage effect', '残像エフェクト', ['多重露光']],
+      ['monochromatic double exposure', 'モノクロの多重露光', ['多重露光','色彩']],
+      ['soft blue layered imagery', '柔らかい青の重なる映像', ['多重露光']],
+      ['sepia-toned memory effect', 'セピア調の記憶のような効果', ['多重露光','儚さ']],
+      ['cool portrait with warm sunset overlay', '暖かい夕焼けが重なるクールなポートレート', ['多重露光']],
+      ['contrasting layered colors', '対照的に重なる色彩', ['多重露光','色彩']],
+      ['soft transparency', '柔らかい透明感', ['多重露光','透明感']],
+      ['semi-transparent overlay', '半透明のオーバーレイ', ['多重露光','透明感']],
+      ['clear silhouette with transparent inner imagery', '透ける映像を内包したはっきりしたシルエット', ['多重露光']],
+      ['surreal double exposure', 'シュールな多重露光', ['多重露光']],
+      ['inner world layered over the character', 'キャラクターに重なる内面世界', ['多重露光']],
+      ['dreamlike imagery blended into the figure', '人物に溶け込む夢のような映像', ['多重露光']],
+      ['emotional landscape inside the body', '身体の中の感情的な風景', ['多重露光']],
+      ['fantasy scenery superimposed on the portrait', 'ポートレートに重なるファンタジーの風景', ['多重露光','背景']],
+      ['ghosted motion trails', '幽霊のような動きの軌跡', ['多重露光','動き']],
+      ['several transparent versions of the same figure', '同じ人物の複数の透ける姿', ['多重露光']],
+      ['overlapping silhouettes showing movement', '動きを示す重なるシルエット', ['多重露光','動き']],
+      ['a sequence of the same character layered together', '重なり合った同一キャラクターの連続', ['多重露光']],
+      ['a portrait with a cityscape layered inside', '都市の風景が重なるポートレート', ['多重露光','背景']],
+      ['double exposure portrait with ocean scenery', '海の風景と重なる多重露光ポートレート', ['多重露光','背景']],
+      ['silhouette filled with a forest landscape', '森の風景で満ちたシルエット', ['多重露光','背景']],
+      ["landscape visible inside the character's silhouette", 'キャラクターのシルエットの中に見える風景', ['多重露光']],
+      ['double exposure', '多重露光', ['多重露光']],
+      ['layered imagery', '重なる映像', ['多重露光']],
+      ['transparent overlay', '透明なオーバーレイ', ['多重露光','透明感']],
+      ['superimposed scene', '重ね合わされた情景', ['多重露光']],
+      ['blended visual layers', '混ざり合う視覚的レイヤー', ['多重露光']],
+      // ソフトフォーカス
+      ['dreamy bokeh background', '夢のようなボケた背景', ['ソフトフォーカス']],
+      ['gentle atmospheric haze', '優しい大気のもや', ['ソフトフォーカス']],
+      ['soft floral background', '柔らかい花の背景', ['ソフトフォーカス','背景']],
+      ['misty pastel background', '霧がかったパステルの背景', ['ソフトフォーカス','背景']],
+      ['soft blooming highlights', '柔らかくにじむハイライト', ['ソフトフォーカス','光']],
+      ['gentle glow around the light', '光の周りの優しい輝き', ['ソフトフォーカス','光']],
+      ['romantic soft lighting', 'ロマンチックな柔らかい照明', ['ソフトフォーカス','ライティング']],
+      ['soft bokeh lights', '柔らかいボケた光', ['ソフトフォーカス','光']],
+      ['tender romantic atmosphere', '優しくロマンチックな雰囲気', ['ソフトフォーカス','雰囲気']],
+      ['dreamlike atmosphere', '夢のような雰囲気', ['ソフトフォーカス','雰囲気']],
+      ['memory-like softness', '記憶のような柔らかさ', ['ソフトフォーカス','儚さ']],
+      ['nostalgic soft focus', '郷愁を誘うソフトフォーカス', ['ソフトフォーカス','儚さ']],
+      ['faded memory effect', '色褪せた記憶のような効果', ['ソフトフォーカス','儚さ']],
+      ['pale gentle light', '淡く優しい光', ['ソフトフォーカス','光']],
+      ['soft haze of memory', '記憶のような柔らかいもや', ['ソフトフォーカス','儚さ']],
+      ['soft focus around the face', '顔の周りのソフトフォーカス', ['ソフトフォーカス','構図']],
+      ['eyes remain clear and detailed', '瞳だけはくっきりと精巧に', ['ソフトフォーカス','瞳']],
+      ['gentle blur around the edges', '縁が柔らかくぼける', ['ソフトフォーカス']],
+      ['clear facial expression with soft atmosphere', '柔らかい雰囲気の中ではっきりした表情', ['ソフトフォーカス','表情']],
+      ['soft focus', 'ソフトフォーカス', ['ソフトフォーカス']],
+      ['dreamy soft focus', '夢のようなソフトフォーカス', ['ソフトフォーカス']],
+      ['soft blurred edges', '柔らかくぼけた輪郭', ['ソフトフォーカス']],
+      ['gentle diffusion effect', '優しい拡散効果', ['ソフトフォーカス','光']],
+      ['soft glowing atmosphere', '柔らかく輝く雰囲気', ['ソフトフォーカス','光']],
+      ['slightly diffused light', 'わずかに拡散した光', ['ソフトフォーカス','光']]
     ];
     return rows.map(([phrase, translation, categories])=>({
       id: uid(), phrase, translation, categories, keywords: '', seeded: true
@@ -775,6 +1110,7 @@
   // ---------- manage list ----------
   function renderManageList(){
     totalCount.textContent = entries.length;
+    tabBadge.textContent = entries.length;
     manageList.innerHTML = '';
     // newest first
     const ordered = entries.slice().reverse();
