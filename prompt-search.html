@@ -464,7 +464,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 11; // bump when the baseline entry set changes below
+  const SEED_VERSION = 13; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   function loadEntries(){
@@ -500,11 +500,11 @@
     const rows = [
       // デザイン性・シルエット
       ['stylish', 'スタイリッシュ', ['デザイン性']],
-      ['character-specific action-game outfit', 'キャラクター専用のアクションゲーム風衣装', ['デザイン性']],
+      ['character-specific action-game outfit', 'キャラクター専用のアクションゲーム風衣装', ['デザイン性','服']],
       ['distinctive silhouette', '特徴的なシルエット', ['デザイン性','シルエット']],
-      ['intricate costume design', '精巧な衣装デザイン', ['デザイン性']],
+      ['intricate costume design', '精巧な衣装デザイン', ['デザイン性','服']],
       ['ornate details', '装飾的なディテール', ['デザイン性']],
-      ['flowing cape', 'なびくマント', ['デザイン性']],
+      ['flowing cape', 'なびくマント', ['デザイン性','服']],
       ['elegant silhouette', '優雅なシルエット', ['デザイン性','シルエット']],
       // エフェクト
       ['dynamic splash art', 'ダイナミックなスプラッシュアート', ['エフェクト']],
@@ -689,10 +689,10 @@
       ['augmented reality visor', '拡張現実のバイザー', ['サイバー']],
       ['robotic exoskeleton', 'ロボット外骨格', ['サイバー']],
       // デザイン性（幻想的な衣装）
-      ['ornate translucent robes', '装飾的な透ける衣', ['デザイン性','透明感']],
-      ['gem-encrusted fantasy attire', '宝石をちりばめた幻想的な衣装', ['デザイン性']],
+      ['ornate translucent robes', '装飾的な透ける衣', ['デザイン性','透明感','服']],
+      ['gem-encrusted fantasy attire', '宝石をちりばめた幻想的な衣装', ['デザイン性','服']],
       ['flowing sheer fabric layers', '幾重にも重なる薄い布', ['デザイン性','透明感']],
-      ['delicate face veil', '繊細なフェイスベール', ['デザイン性']],
+      ['delicate face veil', '繊細なフェイスベール', ['デザイン性','服']],
       ['elvish ethereal design', 'エルフのような幻想的なデザイン', ['デザイン性']],
       ['merman character design', '人魚のキャラクターデザイン', ['デザイン性']],
       ['iridescent fish scale tail', '虹色に輝く魚の尾びれ', ['デザイン性','透明感']],
@@ -945,7 +945,83 @@
       ['soft blurred edges', '柔らかくぼけた輪郭', ['ソフトフォーカス']],
       ['gentle diffusion effect', '優しい拡散効果', ['ソフトフォーカス','光']],
       ['soft glowing atmosphere', '柔らかく輝く雰囲気', ['ソフトフォーカス','光']],
-      ['slightly diffused light', 'わずかに拡散した光', ['ソフトフォーカス','光']]
+      ['slightly diffused light', 'わずかに拡散した光', ['ソフトフォーカス','光']],
+      // 画質・質感（追加）
+      ['high-detail facial features', '精細な顔立ち', ['画質']],
+      ['intricate clothing textures', '緻密な衣服の質感', ['画質']],
+      ['volumetric lighting', 'ボリュームライティング', ['ライティング']],
+      ['dynamic color grading', 'ダイナミックなカラーグレーディング', ['色彩']],
+      ['subsurface scattering', 'サブサーフェススキャタリング', ['画質']],
+      ['ray tracing reflections', 'レイトレーシングによる反射', ['画質','光']],
+      ['fine brushstrokes', '繊細な筆致', ['スタイル']],
+      ['smooth linework and rendering', '滑らかな線画とレンダリング', ['線画']],
+      ['soft shading', '柔らかな陰影', ['光']],
+      // 氷・透明感の雰囲気
+      ['transparent icy atmosphere', '透明感のある氷のような雰囲気', ['透明感']],
+      ['very subtle pale blue tint', 'ごく微かな淡い青みがかった色調', ['色彩']],
+      ['faint cold ambient glow', 'かすかな冷たいアンビエントグロー', ['光']],
+      ['light diffusion bloom', '光の拡散によるブルーム', ['光']],
+      ['high clarity with a hint of haze', 'かすかな霞を帯びた高い透明感', ['透明感']],
+      ['delicate crystalline light scattering', '繊細な結晶状の光の散乱', ['光','キラキラ']],
+      ['barely-there frost texture', 'ほのかに感じられる霜の質感', ['透明感']],
+      ['airy translucency', '空気感のある半透明感', ['透明感']],
+      ['slightly desaturated tones', 'わずかに彩度を抑えたトーン', ['色彩']],
+      ['cool temperature shift', 'クールな色温度のシフト', ['色彩']],
+      ['gentle edge blur', '穏やかなエッジのぼかし', ['ソフトフォーカス']],
+      ['thin mist layer', '薄い霧の層', ['背景']],
+      ['refractive light effect', '屈折光の効果', ['光','透明感']],
+      ['ultra clean', '極めてクリーン', ['画質']],
+      ['fragile and sharp details', '繊細かつシャープなディテール', ['画質','儚さ']],
+      ['quiet frozen air', '静寂に包まれた凍てついた空気', ['雰囲気']],
+      ['ethereal clarity', '幽玄な透明感', ['透明感','儚さ']],
+      // カメラ・フィルム効果
+      ['old lens effect', 'オールドレンズ効果', ['光']],
+      ['lens flare', 'レンズフレア', ['光']],
+      ['film grain', 'フィルム風粒子ノイズ', ['画質']],
+      ['light leak', 'ライトリーク（光もれ）', ['光']],
+      ['dust particles in light', '埃の光の粒', ['光','キラキラ']],
+      ['chromatic aberration', '色収差', ['画質']],
+      ['RGB shift', 'RGBずらし', ['画質']],
+      ['soft lens flare', '柔らかいレンズフレア', ['光']],
+      ['semi-realistic polished sketch lineart', 'セミリアルで洗練されたスケッチ線画', ['線画','スタイル']],
+      ['refined linework', '洗練された線画', ['線画']],
+      // キービジュアル系
+      ['premium game key art', 'プレミアムなゲームのキーアート', ['デザイン性']],
+      ['premium game key visual', 'プレミアムなゲームのキービジュアル', ['デザイン性']],
+      ['high-impact splash art', 'インパクトの強いスプラッシュアート', ['エフェクト']],
+      ['epic character splash art', '壮大なキャラクタースプラッシュアート', ['エフェクト']],
+      ['action-game promotional artwork', 'アクションゲームの宣伝用アートワーク', ['デザイン性']],
+      // 動き（追加）
+      ['frozen moment of action', '動きの一瞬を切り取った静止画', ['動き']],
+      ['dynamic pose', 'ダイナミックなポーズ', ['動き']],
+      ['energetic movement', 'エネルギッシュな動き', ['動き']],
+      ['powerful sense of movement', '力強い動きの感覚', ['動き']],
+      ['dynamic body movement', 'ダイナミックな身体の動き', ['動き']],
+      ['expressive action pose', '表現力豊かなアクションポーズ', ['動き']],
+      ['in-motion composition', '動きの中の構図', ['動き','構図']],
+      ['kinetic energy', '運動エネルギー感', ['動き']],
+      ['vivid sense of movement', '鮮やかな躍動感', ['動き']],
+      // 構図（追加）
+      ['layered depth', '奥行きのある層構造', ['構図']],
+      ['foreground elements framing the character', '前景の要素でキャラクターを縁取る', ['構図']],
+      ['strong silhouette', '力強いシルエット', ['デザイン性']],
+      ['dynamic perspective', 'ダイナミックな遠近感', ['構図']],
+      ['dramatic composition', 'ドラマチックな構図', ['構図']],
+      ['striking visual impact', '印象に残る強い視覚的インパクト', ['構図']],
+      ['powerful visual tension', '強い視覚的緊張感', ['構図','雰囲気']],
+      ['intense focal moment', '強烈な焦点の瞬間', ['構図']],
+      // シネマティック系
+      ['cinematic lighting', '映画のような照明', ['ライティング']],
+      ['cinematic framing', '映画のようなフレーミング', ['構図']],
+      ['cinematic camera angle', '映画のようなカメラアングル', ['構図','カメラ']],
+      ['cinematic atmosphere', '映画のような雰囲気', ['雰囲気']],
+      ['film-like visual storytelling', '映画のような視覚的ストーリーテリング', ['構図']],
+      ['a cinematic action sequence', '映画のようなアクションシーン', ['動き']],
+      ['a captured moment from a fantasy film', 'ファンタジー映画の一場面のような瞬間', ['構図']],
+      // ドラマチック（追加）
+      ['dramatic atmosphere', 'ドラマチックな雰囲気', ['雰囲気']],
+      ['dramatic moment', 'ドラマチックな瞬間', ['雰囲気']],
+      ['heightened emotional intensity', '高まる感情の強度', ['表情','雰囲気']]
     ];
     return rows.map(([phrase, translation, categories])=>({
       id: uid(), phrase, translation, categories, keywords: '', seeded: true
