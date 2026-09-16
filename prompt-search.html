@@ -184,6 +184,15 @@
     color:#63665f;
     margin-top:2px;
   }
+  .result-description{
+    font-size:11px;
+    line-height:1.5;
+    color:#7a7d73;
+    font-style:italic;
+    margin-top:5px;
+    padding-left:8px;
+    border-left:2px solid rgba(47,93,70,0.35);
+  }
   .result-tags{
     margin-top:5px;
     display:flex;
@@ -314,6 +323,11 @@
     margin-bottom:8px;
     background:#fdfdfb;
   }
+  textarea.manage-tag-input{
+    font-family:inherit;
+    resize:vertical;
+    min-height:32px;
+  }
   .manage-row-actions{
     display:flex;
     gap:8px;
@@ -380,7 +394,11 @@
       </div>
       <div class="form-row">
         <label>日本語訳（任意）</label>
-        <input type="text" id="addTranslation" placeholder="例：ダイナミックなカメラアングル">
+        <textarea id="addTranslation" placeholder="例：ダイナミックなカメラアングル" style="min-height:40px;"></textarea>
+      </div>
+      <div class="form-row">
+        <label>意味の説明・メモ（任意・長文OK）</label>
+        <textarea id="addDescription" placeholder="例：映画のワンシーンのような角度" style="min-height:60px;"></textarea>
       </div>
       <div class="form-row">
         <label>カテゴリ（カンマ区切り、複数OK）</label>
@@ -439,6 +457,7 @@
   const clearSelectedBtn = document.getElementById('clearSelectedBtn');
   const addPhrase = document.getElementById('addPhrase');
   const addTranslation = document.getElementById('addTranslation');
+  const addDescription = document.getElementById('addDescription');
   const addTags = document.getElementById('addTags');
   const addOneBtn = document.getElementById('addOneBtn');
   const bulkPhrase = document.getElementById('bulkPhrase');
@@ -464,7 +483,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 18; // bump when the baseline entry set changes below
+  const SEED_VERSION = 19; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   function loadEntries(){
@@ -1271,7 +1290,28 @@
       ['night fog and streetlights', '夜霧と街灯', ['夜','背景']],
       ['lonely night silhouette', '孤独な夜のシルエット', ['夜','雰囲気']],
       ['soft night glow', '夜の柔らかな輝き', ['夜','光']],
-      ['velvet night sky', 'ビロードのような夜空', ['夜','背景']]
+      ['velvet night sky', 'ビロードのような夜空', ['夜','背景']],
+      // 古典絵画のライティング
+      ['chiaroscuro lighting', 'キアロスクーロ照明', ['ライティング']],
+      ['dramatic chiaroscuro contrast', 'ドラマチックなキアロスクーロのコントラスト', ['ライティング']],
+      ['Rembrandt lighting', 'レンブラントライティング', ['ライティング']],
+      ['triangle of light on the cheek', '頬に浮かぶ光の三角形', ['ライティング']],
+      ['Caravaggio-style lighting', 'カラヴァッジョ風の照明', ['ライティング']],
+      ['tenebrism', 'テネブリズム（強い明暗対比）', ['ライティング']],
+      ['split lighting', 'スプリットライティング', ['ライティング']],
+      ['butterfly lighting', 'バタフライライティング', ['ライティング']],
+      ['low-key lighting', 'ローキーライティング', ['ライティング']],
+      ['high-key lighting', 'ハイキーライティング', ['ライティング']],
+      ['single candlelight source', '一本のろうそくの明かり', ['ライティング']],
+      ['golden Renaissance lighting', '黄金のルネサンス風照明', ['ライティング']],
+      ['Baroque-style lighting', 'バロック風の照明', ['ライティング']],
+      ['Vermeer-like window light', 'フェルメールのような窓からの柔らかい光', ['ライティング']],
+      ['dramatic side lighting', 'ドラマチックなサイドライティング', ['ライティング']],
+      ['light emerging from darkness', '闇から浮かび上がる光', ['ライティング']],
+      ['classical portrait lighting', '古典的な肖像画の照明', ['ライティング']],
+      ['single light source in darkness', '暗闇の中の単一光源', ['ライティング']],
+      ['deep shadow with sculpted light', '彫刻のように陰影のついた深い影', ['ライティング']],
+      ['old master painting lighting', '巨匠絵画のような照明', ['ライティング']]
     ];
     return rows.map(([phrase, translation, categories])=>({
       id: uid(), phrase, translation, categories, keywords: '', seeded: true
@@ -1322,7 +1362,7 @@
   // ---------- search + results ----------
   function matchesQuery(entry, q){
     if(!q) return true;
-    const hay = (entry.categories||[]).join(' ') + ' ' + (entry.keywords||'') + ' ' + entry.phrase + ' ' + (entry.translation||'');
+    const hay = (entry.categories||[]).join(' ') + ' ' + (entry.keywords||'') + ' ' + entry.phrase + ' ' + (entry.translation||'') + ' ' + (entry.description||'');
     const hayLower = hay.toLowerCase();
     // split on spaces/commas, match if ANY token is found
     const tokens = q.toLowerCase().split(/[\s,、]+/).filter(Boolean);
@@ -1347,6 +1387,7 @@
         <div class="result-body">
           <div class="result-phrase">${escapeHtml(entry.phrase)}</div>
           ${entry.translation ? `<div class="result-translation">${escapeHtml(entry.translation)}</div>` : ''}
+          ${entry.description ? `<div class="result-description">${escapeHtml(entry.description)}</div>` : ''}
           <div class="result-tags">${(entry.categories||[]).map(c=>`<span class="result-tag">${escapeHtml(c)}</span>`).join('')}</div>
         </div>
       `;
@@ -1406,11 +1447,13 @@
     const phrase = addPhrase.value.trim();
     if(!phrase){ showToast('フレーズを入力してください'); return; }
     const translation = addTranslation.value.trim();
+    const description = addDescription.value.trim();
     const categories = addTags.value.split(/[,、]+/).map(s=>s.trim()).filter(Boolean);
-    entries.push({ id: uid(), phrase, translation, categories, keywords: '' });
+    entries.push({ id: uid(), phrase, translation, description, categories, keywords: '' });
     saveEntries();
     addPhrase.value = '';
     addTranslation.value = '';
+    addDescription.value = '';
     addTags.value = '';
     showToast('追加しました');
     renderChips();
@@ -1446,18 +1489,20 @@
       const tagStr = (entry.categories||[]).join(', ');
       card.innerHTML = `
         <div class="manage-phrase">${escapeHtml(entry.phrase)}</div>
-        <input type="text" class="manage-tag-input" value="${escapeHtml(entry.translation||'')}" placeholder="日本語訳（任意）">
-        <input type="text" class="manage-tag-input" value="${escapeHtml(tagStr)}" placeholder="カテゴリ（カンマ区切り）">
+        <textarea class="manage-tag-input" data-field="translation" placeholder="日本語訳（任意）">${escapeHtml(entry.translation||'')}</textarea>
+        <textarea class="manage-tag-input" data-field="description" placeholder="意味の説明・メモ（任意・長文OK）">${escapeHtml(entry.description||'')}</textarea>
+        <input type="text" class="manage-tag-input" data-field="categories" value="${escapeHtml(tagStr)}" placeholder="カテゴリ（カンマ区切り）">
         <div class="manage-row-actions">
           <button class="btn ghost save-tag-btn">保存</button>
           <button class="btn ghost delete-entry-btn">削除</button>
         </div>
       `;
-      const inputs = card.querySelectorAll('.manage-tag-input');
-      const translationInput = inputs[0];
-      const tagInput = inputs[1];
+      const translationInput = card.querySelector('[data-field="translation"]');
+      const descriptionInput = card.querySelector('[data-field="description"]');
+      const tagInput = card.querySelector('[data-field="categories"]');
       card.querySelector('.save-tag-btn').addEventListener('click', ()=>{
         entry.translation = translationInput.value.trim();
+        entry.description = descriptionInput.value.trim();
         entry.categories = tagInput.value.split(/[,、]+/).map(s=>s.trim()).filter(Boolean);
         saveEntries();
         showToast('更新しました');
@@ -1495,8 +1540,11 @@
       entries = parsed.map(e=>({
         id: e.id || uid(),
         phrase: e.phrase || '',
+        translation: e.translation || '',
+        description: e.description || '',
         categories: Array.isArray(e.categories) ? e.categories : [],
-        keywords: e.keywords || ''
+        keywords: e.keywords || '',
+        seeded: !!e.seeded
       }));
       saveEntries();
       showToast('読み込みました');
