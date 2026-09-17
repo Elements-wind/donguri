@@ -227,13 +227,19 @@
   #selectedPreview{
     font-size:12px;
     color:#3f4a45;
-    line-height:1.4;
-    max-height:54px;
+    line-height:1.5;
+    max-height:90px;
     overflow-y:auto;
     margin-bottom:8px;
     padding:8px 10px;
     background:var(--paper);
     border-radius:8px;
+  }
+  .preview-line{
+    padding:2px 0;
+  }
+  .preview-ja{
+    color:#7a7d73;
   }
   .selected-actions{
     display:flex;
@@ -433,9 +439,10 @@
 <div id="selectedBar">
   <div id="selectedPreview"></div>
   <div class="selected-actions">
-    <button class="btn primary" id="copyBtn">コピーする</button>
-    <button class="btn ghost" id="clearSelectedBtn">選択解除</button>
+    <button class="btn primary" id="copyEnBtn">英語をコピー</button>
+    <button class="btn ghost" id="copyJaBtn">日本語をコピー</button>
   </div>
+  <button class="btn ghost" id="clearSelectedBtn" style="width:100%; margin-top:8px;">選択解除</button>
 </div>
 
 <div id="toast"></div>
@@ -453,7 +460,8 @@
   const tabBadge = document.getElementById('tabBadge');
   const selectedBar = document.getElementById('selectedBar');
   const selectedPreview = document.getElementById('selectedPreview');
-  const copyBtn = document.getElementById('copyBtn');
+  const copyEnBtn = document.getElementById('copyEnBtn');
+  const copyJaBtn = document.getElementById('copyJaBtn');
   const clearSelectedBtn = document.getElementById('clearSelectedBtn');
   const addPhrase = document.getElementById('addPhrase');
   const addTranslation = document.getElementById('addTranslation');
@@ -483,7 +491,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 19; // bump when the baseline entry set changes below
+  const SEED_VERSION = 20; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   function loadEntries(){
@@ -1311,10 +1319,12 @@
       ['classical portrait lighting', '古典的な肖像画の照明', ['ライティング']],
       ['single light source in darkness', '暗闇の中の単一光源', ['ライティング']],
       ['deep shadow with sculpted light', '彫刻のように陰影のついた深い影', ['ライティング']],
-      ['old master painting lighting', '巨匠絵画のような照明', ['ライティング']]
+      ['old master painting lighting', '巨匠絵画のような照明', ['ライティング']],
+      ['color-traced hair outline, thin and low-contrast, no black lines', '色トレスの髪の輪郭線、細く低コントラスト、黒線なし', ['線画'],
+        '髪のアウトラインと内部線には黒を使用せず、非常に細く低コントラストな色トレス線を用いる。線を髪全体で同じ色・同じ濃さに固定しない。ただし輪郭を完全に消して曖昧な塗り絵にもせず、必要な形状認識性を維持する。']
     ];
-    return rows.map(([phrase, translation, categories])=>({
-      id: uid(), phrase, translation, categories, keywords: '', seeded: true
+    return rows.map(([phrase, translation, categories, description])=>({
+      id: uid(), phrase, translation, categories, keywords: '', description: description || '', seeded: true
     }));
   }
 
@@ -1414,13 +1424,16 @@
       return;
     }
     selectedBar.classList.add('show');
-    const phrases = entries.filter(e => selectedIds.has(e.id)).map(e => e.phrase);
-    selectedPreview.textContent = phrases.join(', ');
+    const picked = entries.filter(e => selectedIds.has(e.id));
+    selectedPreview.innerHTML = picked.map(e=>{
+      const en = escapeHtml(e.phrase);
+      const ja = e.translation ? `<span class="preview-ja"> — ${escapeHtml(e.translation)}</span>` : '';
+      return `<div class="preview-line">${en}${ja}</div>`;
+    }).join('');
   }
 
-  copyBtn.addEventListener('click', ()=>{
-    const phrases = entries.filter(e => selectedIds.has(e.id)).map(e => e.phrase);
-    const text = phrases.join(', ');
+  function copyText(text, emptyMsg){
+    if(!text){ showToast(emptyMsg); return; }
     navigator.clipboard.writeText(text).then(()=>{
       showToast('コピーしました');
     }).catch(()=>{
@@ -1435,6 +1448,20 @@
       catch(e){ showToast('コピーできませんでした'); }
       ta.remove();
     });
+  }
+
+  copyEnBtn.addEventListener('click', ()=>{
+    const phrases = entries.filter(e => selectedIds.has(e.id)).map(e => e.phrase);
+    copyText(phrases.join(', '), 'コピーする内容がありません');
+  });
+  copyJaBtn.addEventListener('click', ()=>{
+    const picked = entries.filter(e => selectedIds.has(e.id));
+    const translations = picked.map(e => e.translation).filter(Boolean);
+    if(translations.length === 0){
+      showToast('選択した項目に日本語訳がありません');
+      return;
+    }
+    copyText(translations.join('\n'), 'コピーする内容がありません');
   });
   clearSelectedBtn.addEventListener('click', ()=>{
     selectedIds.clear();
