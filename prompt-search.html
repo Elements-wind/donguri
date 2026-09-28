@@ -491,7 +491,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 26; // bump when the baseline entry set changes below
+  const SEED_VERSION = 28; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   function loadEntries(){
@@ -504,12 +504,19 @@
 
     if(storedVersion < SEED_VERSION){
       // Merge the complete backup; preserve separate duplicate entries and local edits.
+      const previousDefaults = {"mu56kq1eesry25": {"description": "目、鼻、唇など顔の各部分を精細に描く。元の顔立ちを維持したい場合は造形の保持も指定する。", "keywords": "", "categories": ["画質"]}, "mu56kq1ezxctfg": {"description": "織り目、刺繍、革のしわなど衣服の素材を緻密に描く。布の種類や対象部位を添える。", "keywords": "", "categories": ["画質"]}, "mu56kq1eedbx3x": {"description": "霧や埃を通る光の筋に厚みを持たせ、空間の深さを見せる。", "keywords": "", "categories": ["ライティング"]}, "mu56kq1e5dyrt7": {"description": "霧や埃を通る光の筋に厚みを持たせ、空間の深さを見せる。", "keywords": "", "categories": ["ライティング"]}, "mu56kq1em567nr": {"description": "明暗や色の対比を強く調整し、画面の印象を際立たせる。暖色と寒色など狙う配色を添える。", "keywords": "", "categories": ["色彩"]}, "mu56kq1e9x7btc": {"description": "光が物体の表面から内部へ入り、散乱して外へ出る質感。肌、ろう、薄い葉などの柔らかな透過光に使う。", "keywords": "", "categories": ["画質"]}, "mu56kq1epsa897": {"description": "光の経路を計算したような自然な反射を求める指定。画像生成の文章指定だけで実際の描画方式が決まるわけではない。", "keywords": "", "categories": ["画質", "光"]}, "mu56kq1eyz51ik": {"description": "細く丁寧な筆の跡を使う。髪や布などの表面へ繊細な描き込みを加える絵画的な表現。", "keywords": "", "categories": ["スタイル"]}};
       const seeds = defaultSeed();
       const matched = new Set();
       seeds.forEach(seed => {
         let current = entries.find(e => !matched.has(e) && e.id === seed.id);
         if(!current) current = entries.find(e => !matched.has(e) && e.phrase === seed.phrase);
         if(current){
+          const previous = previousDefaults[seed.id];
+          if(previous){
+            ['description', 'keywords', 'categories'].forEach(field => {
+              if(JSON.stringify(current[field]) === JSON.stringify(previous[field])) current[field] = seed[field];
+            });
+          }
           if(!String(current.description || '').trim()) current.description = seed.description;
           matched.add(current);
         } else {
@@ -1020,10 +1027,11 @@
     "phrase": "volumetric lighting",
     "translation": "ボリュームライト（光の筋が見える照明）",
     "categories": [
-      "ライティング"
+      "ライティング",
+      "光"
     ],
-    "keywords": "",
-    "description": "霧や埃を通る光の筋に厚みを持たせ、空間の深さを見せる。",
+    "keywords": "空気の層を感じる光",
+    "description": "霧や空気中の微粒子によって光の道筋が見える表現。窓や木々の隙間から差す光の束で、空間の奥行きや空気の厚みを出せる。光の方向、色、霧の濃さを添えると雰囲気を調整しやすい。",
     "seeded": true
   },
   {
@@ -5058,10 +5066,12 @@
     "phrase": "high-detail facial features",
     "translation": "精細な顔立ち",
     "categories": [
-      "画質"
+      "画質",
+      "顔",
+      "瞳"
     ],
-    "keywords": "",
-    "description": "目、鼻、唇など顔の各部分を精細に描く。元の顔立ちを維持したい場合は造形の保持も指定する。",
+    "keywords": "細密な顔立ち",
+    "description": "目、鼻、唇など顔の各部を細密に描く。虹彩の模様やまつ毛の一本ごとなど、見せたい部分を添えると接写での描写を重視できる。元の顔立ちを保つ場合は骨格や比率の維持も指定する。",
     "seeded": true
   },
   {
@@ -5069,10 +5079,11 @@
     "phrase": "intricate clothing textures",
     "translation": "緻密な衣服の質感",
     "categories": [
-      "画質"
+      "画質",
+      "服"
     ],
-    "keywords": "",
-    "description": "織り目、刺繍、革のしわなど衣服の素材を緻密に描く。布の種類や対象部位を添える。",
+    "keywords": "衣装の質感",
+    "description": "布の織り目、レースや刺繍、革のしわ、金属の反射などを細かく描き、衣装の素材を見分けやすくする。素材名と描き込む部位を添えると、装飾の密度と全体のまとまりを調整できる。",
     "seeded": true
   },
   {
@@ -5080,10 +5091,11 @@
     "phrase": "volumetric lighting",
     "translation": "ボリュームライティング",
     "categories": [
-      "ライティング"
+      "ライティング",
+      "光"
     ],
-    "keywords": "",
-    "description": "霧や埃を通る光の筋に厚みを持たせ、空間の深さを見せる。",
+    "keywords": "空気の層を感じる光",
+    "description": "霧や空気中の微粒子によって光の道筋が見える表現。窓や木々の隙間から差す光の束で、空間の奥行きや空気の厚みを出せる。光の方向、色、霧の濃さを添えると雰囲気を調整しやすい。",
     "seeded": true
   },
   {
@@ -5093,8 +5105,8 @@
     "categories": [
       "色彩"
     ],
-    "keywords": "",
-    "description": "明暗や色の対比を強く調整し、画面の印象を際立たせる。暖色と寒色など狙う配色を添える。",
+    "keywords": "ドラマチックな色調補正",
+    "description": "色相、彩度、明暗の配分を印象的に整え、映画のような統一感や色の深みを求める。寒色の影と暖色の光など狙う配色を添えると具体的になる。髪や瞳の固有色を保つ範囲も指定できる。",
     "seeded": true
   },
   {
@@ -5102,10 +5114,12 @@
     "phrase": "subsurface scattering",
     "translation": "サブサーフェススキャタリング",
     "categories": [
-      "画質"
+      "画質",
+      "光",
+      "透明感"
     ],
-    "keywords": "",
-    "description": "光が物体の表面から内部へ入り、散乱して外へ出る質感。肌、ろう、薄い葉などの柔らかな透過光に使う。",
+    "keywords": "肌の透明感",
+    "description": "光が表面から内部へ入り、散乱して外へ出る質感。肌では耳や指など薄い部分の柔らかな透過光を示し、厚みのある生きた質感を求めるときに使う。ろうや葉にも適用できるため、肌を対象にする場合は明示する。",
     "seeded": true
   },
   {
@@ -5116,8 +5130,8 @@
       "画質",
       "光"
     ],
-    "keywords": "",
-    "description": "光の経路を計算したような自然な反射を求める指定。画像生成の文章指定だけで実際の描画方式が決まるわけではない。",
+    "keywords": "正確な光の反射",
+    "description": "光源や周囲の景色に対応した自然な反射を求める指定。水面、瞳、宝石、金属など、反射する素材と映す対象を添えると具体的になる。文章中の指定だけで実際のレイトレーシング処理や物理的な正確さが保証されるわけではない。",
     "seeded": true
   },
   {
@@ -5127,8 +5141,8 @@
     "categories": [
       "スタイル"
     ],
-    "keywords": "",
-    "description": "細く丁寧な筆の跡を使う。髪や布などの表面へ繊細な描き込みを加える絵画的な表現。",
+    "keywords": "繊細な筆致",
+    "description": "細い筆の跡や色の重なりを残し、手描きらしい表面の質感を加える。髪や布など対象を絞って使える。筆跡の目立つ絵画寄りの仕上がりに作用するため、アニメ塗りを保つ場合は使う範囲と強さを指定する。",
     "seeded": true
   },
   {
@@ -9267,6 +9281,159 @@
     ],
     "keywords": "顔＋全体の完成度・高級感",
     "description": "豪華な画集に収録される一枚を思わせる、顔の精細さと全体の丁寧な仕上げを求める。本の装丁やページを描く指定ではなく、イラスト自体の品質を表す。",
+    "seeded": false
+  },
+  {
+    "id": "effects_20260928_04",
+    "phrase": "Sharp focus & bokeh",
+    "translation": "ピントのメリハリ",
+    "categories": [
+      "カメラ",
+      "構図",
+      "ソフトフォーカス"
+    ],
+    "keywords": "",
+    "description": "人物や瞳へ鮮明にピントを合わせ、背景の光や景色を柔らかくぼかす組み合わせ。主役への視線誘導と奥行きに使える。背景の場所も伝えたい場合は、ぼけの強さを控えめに指定する。",
+    "seeded": false
+  },
+  {
+    "id": "effects_20260928_08",
+    "phrase": "Atmospheric haze",
+    "translation": "遠近感の霞",
+    "categories": [
+      "背景",
+      "雰囲気"
+    ],
+    "keywords": "",
+    "description": "遠くの景色を薄い霞で覆い、遠景ほど輪郭や明暗差を穏やかにする。山並みや街並みなど、広い背景の距離とスケールを見せる用途に向く。手前の人物を鮮明に保つ指定と組み合わせられる。",
+    "seeded": false
+  },
+  {
+    "id": "effects_20260928_10",
+    "phrase": "Post-processing effects",
+    "translation": "仕上げの特殊効果",
+    "categories": [
+      "エフェクト",
+      "完成度"
+    ],
+    "keywords": "",
+    "description": "彩色や描画の後に加えるような、色調補正、シャープネス、ブルーム、粒状感などの仕上げ効果。効果名と強さを添えると方向を絞れる。柔らかくする効果も含む広い語なので、輪郭を引き締めたい場合はその意図を明記する。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_01",
+    "phrase": "Bittersweet smile",
+    "translation": "切ない微笑み",
+    "categories": [
+      "表情"
+    ],
+    "keywords": "喜び 悲しみ 別れ 懐かしい 思い出",
+    "description": "微笑む口元に、寂しげな眉や潤んだ目を合わせ、嬉しさと悲しさが混ざる表情を作る。別れや懐かしい記憶を振り返る場面に向く。口角の上げ方や視線で、喜びと切なさの比重を調整できる。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_02",
+    "phrase": "Teardrop in eye",
+    "translation": "瞳の涙",
+    "categories": [
+      "表情",
+      "瞳"
+    ],
+    "keywords": "涙が溜まる 感動 悔しさ 泣く前",
+    "description": "涙が目の縁にたまり、流れ落ちる直前の状態を描く。下まぶたに沿った水分の膨らみや反射光で表現できる。悲しみ、感動、悔しさなど感情を添え、頬へ流すかどうかも明示すると狙いが伝わる。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_03",
+    "phrase": "Looking down with sorrow",
+    "translation": "憂いの伏し目",
+    "categories": [
+      "表情",
+      "雰囲気"
+    ],
+    "keywords": "俯く 物思い 孤独 横顔",
+    "description": "視線を下へ落とし、眉や口元に悲しみを残す。静かな物思いや孤独の場面に使える。顔全体を俯けるか目だけ下げるか、横顔か正面かを指定すると構図を選びやすい。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_04",
+    "phrase": "Expressive hands covering mouth",
+    "translation": "口元を隠す手",
+    "categories": [
+      "表情",
+      "動き"
+    ],
+    "keywords": "手元 驚き 照れ 秘密 仕草",
+    "description": "手で口元を覆い、指の開きや手首の角度で感情を示す。驚きなら見開いた目、照れなら赤い頬など、目元の表情を添えると意図が明確になる。片手か両手か、口を覆う範囲も指定できる。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_05",
+    "phrase": "Blushing heavily",
+    "translation": "深い照れ顔",
+    "categories": [
+      "表情"
+    ],
+    "keywords": "赤面 頬 耳 恥ずかしい 緊張 恋",
+    "description": "頬を強く赤らめ、照れや感情の高まりを表す。耳まで赤くする場合はその範囲を追加指定する。視線を逸らす、唇を結ぶなどの仕草と組み合わせ、人物の年齢や元の顔立ちを保ったまま照れを強調できる。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_06",
+    "phrase": "Piercing gaze at viewer",
+    "translation": "射抜くような視線",
+    "categories": [
+      "表情",
+      "瞳",
+      "構図"
+    ],
+    "keywords": "カメラ目線 意志 挑発 愛情 強い眼差し",
+    "description": "見る側へ真っ直ぐ視線を合わせ、焦点の定まった瞳とまぶたの角度で強さを出す。意志、挑発、深い愛情など意図を添えると表情を選び分けられる。カメラ目線を含む指定なので、視線を外す構図とは使い分ける。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_07",
+    "phrase": "Gentle smile with closed eyes",
+    "translation": "目を閉じて微笑む",
+    "categories": [
+      "表情"
+    ],
+    "keywords": "安らぎ 幸せ 祈り 休息 音楽",
+    "description": "両目を閉じ、口角を穏やかに上げた表情。休息、音楽に聴き入る時間、嬉しさを味わう瞬間などに使える。眉や肩の力を抜く仕草を添えると、安らいだ様子が伝わる。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_08",
+    "phrase": "Pouting face with furrowed brows",
+    "translation": "眉をひそめて拗ねる",
+    "categories": [
+      "表情"
+    ],
+    "keywords": "不満 嫉妬 照れ隠し 甘え",
+    "description": "眉間を少し寄せ、唇を軽く突き出して不満や拗ねた気持ちを表す。親しい相手への甘えや照れ隠しにも使える。眉の寄せ方や口の誇張を控えると、元の年齢感や顔立ちを保ちやすい。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_09",
+    "phrase": "Expression of shock / awe",
+    "translation": "驚きと畏敬",
+    "categories": [
+      "表情"
+    ],
+    "keywords": "驚愕 感嘆 再会 絶景 見開く",
+    "description": "目を見開き、口をわずかに開いて強い驚きや圧倒された感情を表す。shock は衝撃や驚愕、awe は壮大さへの畏敬や感嘆に寄るため、場面に合う側を選んで使える。再会なら視線の相手、絶景なら見る対象を添える。",
+    "seeded": false
+  },
+  {
+    "id": "expression_20260928_10",
+    "phrase": "Wistful look at distant object",
+    "translation": "遠くを見つめる恋しさ",
+    "categories": [
+      "表情",
+      "雰囲気"
+    ],
+    "keywords": "遠距離 叶わぬ願い 故郷 郷愁 遠い目",
+    "description": "遠くの対象へ視線を向け、目元や口元に恋しさや満たされない思いを滲ませる。遠い人や故郷を想う場面に使える。遠くを見ること自体は焦点のぼけを意味しないため、ぼんやりした眼差しを望む場合は追加指定する。",
     "seeded": false
   }
 ];
