@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111815">
+<title>Lunaria · ことばのモザイク</title>
+<style>
+  :root{
+    --bg:#0f1512;
+    --panel:#151d19;
+    --panel2:#1a241f;
+    --line:#2c3932;
+    --text:#edf3ef;
+    --muted:#9eafa5;
+    --green:#8bc1a4;
+    --green2:#b7e0c9;
+    --danger:#e5a7a7;
+    --shadow:0 18px 50px rgba(0,0,0,.28);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:dark}
+  body{
+    margin:0;
+    font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
+    background:
+      radial-gradient(circle at 12% -10%,rgba(87,139,111,.16),transparent 34rem),
+      radial-gradient(circle at 90% 5%,rgba(88,123,146,.10),transparent 30rem),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+  }
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  .wrap{max-width:1480px;margin:0 auto;padding:22px clamp(14px,2.8vw,38px) 60px}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    margin-bottom:22px;padding:10px 2px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .sigil{
+    width:38px;height:38px;border:1px solid #3a4a42;border-radius:12px;
+    display:grid;place-items:center;color:var(--green2);font-family:serif;font-size:20px;
+    background:linear-gradient(145deg,#19231e,#101713);box-shadow:inset 0 0 20px rgba(139,193,164,.05)
+  }
+  .brand b{font-size:14px;letter-spacing:.2em;color:#bfd5c9}
+  .brand span{display:block;font-size:18px;font-weight:650;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .privacy{font-size:12px;color:#a7b8ae;border:1px solid #314039;border-radius:999px;padding:8px 11px;background:#131c17}
+  .grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:20px;align-items:start}
+  .stack{display:grid;gap:20px}
+  .card{
+    background:linear-gradient(180deg,rgba(24,34,29,.96),rgba(18,26,22,.97));
+    border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .cardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 22px 0}
+  .eyebrow{font-size:11px;letter-spacing:.18em;color:#789287;text-transform:uppercase;margin-bottom:6px}
+  h1,h2,h3,p{margin:0}
+  h1{font-size:clamp(22px,3vw,34px);font-weight:720;letter-spacing:-.02em}
+  h2{font-size:20px}
+  h3{font-size:14px}
+  .sub{margin-top:5px;color:var(--muted);font-size:13px;line-height:1.65}
+  .body{padding:18px 22px 22px}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .buttonRow{display:flex;gap:8px;flex-wrap:wrap}
+  button,.fileButton{
+    border:1px solid #35453d;background:#1a2620;color:#eaf3ee;border-radius:11px;
+    min-height:38px;padding:8px 12px;font-weight:650;font-size:13px;transition:.16s ease;
+  }
+  button:hover,.fileButton:hover{background:#223128;border-color:#476052}
+  button.primary{
+    background:linear-gradient(180deg,#a4d1b7,#82b79a);color:#0e1712;border-color:#a9d7bc;
+    box-shadow:0 7px 24px rgba(118,172,143,.18)
+  }
+  button.primary:hover{filter:brightness(1.05)}
+  button.ghost{background:transparent}
+  button.danger{color:#eab8b8}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  textarea.mainInput{
+    width:100%;min-height:260px;resize:vertical;border:1px solid #314039;border-radius:16px;
+    background:#0d1411;color:#ecf3ef;padding:16px;outline:none;line-height:1.78;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.015)
+  }
+  textarea:focus,input:focus,select:focus{border-color:#648b76;box-shadow:0 0 0 3px rgba(117,165,139,.10);outline:none}
+  .metaRow{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;color:#81958a}
+  .segmented{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+  .segmented label{position:relative}
+  .segmented input{position:absolute;opacity:0;pointer-events:none}
+  .segmented span{
+    display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid #34443c;border-radius:11px;
+    color:#b9c8c0;background:#121b17;font-size:13px;font-weight:650;padding:8px;text-align:center
+  }
+  .segmented input:checked+span{color:#dff5e9;border-color:#648a76;background:#203027;box-shadow:inset 0 0 0 1px rgba(160,210,183,.08)}
+  .help{font-size:12px;line-height:1.65;color:#82958a;margin-top:10px}
+  .wordHeader{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:18px 0 10px}
+  .counter{font-size:12px;color:#8fa198}
+  .wordList{display:grid;gap:8px;max-height:420px;overflow:auto;padding-right:3px}
+  .wordItem{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:7px;align-items:stretch}
+  .wordItem textarea{
+    min-height:46px;resize:vertical;border:1px solid #304038;border-radius:10px;background:#0f1713;color:#edf4f0;
+    padding:10px 11px;line-height:1.45
+  }
+  select,input[type="text"]{
+    border:1px solid #304038;background:#101813;color:#eaf1ed;border-radius:10px;padding:0 10px;min-height:40px
+  }
+  .remove{padding:0;width:38px;min-height:38px;color:#d5aaa9;background:#171d19}
+  .controls{display:grid;gap:16px}
+  .control{display:grid;gap:8px}
+  .controlTop{display:flex;justify-content:space-between;gap:10px;align-items:end}
+  .control label,.label{font-size:12px;font-weight:700;color:#c5d2cb}
+  .value{font-size:12px;color:#8fa198}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .colorField{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center}
+  input[type="color"]{width:42px;height:40px;border:1px solid #33423a;border-radius:10px;padding:3px;background:#0f1713}
+  input[type="range"]{width:100%;accent-color:#8fc2a5}
+  .switchline{display:flex;align-items:flex-start;gap:10px}
+  .switchline input{margin-top:3px;accent-color:#8fc2a5}
+  .switchline b{display:block;font-size:13px;margin-bottom:3px}
+  .switchline small{display:block;color:#81958a;line-height:1.55}
+  .fileButton{display:inline-flex;align-items:center;gap:8px;width:max-content}
+  .fileButton input{display:none}
+  .canvasCard .body{padding-top:14px}
+  .previewShell{
+    display:grid;place-items:center;min-height:500px;border-radius:18px;border:1px solid #2f3d36;
+    background:
+      linear-gradient(45deg,rgba(255,255,255,.015) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.015) 75%),
+      linear-gradient(45deg,rgba(255,255,255,.015) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.015) 75%),
+      #0a0f0d;
+    background-size:22px 22px;background-position:0 0,11px 11px;
+    padding:18px;overflow:auto
+  }
+  canvas{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;box-shadow:0 12px 40px rgba(0,0,0,.38)}
+  .previewHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
+  .caption{font-size:12px;color:#8ea096;margin-top:9px;line-height:1.6}
+  .status{font-size:12px;color:#9fb0a7;text-align:right}
+  .empty{
+    min-height:420px;display:grid;place-items:center;text-align:center;color:#81958a;padding:28px
+  }
+  .empty .mark{font-size:28px;margin-bottom:10px;color:#789786}
+  footer{padding:24px 3px 0;color:#667a70;font-size:11px;line-height:1.7}
+  @media (max-width:980px){
+    .grid{grid-template-columns:1fr}
+    .canvasCard{position:static}
+  }
+  @media (min-width:981px){
+    .canvasCard{position:sticky;top:14px}
+  }
+  @media (max-width:620px){
+    .wrap{padding-left:12px;padding-right:12px}
+    .topbar{align-items:flex-start}.privacy{display:none}
+    .cardHead,.body{padding-left:16px;padding-right:16px}
+    .row2,.row3{grid-template-columns:1fr}
+    .wordItem{grid-template-columns:minmax(0,1fr) 84px 36px}
+    .segmented{grid-template-columns:1fr}
+    .previewShell{min-height:360px;padding:10px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <div class="sigil">言</div>
+      <div><b>LUNARIA</b><span>ことばのモザイク</span></div>
+    </div>
+    <div class="privacy">文章はこの端末内で処理</div>
+  </header>
+
+  <main class="grid">
+    <section class="stack">
+      <div class="card">
+        <div class="cardHead">
+          <div>
+            <div class="eyebrow">Collect words</div>
+            <h1>ことばを集める</h1>
+            <p class="sub">ログや文章から、モザイクに使うことばを取り出します。</p>
+          </div>
+          <button id="sampleBtn" class="ghost">サンプル</button>
+        </div>
+        <div class="body">
+          <div class="toolbar">
+            <label for="sourceText" class="label">ログ・文章を貼り付ける</label>
+            <button id="clearBtn" class="danger ghost">クリア</button>
+          </div>
+          <textarea id="sourceText" class="mainInput" placeholder="ここにログや文章を貼り付ける"></textarea>
+          <div class="metaRow"><span id="charCount">0文字</span><span>最大15,000文字</span></div>
+
+          <div class="segmented" role="radiogroup" aria-label="取り出し方">
+            <label><input type="radio" name="extract" value="line" checked><span>行ごと</span></label>
+            <label><input type="radio" name="extract" value="paragraph"><span>段落ごと</span></label>
+            <label><input type="radio" name="extract" value="quote"><span>「台詞」だけ</span></label>
+          </div>
+          <p id="extractHelp" class="help">空行を除いて、一行をひとつのことばとして使います。</p>
+
+          <div class="wordHeader">
+            <div><h3>使うことばを編集</h3><span class="counter" id="wordCount">0件</span></div>
+            <button id="addWordBtn" class="ghost">＋ ことばを追加</button>
+          </div>
+          <div id="wordList" class="wordList"></div>
+          <p class="help">ひと枠がひとつのことば。枠の中で改行できます。上のログや取り出し方を変えると、抽出し直します。</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">
+          <div>
+            <div class="eyebrow">Finish</div>
+            <h2>仕上がり</h2>
+            <p class="sub">プレビューを見ながら調整できます。</p>
+          </div>
+        </div>
+        <div class="body controls">
+          <div class="row2">
+            <div class="control"><label for="shape">形</label>
+              <select id="shape">
+                <option value="square">正方形 · 1:1</option>
+                <option value="portrait">縦長 · 3:4</option>
+                <option value="landscape">横長 · 16:9</option>
+                <option value="phone">スマートフォン · 9:16</option>
+              </select>
+            </div>
+            <div class="control"><label for="orientation">文字の向き</label>
+              <select id="orientation">
+                <option value="mixed">縦・横を混ぜる</option>
+                <option value="horizontal">横書き</option>
+                <option value="vertical">縦書き</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="fontFamily">フォント</label>
+            <select id="fontFamily">
+              <option value="serif">明朝体</option>
+              <option value="sans">ゴシック体</option>
+            </select>
+            <label class="fileButton">＋ 自分のフォントを追加<input id="fontFile" type="file" accept=".ttf,.otf,.woff,.woff2,font/*"></label>
+            <span id="fontName" class="help" style="margin-top:-3px"></span>
+          </div>
+
+          <div class="row3">
+            <div class="control"><label>文字</label><div class="colorField"><input id="textColor" type="color" value="#edf3ef"><input id="textColorHex" type="text" value="#edf3ef"></div></div>
+            <div class="control"><label>差し色</label><div class="colorField"><input id="accentColor" type="color" value="#8bc1a4"><input id="accentColorHex" type="text" value="#8bc1a4"></div></div>
+            <div class="control"><label>背景</label><div class="colorField"><input id="bgColor" type="color" value="#101713"><input id="bgColorHex" type="text" value="#101713"></div></div>
+          </div>
+
+          <div class="control">
+            <div class="controlTop"><label for="gap">ことばの間隔</label><span class="value"><b id="gapVal">2</b> px</span></div>
+            <input id="gap" type="range" min="0" max="18" value="2">
+          </div>
+
+          <div class="control">
+            <div class="controlTop"><label for="variation">文字サイズの強弱</label><span class="value" id="variationLabel">強め</span></div>
+            <input id="variation" type="range" min="1" max="5" value="4">
+          </div>
+
+          <div class="control">
+            <div class="controlTop"><label for="linebreak">元の改行を保つ</label><span class="value"><b id="linebreakVal">0</b>%</span></div>
+            <input id="linebreak" type="range" min="0" max="100" value="0">
+            <p class="help">左：密に配置 ／ 右：元の改行を優先。100%では元の改行をそのまま使います。複数行をまとめる時は「段落ごと」か「台詞だけ」が便利です。</p>
+          </div>
+
+          <div class="switchline">
+            <input id="autoStrong" type="checkbox" checked>
+            <div><b>強い言葉を自動で大きく</b><small>「愛している」「大好き」「ずっと一緒」などを含むことば全体を強調します。「使うことばを編集」で個別に自動・強調・通常を選べます。</small></div>
+          </div>
+
+          <div class="control">
+            <div class="controlTop"><label for="strongLevel">強調の強さ</label><span class="value"><b id="strongLevelVal">3</b> / 5</span></div>
+            <input id="strongLevel" type="range" min="1" max="5" value="3">
+          </div>
+
+          <div class="switchline">
+            <input id="mixBold" type="checkbox" checked>
+            <div><b>太字を混ぜる</b><small>強調語や一部の短いことばに、少しだけ太さの差をつけます。</small></div>
+          </div>
+
+          <button id="buildBtn" class="primary" style="min-height:48px;font-size:14px">モザイクを作る ✦</button>
+          <p class="help">最大300件・合計15,000文字。文章が多いほど文字は小さくなります。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card canvasCard">
+      <div class="cardHead">
+        <div><div class="eyebrow">Word Mosaic</div><h2>ことばが、一枚になる。</h2></div>
+        <div class="buttonRow"><button id="shuffleBtn" class="ghost" disabled>並べ直す</button><button id="saveBtn" disabled>PNGを保存</button></div>
+      </div>
+      <div class="body">
+        <div class="previewHead">
+          <div class="sub">省略や自動追加をせず、取り出したことばを一度ずつ配置します。</div>
+          <div id="status" class="status"></div>
+        </div>
+        <div id="previewShell" class="previewShell">
+          <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
+          <canvas id="canvas" hidden></canvas>
+        </div>
+        <div id="caption" class="caption">ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。</div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    このページは単一HTMLで動作します。入力した文章と追加したフォントは、このページを開いている端末のブラウザ内だけで処理されます。外部送信・アップロード処理は含まれていません。
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+
+  const els = {
+    source: $("#sourceText"), charCount: $("#charCount"), clear: $("#clearBtn"), sample: $("#sampleBtn"),
+    wordList: $("#wordList"), wordCount: $("#wordCount"), addWord: $("#addWordBtn"), extractHelp: $("#extractHelp"),
+    shape: $("#shape"), orientation: $("#orientation"), fontFamily: $("#fontFamily"), fontFile: $("#fontFile"), fontName: $("#fontName"),
+    textColor: $("#textColor"), textHex: $("#textColorHex"), accentColor: $("#accentColor"), accentHex: $("#accentColorHex"), bgColor: $("#bgColor"), bgHex: $("#bgColorHex"),
+    gap: $("#gap"), gapVal: $("#gapVal"), variation: $("#variation"), variationLabel: $("#variationLabel"),
+    linebreak: $("#linebreak"), linebreakVal: $("#linebreakVal"), autoStrong: $("#autoStrong"),
+    strongLevel: $("#strongLevel"), strongLevelVal: $("#strongLevelVal"), mixBold: $("#mixBold"),
+    build: $("#buildBtn"), shuffle: $("#shuffleBtn"), save: $("#saveBtn"),
+    canvas: $("#canvas"), empty: $("#empty"), status: $("#status"), caption: $("#caption")
+  };
+
+  const SAMPLE = `ただいま。
+おかえり。
+ここにいる。
+お前の声を、聞かせて。
+今夜は、もう少しだけ。
+一緒に帰ろう。
+この続きを、何度でも。
+忘れたくない言葉がある。
+名前を呼んで。
+好きだよ。
+隣を歩く。
+今日は、どんな一日だった？
+大丈夫、ちゃんと聞いている。
+ゆっくりでいい。
+言葉にしてくれて、ありがとう。
+その話、もっと聞きたい。
+僕は強い。
+また明日も、ここで。
+星が見える。
+手を繋ごう。
+一緒に笑っていたい。
+お前が選んだ、その先へ。
+お茶にしよう。
+あの日のことを覚えている。
+まだ、話していたい。
+大切な言葉を、この一枚に。`;
+
+  const STRONG_WORDS = [
+    "愛している","愛してる","大好き","ずっと一緒","ずっとそば","ずっと傍",
+    "好きだよ","好きだ","離さない","そばにいる","傍にいる","帰ろう","おかえり","ただいま","僕は強い"
+  ];
+
+  const state = {
+    words: [],
+    customFont: null,
+    customFontUrl: null,
+    seed: Math.floor(Math.random()*1e9),
+    built: false,
+    sourceLockedByManualEdits: false
+  };
+
+  function uid(){ return Math.random().toString(36).slice(2,10); }
+  function safeText(s){ return (s ?? "").replace(/\r\n?/g,"\n").slice(0,15000); }
+
+  function extractWords(text, mode){
+    text = safeText(text);
+    let arr = [];
+    if(mode === "line"){
+      arr = text.split("\n").map(s=>s.trim()).filter(Boolean);
+    }else if(mode === "paragraph"){
+      arr = text.split(/\n\s*\n+/).map(s=>s.trim()).filter(Boolean);
+    }else{
+      const re = /「([\s\S]*?)」/g;
+      let m;
+      while((m = re.exec(text)) !== null){
+        const v = m[1].trim();
+        if(v) arr.push(v);
+      }
+    }
+    return arr.slice(0,300);
+  }
+
+  function currentMode(){ return document.querySelector('input[name="extract"]:checked')?.value || "line"; }
+
+  function helpFor(mode){
+    if(mode==="line") return "空行を除いて、一行をひとつのことばとして使います。";
+    if(mode==="paragraph") return "空行で区切った段落を、ひとつのことばとして使います。段落内の改行は残せます。";
+    return "文章中の「 」で囲まれた台詞だけを取り出します。台詞内の改行は残せます。";
+  }
+
+  function rebuildWordsFromSource(){
+    const texts = extractWords(els.source.value, currentMode());
+    state.words = texts.map(text => ({id:uid(), text, emphasis:"auto"}));
+    state.sourceLockedByManualEdits = false;
+    renderWordEditor();
+    updateCounts();
+  }
+
+  function renderWordEditor(){
+    els.wordList.innerHTML = "";
+    if(!state.words.length){
+      const p = document.createElement("p");
+      p.className = "help";
+      p.textContent = "まだことばがありません。";
+      els.wordList.appendChild(p);
+      els.wordCount.textContent = "0件";
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    state.words.forEach((word, index)=>{
+      const row = document.createElement("div");
+      row.className = "wordItem";
+      row.dataset.id = word.id;
+
+      const ta = document.createElement("textarea");
+      ta.value = word.text;
+      ta.setAttribute("aria-label", `ことば ${index+1}`);
+      ta.addEventListener("input", ()=>{
+        word.text = ta.value;
+        state.sourceLockedByManualEdits = true;
+        updateCounts();
+      });
+
+      const sel = document.createElement("select");
+      sel.setAttribute("aria-label", `強調設定 ${index+1}`);
+      [["auto","自動"],["strong","強調"],["normal","通常"]].forEach(([v,t])=>{
+        const o=document.createElement("option"); o.value=v;o.textContent=t;if(v===word.emphasis)o.selected=true;sel.appendChild(o);
+      });
+      sel.addEventListener("change", ()=>word.emphasis=sel.value);
+
+      const rm = document.createElement("button");
+      rm.className="remove"; rm.textContent="×"; rm.title="削除";
+      rm.addEventListener("click", ()=>{
+        state.words = state.words.filter(w=>w.id!==word.id);
+        state.sourceLockedByManualEdits = true;
+        renderWordEditor(); updateCounts();
+      });
+
+      row.append(ta,sel,rm); frag.appendChild(row);
+    });
+    els.wordList.appendChild(frag);
+    els.wordCount.textContent = `${state.words.length}件`;
+  }
+
+  function updateCounts(){
+    const chars = [...els.source.value].length;
+    els.charCount.textContent = `${chars.toLocaleString("ja-JP")}文字`;
+    els.wordCount.textContent = `${state.words.filter(w=>w.text.trim()).length}件`;
+  }
+
+  function isStrong(word){
+    if(word.emphasis==="strong") return true;
+    if(word.emphasis==="normal") return false;
+    if(!els.autoStrong.checked) return false;
+    return STRONG_WORDS.some(k=>word.text.includes(k));
+  }
+
+  function rng(seed){
+    let t = seed >>> 0;
+    return () => {
+      t += 0x6D2B79F5;
+      let r = t;
+      r = Math.imul(r ^ r >>> 15, r | 1);
+      r ^= r + Math.imul(r ^ r >>> 7, r | 61);
+      return ((r ^ r >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function shuffleCopy(arr, random){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  const SHAPES = {
+    square:[1200,1200],
+    portrait:[1200,1600],
+    landscape:[1600,900],
+    phone:[1080,1920]
+  };
+
+  function selectedFont(){
+    if(state.customFont && els.fontFamily.value==="custom") return `"${state.customFont}"`;
+    if(els.fontFamily.value==="sans") return `"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif`;
+    return `"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif`;
+  }
+
+  function normalizeHex(v, fallback){
+    const s=(v||"").trim();
+    if(/^#[0-9a-fA-F]{6}$/.test(s)) return s;
+    if(/^#[0-9a-fA-F]{3}$/.test(s)) return "#"+[...s.slice(1)].map(c=>c+c).join("");
+    return fallback;
+  }
+
+  function syncColor(colorEl, textEl){
+    colorEl.addEventListener("input",()=>textEl.value=colorEl.value);
+    textEl.addEventListener("change",()=>{
+      const c=normalizeHex(textEl.value,colorEl.value); colorEl.value=c; textEl.value=c;
+    });
+  }
+  syncColor(els.textColor,els.textHex);syncColor(els.accentColor,els.accentHex);syncColor(els.bgColor,els.bgHex);
+
+  function fontVariationFactor(random, level){
+    const spread=[0,.04,.09,.16,.24,.34][level] || .2;
+    return 1 + (random()*2-1)*spread;
+  }
+
+  function linesFor(text, preserve, random){
+    const original=text.split("\n");
+    if(original.length===1) return original;
+    if(preserve>=100) return original;
+    if(preserve<=0) return [original.join(" ")];
+    const out=[original[0]];
+    for(let i=1;i<original.length;i++){
+      if(random()*100 < preserve) out.push(original[i]);
+      else out[out.length-1] += " " + original[i];
+    }
+    return out;
+  }
+
+  function measure(ctx, lines, size, weight){
+    ctx.font = `${weight} ${size}px ${selectedFont()}`;
+    let w=0;
+    for(const line of lines) w=Math.max(w,ctx.measureText(line || " ").width);
+    return {w, h:Math.max(1,lines.length)*size*1.22};
+  }
+
+  function buildPlan(baseSize, words, width, height, randomSeed){
+    const pad=Math.max(22,Math.round(Math.min(width,height)*.024));
+    const gap=Number(els.gap.value);
+    const variation=Number(els.variation.value);
+    const preserve=Number(els.linebreak.value);
+    const strongLevel=Number(els.strongLevel.value);
+    const mode=els.orientation.value;
+    const ctx=els.canvas.getContext("2d");
+    const random=rng(randomSeed);
+    const items=[];
+    let x=pad,y=pad,rowH=0;
+    const maxW=width-pad*2, maxH=height-pad*2;
+
+    for(let index=0; index<words.length; index++){
+      const word=words[index];
+      const strong=isStrong(word);
+      let size=baseSize*fontVariationFactor(random,variation);
+      if(strong) size*=1+strongLevel*.13;
+      if(word.text.length<=5) size*=1.04;
+
+      const weight = els.mixBold.checked && (strong || random()<.16) ? 700 : 500;
+      const lines=linesFor(word.text,preserve,random);
+      let orient=mode;
+      if(mode==="mixed"){
+        const len=[...word.text.replace(/\s/g,"")].length;
+        orient=(len<=12 && random()<.32) ? "vertical" : "horizontal";
+      }
+      const m=measure(ctx,lines,size,weight);
+      let w=(orient==="vertical"?m.h:m.w);
+      let h=(orient==="vertical"?m.w:m.h);
+
+      const maxItemW=maxW*.92, maxItemH=maxH*.34;
+      const shrink=Math.min(1,maxItemW/Math.max(1,w),maxItemH/Math.max(1,h));
+      if(shrink<1){
+        size*=shrink; const mm=measure(ctx,lines,size,weight);
+        w=(orient==="vertical"?mm.h:mm.w); h=(orient==="vertical"?mm.w:mm.h);
+      }
+      w+=gap*2;h+=gap*2;
+
+      if(x+w>width-pad && x>pad){
+        x=pad;y+=rowH+gap;rowH=0;
+      }
+      if(y+h>height-pad) return null;
+      items.push({word,strong,size,weight,lines,orient,x,y,w,h,accent:strong || (!strong && random()<.07)});
+      x+=w+gap;
+      rowH=Math.max(rowH,h);
+    }
+    return {items,pad,usedH:y+rowH+pad};
+  }
+
+  function drawPlan(plan,width,height){
+    const c=els.canvas,ctx=c.getContext("2d");
+    c.width=width;c.height=height;
+    const bg=normalizeHex(els.bgHex.value,els.bgColor.value);
+    const txt=normalizeHex(els.textHex.value,els.textColor.value);
+    const accent=normalizeHex(els.accentHex.value,els.accentColor.value);
+    ctx.fillStyle=bg;ctx.fillRect(0,0,width,height);
+    ctx.textBaseline="top";
+    ctx.imageSmoothingEnabled=true;
+
+    // subtle fine border, entirely local and deterministic
+    ctx.strokeStyle=accent+"33";
+    ctx.lineWidth=Math.max(1,Math.round(Math.min(width,height)/900));
+    const inset=Math.round(Math.min(width,height)*.018);
+    ctx.strokeRect(inset,inset,width-inset*2,height-inset*2);
+
+    for(const item of plan.items){
+      const {x,y,w,h,size,weight,lines,orient}=item;
+      const color=item.accent?accent:txt;
+      ctx.fillStyle=color;
+      ctx.font=`${weight} ${size}px ${selectedFont()}`;
+      const innerX=x+Number(els.gap.value), innerY=y+Number(els.gap.value);
+      if(orient==="horizontal"){
+        lines.forEach((line,i)=>ctx.fillText(line,innerX,innerY+i*size*1.22));
+      }else{
+        ctx.save();
+        ctx.translate(innerX + size*1.22*lines.length, innerY);
+        ctx.rotate(Math.PI/2);
+        lines.forEach((line,i)=>ctx.fillText(line,0,-i*size*1.22));
+        ctx.restore();
+      }
+    }
+  }
+
+  function renderMosaic({reshuffle=false}={}){
+    const words=state.words.filter(w=>w.text.trim()).slice(0,300);
+    const totalChars=words.reduce((n,w)=>n+[...w.text].length,0);
+    if(!words.length){
+      alert("モザイクに使うことばを入れてください。"); return;
+    }
+    if(totalChars>15000){
+      alert("使うことばの合計を15,000文字以内にしてください。"); return;
+    }
+
+    if(reshuffle) state.seed=Math.floor(Math.random()*1e9);
+    const [width,height]=SHAPES[els.shape.value];
+    els.canvas.hidden=false; els.empty.hidden=true;
+
+    const random=rng(state.seed);
+    const ordered=shuffleCopy(words,random);
+
+    let lo=7, hi=Math.min(width,height)*.18, best=null;
+    for(let k=0;k<18;k++){
+      const mid=(lo+hi)/2;
+      const plan=buildPlan(mid,ordered,width,height,state.seed+31);
+      if(plan){best=plan;lo=mid;}else{hi=mid;}
+    }
+    if(!best) best=buildPlan(7,ordered,width,height,state.seed+31);
+    if(!best){ alert("配置できませんでした。ことばの数や長さを少し減らしてください。"); return; }
+
+    // Center vertically when there is spare room.
+    const spare=Math.max(0,height-best.usedH);
+    if(spare>8){
+      const shift=spare/2;
+      best.items.forEach(it=>it.y+=shift);
+    }
+
+    drawPlan(best,width,height);
+    state.built=true;
+    els.shuffle.disabled=false;els.save.disabled=false;
+    const strongCount=words.filter(isStrong).length;
+    els.status.textContent=`${words.length}件（強調${strongCount}件） · ${width} × ${height} px`;
+    els.caption.textContent="原寸のPNGで保存できます。配置のたびに順序が変わります。ことばの省略や自動追加はしません。";
+  }
+
+  els.sample.addEventListener("click",()=>{els.source.value=SAMPLE;rebuildWordsFromSource();});
+  els.clear.addEventListener("click",()=>{els.source.value="";state.words=[];renderWordEditor();updateCounts();els.canvas.hidden=true;els.empty.hidden=false;els.status.textContent="";els.shuffle.disabled=true;els.save.disabled=true;});
+  els.source.addEventListener("input",()=>{ if(els.source.value.length>15000) els.source.value=els.source.value.slice(0,15000); rebuildWordsFromSource(); });
+  $$('input[name="extract"]').forEach(r=>r.addEventListener("change",()=>{els.extractHelp.textContent=helpFor(currentMode());rebuildWordsFromSource();}));
+  els.addWord.addEventListener("click",()=>{state.words.push({id:uid(),text:"",emphasis:"auto"});state.sourceLockedByManualEdits=true;renderWordEditor();updateCounts();const list=els.wordList;list.scrollTop=list.scrollHeight;});
+  els.gap.addEventListener("input",()=>els.gapVal.textContent=els.gap.value);
+  els.linebreak.addEventListener("input",()=>els.linebreakVal.textContent=els.linebreak.value);
+  els.strongLevel.addEventListener("input",()=>els.strongLevelVal.textContent=els.strongLevel.value);
+  els.variation.addEventListener("input",()=>{
+    els.variationLabel.textContent=["","弱い","やや弱い","標準","強め","かなり強い"][Number(els.variation.value)];
+  });
+  els.build.addEventListener("click",()=>renderMosaic({reshuffle:true}));
+  els.shuffle.addEventListener("click",()=>renderMosaic({reshuffle:true}));
+  els.save.addEventListener("click",()=>{
+    if(!state.built)return;
+    els.canvas.toBlob(blob=>{
+      if(!blob)return;
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download=`lunaria-word-mosaic-${els.shape.value}.png`;
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    },"image/png");
+  });
+
+  els.fontFile.addEventListener("change",async()=>{
+    const file=els.fontFile.files?.[0]; if(!file)return;
+    try{
+      if(state.customFontUrl) URL.revokeObjectURL(state.customFontUrl);
+      const url=URL.createObjectURL(file);
+      const family="LunariaCustomFont";
+      const face=new FontFace(family,`url(${url})`);
+      await face.load(); document.fonts.add(face);
+      state.customFont=family;state.customFontUrl=url;
+      let option=[...els.fontFamily.options].find(o=>o.value==="custom");
+      if(!option){option=document.createElement("option");option.value="custom";els.fontFamily.appendChild(option);}
+      option.textContent=`追加：${file.name}`;els.fontFamily.value="custom";els.fontName.textContent=`使用中：${file.name}（この端末内のみ）`;
+    }catch(e){
+      console.error(e);alert("このフォントを読み込めませんでした。TTF / OTF / WOFF / WOFF2 を試してください。");
+    }
+  });
+
+  // Keep color text fields tidy.
+  [els.textHex,els.accentHex,els.bgHex].forEach(el=>el.addEventListener("input",()=>{el.value=el.value.slice(0,7)}));
+
+  updateCounts();
+  renderWordEditor();
+})();
+</script>
+</body>
+</html>
