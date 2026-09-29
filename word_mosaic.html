@@ -47,8 +47,18 @@
   .brand b{font-size:14px;letter-spacing:.2em;color:#bfd5c9}
   .brand span{display:block;font-size:18px;font-weight:650;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .privacy{font-size:12px;color:#a7b8ae;border:1px solid #314039;border-radius:999px;padding:8px 11px;background:#131c17}
-  .grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:20px;align-items:start}
-  .stack{display:grid;gap:20px}
+  .grid{
+    display:grid;
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+    grid-template-areas:
+      "input canvas"
+      "settings canvas";
+    gap:20px;
+    align-items:start
+  }
+  .inputCard{grid-area:input}
+  .settingsCard{grid-area:settings}
+  .canvasCard{grid-area:canvas;align-self:start}
   .card{
     background:linear-gradient(180deg,rgba(24,34,29,.96),rgba(18,26,22,.97));
     border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
@@ -141,7 +151,13 @@
   .empty .mark{font-size:28px;margin-bottom:10px;color:#789786}
   footer{padding:24px 3px 0;color:#667a70;font-size:11px;line-height:1.7}
   @media (max-width:980px){
-    .grid{grid-template-columns:1fr}
+    .grid{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "input"
+        "canvas"
+        "settings";
+    }
     .canvasCard{position:static}
   }
   @media (min-width:981px){
@@ -169,8 +185,7 @@
   </header>
 
   <main class="grid">
-    <section class="stack">
-      <div class="card">
+      <section class="card inputCard">
         <div class="cardHead">
           <div>
             <div class="eyebrow">Collect words</div>
@@ -201,9 +216,9 @@
           <div id="wordList" class="wordList"></div>
           <p class="help">ひと枠がひとつのことば。枠の中で改行できます。上のログや取り出し方を変えると、抽出し直します。</p>
         </div>
-      </div>
+      </section>
 
-      <div class="card">
+      <section class="card settingsCard">
         <div class="cardHead">
           <div>
             <div class="eyebrow">Finish</div>
@@ -241,9 +256,9 @@
           </div>
 
           <div class="row3">
-            <div class="control"><label>文字</label><div class="colorField"><input id="textColor" type="color" value="#edf3ef"><input id="textColorHex" type="text" value="#edf3ef"></div></div>
+            <div class="control"><label>文字</label><div class="colorField"><input id="textColor" type="color" value="#000000"><input id="textColorHex" type="text" value="#000000"></div></div>
             <div class="control"><label>差し色</label><div class="colorField"><input id="accentColor" type="color" value="#8bc1a4"><input id="accentColorHex" type="text" value="#8bc1a4"></div></div>
-            <div class="control"><label>背景</label><div class="colorField"><input id="bgColor" type="color" value="#101713"><input id="bgColorHex" type="text" value="#101713"></div></div>
+            <div class="control"><label>背景</label><div class="colorField"><input id="bgColor" type="color" value="#ffffff"><input id="bgColorHex" type="text" value="#ffffff"></div></div>
           </div>
 
           <div class="control">
@@ -280,8 +295,7 @@
           <button id="buildBtn" class="primary" style="min-height:48px;font-size:14px">モザイクを作る ✦</button>
           <p class="help">最大300件・合計15,000文字。文章が多いほど文字は小さくなります。</p>
         </div>
-      </div>
-    </section>
+      </section>
 
     <section class="card canvasCard">
       <div class="cardHead">
@@ -658,6 +672,9 @@
     const strongCount=words.filter(isStrong).length;
     els.status.textContent=`${words.length}件（強調${strongCount}件） · ${width} × ${height} px`;
     els.caption.textContent="原寸のPNGで保存できます。配置のたびに順序が変わります。ことばの省略や自動追加はしません。";
+    if (window.matchMedia("(max-width: 980px)").matches) {
+      document.querySelector(".canvasCard")?.scrollIntoView({behavior:"smooth", block:"start"});
+    }
   }
 
   els.sample.addEventListener("click",()=>{els.source.value=SAMPLE;rebuildWordsFromSource();});
