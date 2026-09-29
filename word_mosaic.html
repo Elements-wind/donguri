@@ -133,15 +133,23 @@
   .fileButton input{display:none}
   .canvasCard .body{padding-top:14px}
   .previewShell{
-    display:grid;place-items:center;min-height:500px;border-radius:18px;border:1px solid #dfe5e0;
+    display:flex;align-items:center;justify-content:center;min-height:500px;border-radius:18px;border:1px solid #dfe5e0;
     background:
       linear-gradient(45deg,rgba(80,100,88,.025) 25%,transparent 25%,transparent 75%,rgba(80,100,88,.025) 75%),
       linear-gradient(45deg,rgba(80,100,88,.025) 25%,transparent 25%,transparent 75%,rgba(80,100,88,.025) 75%),
       #f8faf8;
     background-size:22px 22px;background-position:0 0,11px 11px;
-    padding:18px;overflow:auto
+    overflow:auto
   }
-  canvas{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;box-shadow:0 12px 32px rgba(31,46,37,.14)}
+  .previewInner{
+    min-width:100%;
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+  }
+  canvas{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;box-shadow:0 12px 32px rgba(31,46,37,.14);margin:auto;flex:0 0 auto}
   .previewHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
   .caption{font-size:12px;color:#7d8881;margin-top:9px;line-height:1.6}
   .status{font-size:12px;color:#7d8881;text-align:right}
@@ -178,7 +186,8 @@
     .row2,.row3{grid-template-columns:1fr}
     .wordItem{grid-template-columns:minmax(0,1fr) 84px 36px}
     .segmented{grid-template-columns:1fr}
-    .previewShell{min-height:360px;padding:10px}
+    .previewShell{min-height:360px}
+    .previewInner{padding:10px}
   }
 </style>
 </head>
@@ -237,8 +246,10 @@
           <div id="status" class="status"></div>
         </div>
         <div id="previewShell" class="previewShell">
-          <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
-          <canvas id="canvas" hidden></canvas>
+          <div class="previewInner" id="previewInner">
+            <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
+            <canvas id="canvas" hidden></canvas>
+          </div>
         </div>
         <div id="caption" class="caption">ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。</div>
       </div>
@@ -680,6 +691,16 @@
     const strongCount=words.filter(isStrong).length;
     els.status.textContent=`${words.length}件（強調${strongCount}件） · ${width} × ${height} px`;
     els.caption.textContent="原寸のPNGで保存できます。配置のたびに順序が変わります。ことばの省略や自動追加はしません。";
+
+    requestAnimationFrame(() => {
+      const shell = document.getElementById("previewShell");
+      if (shell) {
+        const left = Math.max(0, (shell.scrollWidth - shell.clientWidth) / 2);
+        const top = Math.max(0, (shell.scrollHeight - shell.clientHeight) / 2);
+        shell.scrollTo({ left, top, behavior: "auto" });
+      }
+    });
+
     if (window.matchMedia("(max-width: 980px)").matches) {
       window.scrollTo({top:0, behavior:"smooth"});
     }
