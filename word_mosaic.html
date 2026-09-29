@@ -7,26 +7,26 @@
 <title>Lunaria · ことばのモザイク</title>
 <style>
   :root{
-    --bg:#0f1512;
-    --panel:#151d19;
-    --panel2:#1a241f;
-    --line:#2c3932;
-    --text:#edf3ef;
-    --muted:#9eafa5;
-    --green:#8bc1a4;
-    --green2:#b7e0c9;
-    --danger:#e5a7a7;
-    --shadow:0 18px 50px rgba(0,0,0,.28);
+    --bg:#f6f7f4;
+    --panel:#ffffff;
+    --panel2:#f4f7f4;
+    --line:#dfe5df;
+    --text:#202521;
+    --muted:#747d77;
+    --green:#789b84;
+    --green2:#5f806c;
+    --danger:#b66f6f;
+    --shadow:0 14px 38px rgba(39,55,45,.08);
     --radius:22px;
   }
   *{box-sizing:border-box}
-  html{color-scheme:dark}
+  html{color-scheme:light}
   body{
     margin:0;
     font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
     background:
-      radial-gradient(circle at 12% -10%,rgba(87,139,111,.16),transparent 34rem),
-      radial-gradient(circle at 90% 5%,rgba(88,123,146,.10),transparent 30rem),
+      radial-gradient(circle at 12% -10%,rgba(126,162,139,.12),transparent 34rem),
+      radial-gradient(circle at 90% 5%,rgba(153,175,163,.09),transparent 30rem),
       var(--bg);
     color:var(--text);
     min-height:100vh;
@@ -40,13 +40,13 @@
   }
   .brand{display:flex;align-items:center;gap:12px;min-width:0}
   .sigil{
-    width:38px;height:38px;border:1px solid #3a4a42;border-radius:12px;
+    width:38px;height:38px;border:1px solid #d9e3dc;border-radius:12px;
     display:grid;place-items:center;color:var(--green2);font-family:serif;font-size:20px;
-    background:linear-gradient(145deg,#19231e,#101713);box-shadow:inset 0 0 20px rgba(139,193,164,.05)
+    background:linear-gradient(145deg,#ffffff,#f1f5f2);box-shadow:inset 0 0 20px rgba(121,155,132,.04)
   }
-  .brand b{font-size:14px;letter-spacing:.2em;color:#bfd5c9}
+  .brand b{font-size:14px;letter-spacing:.2em;color:#779181}
   .brand span{display:block;font-size:18px;font-weight:650;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .privacy{font-size:12px;color:#a7b8ae;border:1px solid #314039;border-radius:999px;padding:8px 11px;background:#131c17}
+  .privacy{font-size:12px;color:#758078;border:1px solid #dde5df;border-radius:999px;padding:8px 11px;background:#ffffff}
   .grid{
     display:grid;
     grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
@@ -56,16 +56,16 @@
     gap:20px;
     align-items:start
   }
-  .inputCard{grid-area:input}
-  .settingsCard{grid-area:settings}
-  .canvasCard{grid-area:canvas;align-self:start}
+  .inputCard{grid-area:input;order:2}
+  .canvasCard{grid-area:canvas;align-self:start;order:1}
+  .settingsCard{grid-area:settings;order:3}
   .card{
-    background:linear-gradient(180deg,rgba(24,34,29,.96),rgba(18,26,22,.97));
+    background:linear-gradient(180deg,#ffffff,#fdfefd);
     border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
     overflow:hidden;
   }
   .cardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 22px 0}
-  .eyebrow{font-size:11px;letter-spacing:.18em;color:#789287;text-transform:uppercase;margin-bottom:6px}
+  .eyebrow{font-size:11px;letter-spacing:.18em;color:#789283;text-transform:uppercase;margin-bottom:6px}
   h1,h2,h3,p{margin:0}
   h1{font-size:clamp(22px,3vw,34px);font-weight:720;letter-spacing:-.02em}
   h2{font-size:20px}
@@ -75,93 +75,101 @@
   .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
   .buttonRow{display:flex;gap:8px;flex-wrap:wrap}
   button,.fileButton{
-    border:1px solid #35453d;background:#1a2620;color:#eaf3ee;border-radius:11px;
+    border:1px solid #d8e2db;background:#ffffff;color:#303832;border-radius:11px;
     min-height:38px;padding:8px 12px;font-weight:650;font-size:13px;transition:.16s ease;
   }
-  button:hover,.fileButton:hover{background:#223128;border-color:#476052}
+  button:hover,.fileButton:hover{background:#f1f6f2;border-color:#b8cbbd}
   button.primary{
-    background:linear-gradient(180deg,#a4d1b7,#82b79a);color:#0e1712;border-color:#a9d7bc;
-    box-shadow:0 7px 24px rgba(118,172,143,.18)
+    background:linear-gradient(180deg,#8eb29a,#769b83);color:#ffffff;border-color:#75977f;
+    box-shadow:0 7px 24px rgba(100,139,113,.16)
   }
   button.primary:hover{filter:brightness(1.05)}
   button.ghost{background:transparent}
-  button.danger{color:#eab8b8}
+  button.danger{color:#aa6666}
   button:disabled{opacity:.45;cursor:not-allowed}
   textarea.mainInput{
-    width:100%;min-height:260px;resize:vertical;border:1px solid #314039;border-radius:16px;
-    background:#0d1411;color:#ecf3ef;padding:16px;outline:none;line-height:1.78;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.015)
+    width:100%;min-height:260px;resize:vertical;border:1px solid #dde5df;border-radius:16px;
+    background:#ffffff;color:#202521;padding:16px;outline:none;line-height:1.78;
+    box-shadow:inset 0 1px 0 rgba(20,35,26,.015)
   }
-  textarea:focus,input:focus,select:focus{border-color:#648b76;box-shadow:0 0 0 3px rgba(117,165,139,.10);outline:none}
-  .metaRow{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;color:#81958a}
+  textarea:focus,input:focus,select:focus{border-color:#8fac98;box-shadow:0 0 0 3px rgba(117,165,139,.10);outline:none}
+  .metaRow{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;color:#7d8881}
   .segmented{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
   .segmented label{position:relative}
   .segmented input{position:absolute;opacity:0;pointer-events:none}
   .segmented span{
-    display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid #34443c;border-radius:11px;
-    color:#b9c8c0;background:#121b17;font-size:13px;font-weight:650;padding:8px;text-align:center
+    display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid #dce4de;border-radius:11px;
+    color:#5f6962;background:#ffffff;font-size:13px;font-weight:650;padding:8px;text-align:center
   }
-  .segmented input:checked+span{color:#dff5e9;border-color:#648a76;background:#203027;box-shadow:inset 0 0 0 1px rgba(160,210,183,.08)}
-  .help{font-size:12px;line-height:1.65;color:#82958a;margin-top:10px}
+  .segmented input:checked+span{color:#395344;border-color:#95b09f;background:#edf4ef;box-shadow:inset 0 0 0 1px rgba(102,139,116,.06)}
+  .help{font-size:12px;line-height:1.65;color:#7d8881;margin-top:10px}
   .wordHeader{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:18px 0 10px}
-  .counter{font-size:12px;color:#8fa198}
+  .counter{font-size:12px;color:#7e8a82}
   .wordList{display:grid;gap:8px;max-height:420px;overflow:auto;padding-right:3px}
   .wordItem{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:7px;align-items:stretch}
   .wordItem textarea{
-    min-height:46px;resize:vertical;border:1px solid #304038;border-radius:10px;background:#0f1713;color:#edf4f0;
+    min-height:46px;resize:vertical;border:1px solid #d9e2dc;border-radius:10px;background:#ffffff;color:#202521;
     padding:10px 11px;line-height:1.45
   }
   select,input[type="text"]{
-    border:1px solid #304038;background:#101813;color:#eaf1ed;border-radius:10px;padding:0 10px;min-height:40px
+    border:1px solid #d9e2dc;background:#ffffff;color:#202521;border-radius:10px;padding:0 10px;min-height:40px
   }
-  .remove{padding:0;width:38px;min-height:38px;color:#d5aaa9;background:#171d19}
+  .remove{padding:0;width:38px;min-height:38px;color:#b97777;background:#fbf8f8}
   .controls{display:grid;gap:16px}
   .control{display:grid;gap:8px}
   .controlTop{display:flex;justify-content:space-between;gap:10px;align-items:end}
-  .control label,.label{font-size:12px;font-weight:700;color:#c5d2cb}
-  .value{font-size:12px;color:#8fa198}
+  .control label,.label{font-size:12px;font-weight:700;color:#4b554f}
+  .value{font-size:12px;color:#7e8a82}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .colorField{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center}
-  input[type="color"]{width:42px;height:40px;border:1px solid #33423a;border-radius:10px;padding:3px;background:#0f1713}
+  input[type="color"]{width:42px;height:40px;border:1px solid #d7e0da;border-radius:10px;padding:3px;background:#ffffff}
   input[type="range"]{width:100%;accent-color:#8fc2a5}
   .switchline{display:flex;align-items:flex-start;gap:10px}
   .switchline input{margin-top:3px;accent-color:#8fc2a5}
   .switchline b{display:block;font-size:13px;margin-bottom:3px}
-  .switchline small{display:block;color:#81958a;line-height:1.55}
+  .switchline small{display:block;color:#7d8881;line-height:1.55}
   .fileButton{display:inline-flex;align-items:center;gap:8px;width:max-content}
   .fileButton input{display:none}
   .canvasCard .body{padding-top:14px}
   .previewShell{
-    display:grid;place-items:center;min-height:500px;border-radius:18px;border:1px solid #2f3d36;
+    display:grid;place-items:center;min-height:500px;border-radius:18px;border:1px solid #dfe5e0;
     background:
-      linear-gradient(45deg,rgba(255,255,255,.015) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.015) 75%),
-      linear-gradient(45deg,rgba(255,255,255,.015) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.015) 75%),
-      #0a0f0d;
+      linear-gradient(45deg,rgba(80,100,88,.025) 25%,transparent 25%,transparent 75%,rgba(80,100,88,.025) 75%),
+      linear-gradient(45deg,rgba(80,100,88,.025) 25%,transparent 25%,transparent 75%,rgba(80,100,88,.025) 75%),
+      #f8faf8;
     background-size:22px 22px;background-position:0 0,11px 11px;
     padding:18px;overflow:auto
   }
-  canvas{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;box-shadow:0 12px 40px rgba(0,0,0,.38)}
+  canvas{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;box-shadow:0 12px 32px rgba(31,46,37,.14)}
   .previewHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
-  .caption{font-size:12px;color:#8ea096;margin-top:9px;line-height:1.6}
-  .status{font-size:12px;color:#9fb0a7;text-align:right}
+  .caption{font-size:12px;color:#7d8881;margin-top:9px;line-height:1.6}
+  .status{font-size:12px;color:#7d8881;text-align:right}
   .empty{
-    min-height:420px;display:grid;place-items:center;text-align:center;color:#81958a;padding:28px
+    min-height:420px;display:grid;place-items:center;text-align:center;color:#87928b;padding:28px
   }
-  .empty .mark{font-size:28px;margin-bottom:10px;color:#789786}
-  footer{padding:24px 3px 0;color:#667a70;font-size:11px;line-height:1.7}
+  .empty .mark{font-size:28px;margin-bottom:10px;color:#819a89}
+  footer{padding:24px 3px 0;color:#879089;font-size:11px;line-height:1.7}
   @media (max-width:980px){
     .grid{
-      grid-template-columns:1fr;
-      grid-template-areas:
-        "input"
-        "canvas"
-        "settings";
+      display:flex;
+      flex-direction:column;
     }
-    .canvasCard{position:static}
+    .canvasCard{order:1;position:static}
+    .inputCard{order:2}
+    .settingsCard{order:3}
   }
   @media (min-width:981px){
-    .canvasCard{position:sticky;top:14px}
+    .grid{
+      display:grid;
+      grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+      grid-template-areas:
+        "input canvas"
+        "settings canvas";
+    }
+    .inputCard{order:1}
+    .canvasCard{order:2;position:sticky;top:14px}
+    .settingsCard{order:3}
   }
   @media (max-width:620px){
     .wrap{padding-left:12px;padding-right:12px}
@@ -185,7 +193,7 @@
   </header>
 
   <main class="grid">
-      <section class="card inputCard">
+<section class="card inputCard">
         <div class="cardHead">
           <div>
             <div class="eyebrow">Collect words</div>
@@ -218,7 +226,25 @@
         </div>
       </section>
 
-      <section class="card settingsCard">
+<section class="card canvasCard">
+      <div class="cardHead">
+        <div><div class="eyebrow">Word Mosaic</div><h2>ことばが、一枚になる。</h2></div>
+        <div class="buttonRow"><button id="shuffleBtn" class="ghost" disabled>並べ直す</button><button id="saveBtn" disabled>PNGを保存</button></div>
+      </div>
+      <div class="body">
+        <div class="previewHead">
+          <div class="sub">省略や自動追加をせず、取り出したことばを一度ずつ配置します。</div>
+          <div id="status" class="status"></div>
+        </div>
+        <div id="previewShell" class="previewShell">
+          <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
+          <canvas id="canvas" hidden></canvas>
+        </div>
+        <div id="caption" class="caption">ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。</div>
+      </div>
+    </section>
+
+<section class="card settingsCard">
         <div class="cardHead">
           <div>
             <div class="eyebrow">Finish</div>
@@ -296,25 +322,7 @@
           <p class="help">最大300件・合計15,000文字。文章が多いほど文字は小さくなります。</p>
         </div>
       </section>
-
-    <section class="card canvasCard">
-      <div class="cardHead">
-        <div><div class="eyebrow">Word Mosaic</div><h2>ことばが、一枚になる。</h2></div>
-        <div class="buttonRow"><button id="shuffleBtn" class="ghost" disabled>並べ直す</button><button id="saveBtn" disabled>PNGを保存</button></div>
-      </div>
-      <div class="body">
-        <div class="previewHead">
-          <div class="sub">省略や自動追加をせず、取り出したことばを一度ずつ配置します。</div>
-          <div id="status" class="status"></div>
-        </div>
-        <div id="previewShell" class="previewShell">
-          <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
-          <canvas id="canvas" hidden></canvas>
-        </div>
-        <div id="caption" class="caption">ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。</div>
-      </div>
-    </section>
-  </main>
+</main>
   <footer>
     このページは単一HTMLで動作します。入力した文章と追加したフォントは、このページを開いている端末のブラウザ内だけで処理されます。外部送信・アップロード処理は含まれていません。
   </footer>
@@ -673,7 +681,7 @@
     els.status.textContent=`${words.length}件（強調${strongCount}件） · ${width} × ${height} px`;
     els.caption.textContent="原寸のPNGで保存できます。配置のたびに順序が変わります。ことばの省略や自動追加はしません。";
     if (window.matchMedia("(max-width: 980px)").matches) {
-      document.querySelector(".canvasCard")?.scrollIntoView({behavior:"smooth", block:"start"});
+      window.scrollTo({top:0, behavior:"smooth"});
     }
   }
 
