@@ -22,7 +22,15 @@ for(const id of ['size','direction','font','ink','accent','paper','gap','variety
 $('mono').onclick=()=>{mono=!mono;$('mono').setAttribute('aria-pressed',String(mono));schedule();};
 $('generate').onclick=()=>{clearTimeout(timer);void draw();};$('shuffle').onclick=()=>{seed=crypto.getRandomValues(new Uint32Array(1))[0];clearTimeout(timer);void draw();};
 $('sample').onclick=()=>{if($('source').value&&$('source').value!==sample&&!confirm('入力中の文章をサンプルに置き換えますか？'))return;$('source').value=sample;document.querySelector('[name=mode][value=lines]').checked=true;extractSource();notify('サンプルのことばを表示しています');};
-$('clear').onclick=()=>{if(($('source').value||phrases().length)&&!confirm('入力した文章と、使うことばをクリアしますか？'))return;$('source').value='';extractSource();$('source').focus();};
+let clearedInput=null;
+const undoClear=document.createElement('button');undoClear.type='button';undoClear.className='text-button';undoClear.id='undo-clear';undoClear.textContent='クリアを戻す';undoClear.hidden=true;$('clear').before(undoClear);
+function discardClearUndo(){clearedInput=null;undoClear.hidden=true;}
+$('source').addEventListener('input',discardClearUndo);
+$('phrases').addEventListener('input',discardClearUndo);
+$('phrases').addEventListener('change',discardClearUndo);
+$('clear').type='button';
+$('clear').onclick=()=>{if(!$('source').value&&!phraseList.length){resetPreview();return;}clearedInput={source:$('source').value,phrases:[...phraseList],emphasis:[...emphasisModes]};$('source').value='';phraseList=[];emphasisModes=[];editPhrases();status();schedule();undoClear.hidden=false;notify('文章とプレビューをクリアしました');};
+undoClear.onclick=()=>{if(!clearedInput)return;const saved=clearedInput;discardClearUndo();$('source').value=saved.source;phraseList=[...saved.phrases];emphasisModes=[...saved.emphasis];editPhrases();status();schedule();notify('クリア前の文章を戻しました');};
 $('font-add').onclick=()=>$('font-file').click();$('font-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>20*1024*1024)throw new Error('フォントは20MBまでです。');$('font-status').textContent='読み込み中…';const name='MosaicCustom'+(++fontNumber);const face=new FontFace(name,await file.arrayBuffer());await face.load();document.fonts.add(face);families[name]=`"${name}",sans-serif`;const option=new Option(file.name.replace(/\.[^.]+$/,''),name);$('font').add(option);$('font').value=name;$('font-status').textContent='この画面を開いている間、有効';schedule();}catch(e){$('font-status').textContent='追加できませんでした';notify(e.message||'このフォントを読み込めません。');}finally{$('font-file').value='';}};
 $('download').onclick=async()=>{if(busy||$('download').disabled)return;$('download').disabled=true;try{const blob=await new Promise(r=>$('canvas').toBlob(r,'image/png'));if(!blob)throw new Error('画像を作れませんでした。');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='lunaria-mosaic-'+new Date().toISOString().slice(0,10)+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);notify('PNGを書き出しました');}catch(e){notify(e.message);}finally{$('download').disabled=false;}};
 $('source').value=sample;extractSource();
