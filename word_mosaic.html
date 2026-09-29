@@ -450,14 +450,14 @@
       [["auto","自動"],["strong","強調"],["normal","通常"]].forEach(([v,t])=>{
         const o=document.createElement("option"); o.value=v;o.textContent=t;if(v===word.emphasis)o.selected=true;sel.appendChild(o);
       });
-      sel.addEventListener("change", ()=>word.emphasis=sel.value);
+      sel.addEventListener("change", ()=>{word.emphasis=sel.value;scheduleRender();});
 
       const rm = document.createElement("button");
       rm.className="remove"; rm.textContent="×"; rm.title="削除";
       rm.addEventListener("click", ()=>{
         state.words = state.words.filter(w=>w.id!==word.id);
         state.sourceLockedByManualEdits = true;
-        renderWordEditor(); updateCounts();
+        renderWordEditor(); updateCounts(); scheduleRender();
       });
 
       row.append(ta,sel,rm); frag.appendChild(row);
@@ -520,9 +520,20 @@
   }
 
   function syncColor(colorEl, textEl){
-    colorEl.addEventListener("input",()=>textEl.value=colorEl.value);
+    colorEl.addEventListener("input",()=>{
+      textEl.value=colorEl.value;
+      scheduleRender();
+    });
+    textEl.addEventListener("input",()=>{
+      const c=normalizeHex(textEl.value,"");
+      if(c) colorEl.value=c;
+      scheduleRender();
+    });
     textEl.addEventListener("change",()=>{
-      const c=normalizeHex(textEl.value,colorEl.value); colorEl.value=c; textEl.value=c;
+      const c=normalizeHex(textEl.value,colorEl.value);
+      colorEl.value=c;
+      textEl.value=c;
+      scheduleRender();
     });
   }
   syncColor(els.textColor,els.textHex);syncColor(els.accentColor,els.accentHex);syncColor(els.bgColor,els.bgHex);
@@ -699,6 +710,16 @@
     }
   }
 
+  let pendingRender = 0;
+  function scheduleRender(){
+    if(!state.built) return;
+    cancelAnimationFrame(pendingRender);
+    pendingRender = requestAnimationFrame(() => {
+      pendingRender = 0;
+      renderMosaic({reshuffle:false});
+    });
+  }
+
   function renderMosaic({reshuffle=false}={}){
     const words=state.words.filter(w=>w.text.trim()).slice(0,300);
     const totalChars=words.reduce((n,w)=>n+[...w.text].length,0);
@@ -751,13 +772,21 @@
   els.source.addEventListener("input",()=>{ if(els.source.value.length>15000) els.source.value=els.source.value.slice(0,15000); rebuildWordsFromSource(); });
   $$('input[name="extract"]').forEach(r=>r.addEventListener("change",()=>{els.extractHelp.textContent=helpFor(currentMode());rebuildWordsFromSource();}));
   els.addWord.addEventListener("click",()=>{state.words.push({id:uid(),text:"",emphasis:"auto"});state.sourceLockedByManualEdits=true;renderWordEditor();updateCounts();const list=els.wordList;list.scrollTop=list.scrollHeight;});
-  els.gap.addEventListener("input",()=>els.gapVal.textContent=els.gap.value);
-  els.linebreak.addEventListener("input",()=>els.linebreakVal.textContent=els.linebreak.value);
-  els.strongLevel.addEventListener("input",()=>els.strongLevelVal.textContent=els.strongLevel.value);
+  els.gap.addEventListener("input",()=>{els.gapVal.textContent=els.gap.value;scheduleRender();});
+  els.linebreak.addEventListener("input",()=>{els.linebreakVal.textContent=els.linebreak.value;scheduleRender();});
+  els.strongLevel.addEventListener("input",()=>{els.strongLevelVal.textContent=els.strongLevel.value;scheduleRender();});
   els.variation.addEventListener("input",()=>{
     els.variationLabel.textContent=["","弱い","やや弱い","標準","強め","かなり強い"][Number(els.variation.value)];
+    scheduleRender();
   });
-  els.build.addEventListener("click",()=>renderMosaic({reshuffle:true}));
+  [els.shape,els.orientation,els.fontFamily].forEach(el=>{
+    el.addEventListener("change",scheduleRender);
+  });
+  [els.autoStrong,els.mixBold].forEach(el=>{
+    el.addEventListener("change",scheduleRender);
+  });
+
+  els.build.addEventListener("click",()=>renderMosaic({reshuffle:false}));
   els.shuffle.addEventListener("click",()=>renderMosaic({reshuffle:true}));
   els.save.addEventListener("click",()=>{
     if(!state.built)return;
@@ -782,7 +811,7 @@
       state.customFont=family;state.customFontUrl=url;
       let option=[...els.fontFamily.options].find(o=>o.value==="custom");
       if(!option){option=document.createElement("option");option.value="custom";els.fontFamily.appendChild(option);}
-      option.textContent=`追加：${file.name}`;els.fontFamily.value="custom";els.fontName.textContent=`使用中：${file.name}（この端末内のみ）`;
+      option.textContent=`追加：${file.name}`;els.fontFamily.value="custom";els.fontName.textContent=`使用中：${file.name}（この端末内のみ）`;scheduleRender();
     }catch(e){
       console.error(e);alert("このフォントを読み込めませんでした。TTF / OTF / WOFF / WOFF2 を試してください。");
     }
