@@ -56,9 +56,9 @@
     gap:20px;
     align-items:start
   }
-  .inputCard{grid-area:input;order:2}
-  .canvasCard{grid-area:canvas;align-self:start;order:1}
-  .settingsCard{grid-area:settings;order:3}
+  .inputCard{grid-area:input}
+  .canvasCard{grid-area:canvas;align-self:start}
+  .settingsCard{grid-area:settings}
   .card{
     background:linear-gradient(180deg,#ffffff,#fdfefd);
     border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
@@ -178,9 +178,7 @@
       display:flex;
       flex-direction:column;
     }
-    .canvasCard{order:1;position:static}
-    .inputCard{order:2}
-    .settingsCard{order:3}
+    .canvasCard{position:static}
   }
   @media (min-width:981px){
     .grid{
@@ -190,9 +188,7 @@
         "input canvas"
         "settings canvas";
     }
-    .inputCard{order:1}
-    .canvasCard{order:2;position:sticky;top:14px}
-    .settingsCard{order:3}
+    .canvasCard{position:sticky;top:14px}
   }
   @media (max-width:620px){
     .wrap{padding-left:12px;padding-right:12px}
@@ -219,6 +215,26 @@
   </header>
 
   <main class="grid">
+<section class="card canvasCard">
+      <div class="cardHead">
+        <div><div class="eyebrow">Word Mosaic</div><h2>ことばが、一枚になる。</h2></div>
+        <div class="buttonRow"><button id="shuffleBtn" class="ghost" disabled>並べ直す</button><button id="saveBtn" disabled>PNGを保存</button></div>
+      </div>
+      <div class="body">
+        <div class="previewHead">
+          <div class="sub">省略や自動追加をせず、取り出したことばを一度ずつ配置します。</div>
+          <div id="status" class="status"></div>
+        </div>
+        <div id="previewShell" class="previewShell">
+          <div class="previewInner" id="previewInner">
+            <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
+            <canvas id="canvas" hidden></canvas>
+          </div>
+        </div>
+        <div id="caption" class="caption">ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。</div>
+      </div>
+    </section>
+
 <section class="card inputCard">
         <div class="cardHead">
           <div>
@@ -251,26 +267,6 @@
           <p class="help">ひと枠がひとつのことば。枠の中で改行できます。上のログや取り出し方を変えると、抽出し直します。</p>
         </div>
       </section>
-
-<section class="card canvasCard">
-      <div class="cardHead">
-        <div><div class="eyebrow">Word Mosaic</div><h2>ことばが、一枚になる。</h2></div>
-        <div class="buttonRow"><button id="shuffleBtn" class="ghost" disabled>並べ直す</button><button id="saveBtn" disabled>PNGを保存</button></div>
-      </div>
-      <div class="body">
-        <div class="previewHead">
-          <div class="sub">省略や自動追加をせず、取り出したことばを一度ずつ配置します。</div>
-          <div id="status" class="status"></div>
-        </div>
-        <div id="previewShell" class="previewShell">
-          <div class="previewInner" id="previewInner">
-            <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
-            <canvas id="canvas" hidden></canvas>
-          </div>
-        </div>
-        <div id="caption" class="caption">ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。</div>
-      </div>
-    </section>
 
 <section class="card settingsCard">
         <div class="cardHead">
@@ -578,6 +574,65 @@
     return out;
   }
 
+  const VERTICAL_ROTATE_CHARS = new Set(
+    "ー―‐-–—…‥()（）[]［］{}｛｝<>〈〉《》「」『』【】〔〕〖〗〘〙〚〛"
+  );
+  const VERTICAL_SMALL_PUNCT = new Set("、。，．,.｡､");
+
+  function verticalColumns(lines){
+    return lines.map(line => [...(line || " ")]);
+  }
+
+  function measureVertical(lines, size){
+    const cols = verticalColumns(lines);
+    const maxChars = Math.max(1, ...cols.map(col => col.length));
+    const colGap = size * 0.16;
+    const width = cols.length * size + Math.max(0, cols.length - 1) * colGap;
+    const height = maxChars * size * 1.08;
+    return {w: width, h: height};
+  }
+
+  function drawVerticalText(ctx, lines, x, y, size, color){
+    const cols = verticalColumns(lines);
+    const colGap = size * 0.16;
+    const lineAdvance = size * 1.08;
+
+    ctx.fillStyle = color;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Japanese vertical writing columns proceed from right to left.
+    cols.forEach((chars, colIndex) => {
+      const cx = x + (cols.length - 1 - colIndex) * (size + colGap) + size / 2;
+
+      chars.forEach((ch, rowIndex) => {
+        const cy = y + rowIndex * lineAdvance + size / 2;
+        ctx.save();
+
+        if (VERTICAL_SMALL_PUNCT.has(ch)) {
+          // Japanese punctuation sits toward the upper-right of its character cell.
+          ctx.translate(cx + size * 0.18, cy - size * 0.18);
+          ctx.font = ctx.font;
+          ctx.fillText(ch, 0, 0);
+        } else if (VERTICAL_ROTATE_CHARS.has(ch)) {
+          // Long vowel marks, dashes, brackets, etc. are rotated in vertical composition.
+          ctx.translate(cx, cy);
+          ctx.rotate(Math.PI / 2);
+          ctx.fillText(ch, 0, 0);
+        } else {
+          // Kanji/kana stay upright and are stacked top-to-bottom.
+          ctx.translate(cx, cy);
+          ctx.fillText(ch, 0, 0);
+        }
+
+        ctx.restore();
+      });
+    });
+
+    ctx.textAlign = "start";
+    ctx.textBaseline = "alphabetic";
+  }
+
   function measure(ctx, lines, size, weight){
     ctx.font = `${weight} ${size}px ${selectedFont()}`;
     let w=0;
@@ -612,15 +667,20 @@
         const len=[...word.text.replace(/\s/g,"")].length;
         orient=(len<=12 && random()<.32) ? "vertical" : "horizontal";
       }
-      const m=measure(ctx,lines,size,weight);
-      let w=(orient==="vertical"?m.h:m.w);
-      let h=(orient==="vertical"?m.w:m.h);
+      const m = orient==="vertical"
+        ? measureVertical(lines,size)
+        : measure(ctx,lines,size,weight);
+      let w=m.w;
+      let h=m.h;
 
       const maxItemW=maxW*.92, maxItemH=maxH*.34;
       const shrink=Math.min(1,maxItemW/Math.max(1,w),maxItemH/Math.max(1,h));
       if(shrink<1){
-        size*=shrink; const mm=measure(ctx,lines,size,weight);
-        w=(orient==="vertical"?mm.h:mm.w); h=(orient==="vertical"?mm.w:mm.h);
+        size*=shrink;
+        const mm = orient==="vertical"
+          ? measureVertical(lines,size)
+          : measure(ctx,lines,size,weight);
+        w=mm.w; h=mm.h;
       }
       w+=gap*2;h+=gap*2;
 
@@ -643,6 +703,7 @@
     const accent=normalizeHex(els.accentHex.value,els.accentColor.value);
     ctx.fillStyle=bg;ctx.fillRect(0,0,width,height);
     ctx.textBaseline="top";
+    ctx.textAlign="start";
     ctx.imageSmoothingEnabled=true;
 
     // subtle fine border, entirely local and deterministic
@@ -658,13 +719,11 @@
       ctx.font=`${weight} ${size}px ${selectedFont()}`;
       const innerX=x+Number(els.gap.value), innerY=y+Number(els.gap.value);
       if(orient==="horizontal"){
+        ctx.textAlign="start";
+        ctx.textBaseline="top";
         lines.forEach((line,i)=>ctx.fillText(line,innerX,innerY+i*size*1.22));
       }else{
-        ctx.save();
-        ctx.translate(innerX + size*1.22*lines.length, innerY);
-        ctx.rotate(Math.PI/2);
-        lines.forEach((line,i)=>ctx.fillText(line,0,-i*size*1.22));
-        ctx.restore();
+        drawVerticalText(ctx,lines,innerX,innerY,size,color);
       }
     }
   }
@@ -710,9 +769,6 @@
     els.caption.textContent="原寸のPNGで保存できます。配置のたびに順序が変わります。ことばの省略や自動追加はしません。";
 
 
-    if (window.matchMedia("(max-width: 980px)").matches) {
-      window.scrollTo({top:0, behavior:"smooth"});
-    }
   }
 
   els.sample.addEventListener("click",()=>{els.source.value=SAMPLE;rebuildWordsFromSource();});
