@@ -3,318 +3,177 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f6f7f4">
+<meta name="theme-color" content="#f2f1f5">
 <title>Lunaria · ことばのモザイク</title>
+
 <style>
-  :root{
-    --bg:#f6f7f4;
-    --panel:#ffffff;
-    --panel2:#f4f7f4;
-    --line:#dfe5df;
-    --text:#202521;
-    --muted:#747d77;
-    --green:#789b84;
-    --green2:#5f806c;
-    --danger:#b66f6f;
-    --shadow:0 14px 38px rgba(39,55,45,.08);
-    --radius:22px;
+  :root {
+    --navy:#18162b;
+    --page:#f2f1f5;
+    --purple:#7753ad;
+    --muted:#74717f;
+    --line:#dedbe5;
+    --blue:#0088ff;
+    --white:#ffffff;
   }
   *{box-sizing:border-box}
-  html{color-scheme:light}
+  html{color-scheme:light;background:var(--page)}
   body{
-    margin:0;
-    font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
-    background:
-      radial-gradient(circle at 12% -10%,rgba(126,162,139,.12),transparent 34rem),
-      radial-gradient(circle at 90% 5%,rgba(153,175,163,.09),transparent 30rem),
-      var(--bg);
-    color:var(--text);
-    min-height:100vh;
+    margin:0;min-height:100vh;background:var(--page);color:var(--navy);
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",sans-serif;
   }
   button,input,select,textarea{font:inherit}
   button{cursor:pointer}
-  .wrap{max-width:1480px;margin:0 auto;padding:22px clamp(14px,2.8vw,38px) 60px}
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;gap:16px;
-    margin-bottom:22px;padding:10px 2px;
-  }
-  .brand{display:flex;align-items:center;gap:12px;min-width:0}
-  .sigil{
-    width:38px;height:38px;border:1px solid #d9e3dc;border-radius:12px;
-    display:grid;place-items:center;color:var(--green2);font-family:serif;font-size:20px;
-    background:linear-gradient(145deg,#ffffff,#f1f5f2);box-shadow:inset 0 0 20px rgba(121,155,132,.04)
-  }
-  .brand b{font-size:14px;letter-spacing:.2em;color:#779181}
-  .brand span{display:block;font-size:18px;font-weight:650;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .privacy{font-size:12px;color:#758078;border:1px solid #dde5df;border-radius:999px;padding:8px 11px;background:#ffffff}
-  .grid{
-    display:grid;
-    grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
-    grid-template-areas:
-      "input canvas"
-      "settings canvas";
-    gap:20px;
-    align-items:start
-  }
-  .inputCard{grid-area:input}
-  .canvasCard{grid-area:canvas;align-self:start}
-  .settingsCard{grid-area:settings}
-  .card{
-    background:linear-gradient(180deg,#ffffff,#fdfefd);
-    border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
-    overflow:hidden;
-  }
-  .cardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 22px 0}
-  .eyebrow{font-size:11px;letter-spacing:.18em;color:#789283;text-transform:uppercase;margin-bottom:6px}
   h1,h2,h3,p{margin:0}
-  h1{font-size:clamp(22px,3vw,34px);font-weight:720;letter-spacing:-.02em}
-  h2{font-size:20px}
-  h3{font-size:14px}
-  .sub{margin-top:5px;color:var(--muted);font-size:13px;line-height:1.65}
-  .body{padding:18px 22px 22px}
+
+  .wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 18px 56px}
+  .topbar{
+    height:66px;margin:0 -18px;padding:13px 18px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:var(--navy);color:#fff;
+  }
+  .brand{display:flex;align-items:center;gap:13px;min-width:0}
+  .sigil{
+    width:40px;height:40px;display:grid;place-items:center;
+    border:1px solid #827a9b;border-radius:0;background:transparent;color:#fff;
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:24px;line-height:1;
+  }
+  .brand b{display:block;color:#fff;font-size:12px;line-height:1.15;letter-spacing:.25em;font-weight:700}
+  .brand span{display:block;margin-top:5px;color:#c9c3d6;font-size:11px;line-height:1.2;font-weight:500;white-space:nowrap}
+  .privacy{
+    position:relative;flex:0 0 100px;padding-left:14px;border:0;background:transparent;
+    color:#c9c3d6;font-size:10px;line-height:1.55;
+  }
+  .privacy::before{
+    content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:#bca0ea;
+  }
+
+  .grid{display:flex;flex-direction:column;gap:0}
+  .card{border:0;border-radius:0;box-shadow:none;overflow:visible;background:transparent}
+  .canvasCard{order:1;background:var(--page)}
+  .inputCard{order:2}
+  .settingsCard{order:3}
+  .cardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .eyebrow{color:var(--purple);text-transform:uppercase;font-size:10px;line-height:1;letter-spacing:.31em;font-weight:800}
+  .sub{color:#817d89;font-size:13px;line-height:1.6}
+
+  .mosaicHead{padding:29px 0 20px;align-items:flex-end}
+  .mosaicHead .eyebrow{margin-bottom:9px}
+  .mosaicHead h2{color:var(--navy);font-size:16px;line-height:1.3;font-weight:800;letter-spacing:.02em}
+  .buttonRow{display:flex;gap:7px;align-items:center;flex-wrap:nowrap}
+  .mosaicHead button{
+    height:35px;min-height:35px;padding:0 11px;border-radius:8px;
+    font-size:12px;line-height:33px;font-weight:500;white-space:nowrap;box-shadow:none;
+  }
+  .shuffleButton{border:1px solid #d8d4df;background:#fff;color:var(--blue)}
+  .saveButton{border:1px solid var(--navy);background:var(--navy);color:#fff}
+  .mosaicHead button:disabled{opacity:.45;cursor:not-allowed}
+
+  .mosaicBody{padding:0}
+  .previewShell{
+    position:relative;width:100%;aspect-ratio:1/1;
+    display:flex;align-items:center;justify-content:center;
+    padding:12px;overflow:hidden;
+    border:1px solid #dcd9e2;border-radius:13px;
+    background-color:#eeecf2;
+    background-image:radial-gradient(circle,rgba(95,83,117,.18) .7px,transparent .8px);
+    background-size:9px 9px;
+    box-shadow:0 7px 18px rgba(52,45,70,.07);
+  }
+  #canvas{
+    display:block;flex:0 0 auto;width:auto;height:auto;max-width:100%;max-height:100%;
+    margin:auto;background:#fff;box-shadow:none;
+  }
+  #canvas[hidden]{display:none}
+  .empty{width:100%;height:100%;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+  .empty[hidden]{display:none}
+  .empty .mark{margin-bottom:8px;color:var(--purple);font-size:24px}
+  .mosaicMeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;color:var(--muted);font-size:11px;line-height:1.4}
+  .status{color:var(--muted);font-size:11px;text-align:left}
+  .saveHint{color:var(--muted);white-space:nowrap;text-align:right}
+  .caption{margin-top:12px;padding:0 0 26px;color:var(--muted);font-size:11px;line-height:1.85}
+
+  .inputCard,.settingsCard{margin:0 -18px;padding:0 18px;background:#fff;border-top:1px solid #dfdde4}
+  .inputCard .cardHead,.settingsCard .cardHead{padding:27px 0 14px;align-items:center}
+  .inputCard .eyebrow,.settingsCard .eyebrow{display:none}
+  .inputCard h1,.settingsCard h2{color:var(--navy);font-size:20px;line-height:1.3;font-weight:800;letter-spacing:.01em}
+  .inputCard .sub,.settingsCard .sub{margin-top:5px;color:#817d89}
+  #sampleBtn{min-height:0;padding:4px 0;border:0;background:transparent;color:var(--purple);font-size:14px;font-weight:500}
+  .inputCard .body,.settingsCard .body{padding:0 0 28px}
+
   .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-  .buttonRow{display:flex;gap:8px;flex-wrap:wrap}
-  button,.fileButton{
-    border:1px solid #d8e2db;background:#ffffff;color:#303832;border-radius:11px;
-    min-height:38px;padding:8px 12px;font-weight:650;font-size:13px;transition:.16s ease;
-  }
-  button:hover,.fileButton:hover{background:#f1f6f2;border-color:#b8cbbd}
-  button.primary{
-    background:linear-gradient(180deg,#8eb29a,#769b83);color:#ffffff;border-color:#75977f;
-    box-shadow:0 7px 24px rgba(100,139,113,.16)
-  }
-  button.primary:hover{filter:brightness(1.05)}
-  button.ghost{background:transparent}
-  button.danger{color:#aa6666}
-  button:disabled{opacity:.45;cursor:not-allowed}
+  .label,.control label{color:#4a4652;font-size:12px;font-weight:700}
   textarea.mainInput{
-    width:100%;min-height:260px;resize:vertical;border:1px solid #dde5df;border-radius:16px;
-    background:#ffffff;color:#202521;padding:16px;outline:none;line-height:1.78;
-    box-shadow:inset 0 1px 0 rgba(20,35,26,.015)
+    width:100%;min-height:260px;resize:vertical;padding:16px;
+    border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);outline:none;line-height:1.78;
   }
-  textarea:focus,input:focus,select:focus{border-color:#8fac98;box-shadow:0 0 0 3px rgba(117,165,139,.10);outline:none}
-  .metaRow{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;color:#7d8881}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:#9b7bc4;box-shadow:0 0 0 3px rgba(119,83,173,.10)}
+  .metaRow{display:flex;justify-content:space-between;gap:12px;margin-top:8px;color:#817d89;font-size:12px}
+  button,.fileButton{
+    min-height:38px;padding:8px 12px;border:1px solid #d8d4df;border-radius:10px;
+    background:#fff;color:var(--navy);font-size:13px;font-weight:650;
+  }
+  button.ghost{background:transparent}
+  button.danger{color:#a76060}
+  button.primary{min-height:48px;border-color:var(--navy);background:var(--navy);color:#fff;box-shadow:none}
+  button:disabled{opacity:.45;cursor:not-allowed}
+
   .segmented{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
   .segmented label{position:relative}
   .segmented input{position:absolute;opacity:0;pointer-events:none}
   .segmented span{
-    display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid #dce4de;border-radius:11px;
-    color:#5f6962;background:#ffffff;font-size:13px;font-weight:650;padding:8px;text-align:center
+    min-height:42px;padding:8px;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);border-radius:10px;background:#fff;color:#5e5968;font-size:13px;font-weight:650;text-align:center;
   }
-  .segmented input:checked+span{color:#395344;border-color:#95b09f;background:#edf4ef;box-shadow:inset 0 0 0 1px rgba(102,139,116,.06)}
-  .help{font-size:12px;line-height:1.65;color:#7d8881;margin-top:10px}
-  .wordHeader{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:18px 0 10px}
-  .counter{font-size:12px;color:#7e8a82}
+  .segmented input:checked+span{border-color:#b9a5d3;background:#f5f0fb;color:#68439d}
+  .help{margin-top:10px;color:#817d89;font-size:12px;line-height:1.65}
+  .wordHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0 10px}
+  .wordHeader h3{font-size:14px}
+  .counter,.value{color:#817d89;font-size:12px}
   .wordList{display:grid;gap:8px;max-height:420px;overflow:auto;padding-right:3px}
   .wordItem{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:7px;align-items:stretch}
-  .wordItem textarea{
-    min-height:46px;resize:vertical;border:1px solid #d9e2dc;border-radius:10px;background:#ffffff;color:#202521;
-    padding:10px 11px;line-height:1.45
-  }
-  select,input[type="text"]{
-    border:1px solid #d9e2dc;background:#ffffff;color:#202521;border-radius:10px;padding:0 10px;min-height:40px
-  }
-  .remove{padding:0;width:38px;min-height:38px;color:#b97777;background:#fbf8f8}
+  .wordItem textarea{min-height:46px;resize:vertical;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);line-height:1.45}
+  select,input[type="text"]{min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy)}
+  .remove{width:38px;min-height:38px;padding:0;color:#a76060;background:#fff}
   .controls{display:grid;gap:16px}
   .control{display:grid;gap:8px}
-  .controlTop{display:flex;justify-content:space-between;gap:10px;align-items:end}
-  .control label,.label{font-size:12px;font-weight:700;color:#4b554f}
-  .value{font-size:12px;color:#7e8a82}
+  .controlTop{display:flex;justify-content:space-between;align-items:end;gap:10px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .colorField{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center}
-  input[type="color"]{width:42px;height:40px;border:1px solid #d7e0da;border-radius:10px;padding:3px;background:#ffffff}
-  input[type="range"]{width:100%;accent-color:#8fc2a5}
+  input[type="color"]{width:42px;height:40px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  input[type="range"]{width:100%;accent-color:var(--purple)}
   .switchline{display:flex;align-items:flex-start;gap:10px}
-  .switchline input{margin-top:3px;accent-color:#8fc2a5}
-  .switchline b{display:block;font-size:13px;margin-bottom:3px}
-  .switchline small{display:block;color:#7d8881;line-height:1.55}
+  .switchline input{margin-top:3px;accent-color:var(--purple)}
+  .switchline b{display:block;margin-bottom:3px;color:#4a4652;font-size:13px}
+  .switchline small{display:block;color:#817d89;line-height:1.55}
   .fileButton{display:inline-flex;align-items:center;gap:8px;width:max-content}
   .fileButton input{display:none}
-  .canvasCard .body{padding-top:14px}
-  .previewShell{
-    display:grid;
-    place-items:center;
-    width:100%;
-    height:clamp(500px,68vh,760px);
-    border-radius:18px;
-    border:1px solid #dfe5e0;
-    background:
-      linear-gradient(45deg,rgba(80,100,88,.025) 25%,transparent 25%,transparent 75%,rgba(80,100,88,.025) 75%),
-      linear-gradient(45deg,rgba(80,100,88,.025) 25%,transparent 25%,transparent 75%,rgba(80,100,88,.025) 75%),
-      #f8faf8;
-    background-size:22px 22px;
-    background-position:0 0,11px 11px;
-    overflow:hidden;
-    padding:18px;
-  }
-  .previewInner{
-    width:100%;
-    height:100%;
-    display:grid;
-    place-items:center;
-    min-width:0;
-    min-height:0;
-  }
-  canvas{
-    display:block;
-    width:auto;
-    height:auto;
-    max-width:100%;
-    max-height:100%;
-    margin:0;
-    box-shadow:0 12px 32px rgba(31,46,37,.14);
-  }
-  .previewHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
-  .caption{font-size:12px;color:#7d8881;margin-top:9px;line-height:1.6}
-  .status{font-size:12px;color:#7d8881;text-align:right}
-  .empty{
-    min-height:420px;display:grid;place-items:center;text-align:center;color:#87928b;padding:28px
-  }
-  .empty .mark{font-size:28px;margin-bottom:10px;color:#819a89}
-  footer{padding:24px 3px 0;color:#879089;font-size:11px;line-height:1.7}
-  @media (max-width:980px){
-    .grid{
-      display:flex;
-      flex-direction:column;
-    }
-    .canvasCard{position:static}
-  }
+  footer{display:none}
+
   @media (min-width:981px){
+    .wrap{padding-left:24px;padding-right:24px}
+    .topbar{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
     .grid{
-      display:grid;
-      grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
-      grid-template-areas:
-        "input canvas"
-        "settings canvas";
+      display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+      grid-template-areas:"input canvas" "settings canvas";
+      gap:20px;align-items:start;padding-top:24px;
     }
-    .canvasCard{position:sticky;top:14px}
+    .inputCard{grid-area:input;order:initial;margin:0;padding:0 22px;border:1px solid var(--line);border-radius:16px}
+    .settingsCard{grid-area:settings;order:initial;margin:0;padding:0 22px;border:1px solid var(--line);border-radius:16px}
+    .canvasCard{grid-area:canvas;order:initial;position:sticky;top:14px}
+    .mosaicHead{padding-top:0}
   }
-  @media (max-width:620px){
-    .wrap{padding-left:12px;padding-right:12px}
-    .topbar{align-items:flex-start}.privacy{display:none}
-    .cardHead,.body{padding-left:16px;padding-right:16px}
-    .row2,.row3{grid-template-columns:1fr}
-    .wordItem{grid-template-columns:minmax(0,1fr) 84px 36px}
-    .segmented{grid-template-columns:1fr}
-    .previewShell{
-      height:clamp(360px,58vh,560px);
-      padding:10px;
-    }
-  }
-</style>
 
-<style id="original-ui-override">
-  :root{
-    --original-navy:#18162b;
-    --original-page:#f2f1f5;
-    --original-purple:#7753ad;
-    --original-muted:#777482;
-    --original-line:#dedbe5;
-  }
-  html{color-scheme:light;background:var(--original-page)}
-  body{
-    background:var(--original-page);
-    color:var(--original-navy);
-    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",sans-serif;
-  }
-  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 64px}
-  .topbar{
-    margin:0 -22px 0;
-    padding:25px 22px 23px;
-    min-height:132px;
-    background:var(--original-navy);
-    color:#fff;
-    align-items:center;
-    box-shadow:none;
-  }
-  .brand{gap:13px}
-  .sigil{
-    width:39px;height:39px;border:1px solid #827a9b;border-radius:0;
-    background:transparent;color:#fff;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;
-    font-size:24px;box-shadow:none;
-  }
-  .brand b{color:#fff;font-size:12px;letter-spacing:.25em;font-weight:700}
-  .brand span{margin-top:4px;color:#cbc6d6;font-size:11px;font-weight:500;letter-spacing:.02em}
-  .privacy{
-    position:relative;max-width:106px;padding:0 0 0 14px;border:0;border-radius:0;background:transparent;
-    color:#c9c4d3;font-size:10px;line-height:1.55;
-  }
-  .privacy::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#b69be7}
-
-  .grid{gap:0}
-  .card{border:0;border-radius:0;box-shadow:none;background:transparent;overflow:visible}
-  .canvasCard{background:var(--original-page)}
-  .canvasCard .body{padding:0}
-  .mosaicHead{padding:29px 0 18px;align-items:end}
-  .mosaicHead .eyebrow{margin-bottom:8px;color:var(--original-purple);font-size:10px;letter-spacing:.31em;font-weight:800}
-  .mosaicHead h2{font-size:16px;line-height:1.3;font-weight:800;letter-spacing:.02em;color:var(--original-navy)}
-  .buttonRow{gap:7px;align-items:center;flex-wrap:nowrap}
-  .mosaicHead button{min-height:35px;border-radius:8px;padding:7px 11px;font-size:12px;font-weight:500;white-space:nowrap;box-shadow:none}
-  .shuffleButton{background:#fff;border:1px solid #d8d4df;color:#0788fa}
-  .shuffleButton:hover{background:#fff;border-color:#cbc5d3}
-  .saveButton{background:var(--original-navy);border:1px solid var(--original-navy);color:#fff}
-  .saveButton:hover{background:var(--original-navy);border-color:var(--original-navy);filter:none}
-  .mosaicHead button:disabled{opacity:1;cursor:pointer}
-
-  .previewShell{
-    width:100%;height:auto;aspect-ratio:1/1;min-height:0;padding:12px;
-    display:grid;place-items:center;overflow:hidden;
-    border:1px solid #dedbe5;border-radius:13px;
-    background-color:#efedf3;
-    background-image:radial-gradient(circle,rgba(103,91,124,.19) .7px,transparent .8px);
-    background-size:9px 9px;
-    box-shadow:0 7px 18px rgba(52,45,70,.06);
-  }
-  .previewInner{width:100%;height:100%;min-width:0;min-height:0;display:grid;place-items:center;padding:0}
-  canvas{max-width:100%;max-height:100%;width:auto;height:auto;margin:0;box-shadow:none;background:#fff}
-  .empty{min-height:0;color:#777482;padding:20px}
-  .mosaicMeta{display:flex;justify-content:space-between;gap:12px;margin-top:18px;color:var(--original-muted);font-size:11px;line-height:1.4}
-  .status{font-size:11px;color:var(--original-muted);text-align:left}
-  .saveHint{white-space:nowrap;text-align:right}
-  .caption{margin-top:12px;padding:0 0 26px;color:var(--original-muted);font-size:11px;line-height:1.85;border:0}
-
-  .inputCard,.settingsCard{background:#fff;margin:0 -22px;padding:0 22px;border-top:1px solid #dfdde4}
-  .inputCard .cardHead,.settingsCard .cardHead{padding:27px 0 14px;align-items:center}
-  .inputCard h1,.settingsCard h2{color:var(--original-navy);font-size:20px;font-weight:800;letter-spacing:.01em}
-  .inputCard .eyebrow,.settingsCard .eyebrow{display:none}
-  .inputCard .sub,.settingsCard .sub{color:#817d89}
-  #sampleBtn{border:0;background:transparent;color:var(--original-purple);padding:4px 0;min-height:0;font-size:14px;font-weight:500}
-  .inputCard .body,.settingsCard .body{padding:0 0 28px}
-
-  button,.fileButton{border-color:#d8d4df;background:#fff;color:var(--original-navy)}
-  button.primary{background:var(--original-navy);border-color:var(--original-navy);color:#fff;box-shadow:none}
-  textarea.mainInput,select,input[type="text"],.wordItem textarea{border-color:#dedbe5;background:#fff;color:var(--original-navy)}
-  textarea:focus,input:focus,select:focus{border-color:#9b7bc4;box-shadow:0 0 0 3px rgba(119,83,173,.10)}
-  .segmented span{border-color:#dedbe5;background:#fff;color:#5e5968}
-  .segmented input:checked+span{border-color:#b9a5d3;background:#f5f0fb;color:#68439d}
-  input[type="range"],.switchline input{accent-color:var(--original-purple)}
-  .help,.metaRow,.counter,.value,.switchline small{color:#817d89}
-  .control label,.label,.switchline b{color:#4a4652}
-
-  @media (max-width:980px){
-    .wrap{padding:0 18px 52px}
-    .topbar{margin:0 -18px;padding:22px 18px 20px;min-height:132px}
-    .grid{display:flex;flex-direction:column}
-    .canvasCard{order:1;position:static;margin:0}
-    .inputCard{order:2;margin-left:-18px;margin-right:-18px;padding-left:18px;padding-right:18px}
-    .settingsCard{order:3;margin-left:-18px;margin-right:-18px;padding-left:18px;padding-right:18px}
-    .mosaicHead{padding-top:28px}
-  }
   @media (max-width:420px){
-    .topbar{min-height:132px}
-    .brand{gap:12px}
-    .sigil{width:39px;height:39px}
-    .privacy{max-width:104px;font-size:10px}
     .mosaicHead{gap:9px}
-    .mosaicHead h2{font-size:16px}
-    .mosaicHead button{padding:7px 10px;font-size:12px}
-    .previewShell{padding:12px;border-radius:13px}
-    .mosaicMeta{margin-top:18px;font-size:11px}
-    .status{font-size:11px}
-    .caption{font-size:11px;line-height:1.85;padding-bottom:25px}
+    .mosaicHead button{padding-left:10px;padding-right:10px}
+    .wordItem{grid-template-columns:minmax(0,1fr) 84px 36px}
+    .row2,.row3{grid-template-columns:1fr}
+    .segmented{grid-template-columns:1fr}
   }
 </style>
+
 </head>
 <body>
 <div class="wrap">
@@ -340,10 +199,8 @@
       </div>
       <div class="body mosaicBody">
         <div id="previewShell" class="previewShell">
-          <div class="previewInner" id="previewInner">
-            <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
-            <canvas id="canvas" hidden></canvas>
-          </div>
+          <div id="empty" class="empty"><div><div class="mark">✦</div><div>ことばを入れて<br>「モザイクを作る」を押してください。</div></div></div>
+          <canvas id="canvas" hidden></canvas>
         </div>
         <div class="mosaicMeta">
           <div id="status" class="status"></div>
@@ -845,7 +702,7 @@
     }
   }
 
-  function renderMosaic({reshuffle=false, focusPreview=true}={}){
+  function renderMosaic({reshuffle=false}={}){
     const words=state.words.filter(w=>w.text.trim()).slice(0,300);
     const totalChars=words.reduce((n,w)=>n+[...w.text].length,0);
     if(!words.length){
@@ -886,21 +743,12 @@
     const strongCount=words.filter(isStrong).length;
     els.status.textContent=`${words.length}件（強調${strongCount}件） · ${width} × ${height} px`;
     els.caption.textContent="ログの順序は配置のたびに変わります。ことばの省略や自動追加はしません。";
-
-    if (focusPreview && window.matchMedia("(max-width: 980px)").matches) {
-      requestAnimationFrame(() => {
-        document.querySelector(".canvasCard")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      });
-    }
   }
 
   els.sample.addEventListener("click",()=>{
     els.source.value=SAMPLE;
     rebuildWordsFromSource();
-    renderMosaic({reshuffle:true, focusPreview:true});
+    renderMosaic({reshuffle:true});
   });
   els.clear.addEventListener("click",()=>{els.source.value="";state.words=[];renderWordEditor();updateCounts();els.canvas.hidden=true;els.empty.hidden=false;els.status.textContent="";els.shuffle.disabled=true;els.save.disabled=true;});
   els.source.addEventListener("input",()=>{ if(els.source.value.length>15000) els.source.value=els.source.value.slice(0,15000); rebuildWordsFromSource(); });
@@ -945,10 +793,9 @@
 
   // Keep color text fields tidy.
   [els.textHex,els.accentHex,els.bgHex].forEach(el=>el.addEventListener("input",()=>{el.value=el.value.slice(0,7)}));
-
   els.source.value=SAMPLE;
   rebuildWordsFromSource();
-  requestAnimationFrame(()=>renderMosaic({reshuffle:false, focusPreview:false}));
+  renderMosaic({reshuffle:false});
 })();
 </script>
 </body>
