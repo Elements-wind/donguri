@@ -296,7 +296,7 @@
           <div class="control">
             <div class="controlTop"><label for="linebreak">元の改行を保つ</label><span class="value"><b id="linebreakVal">0</b>%</span></div>
             <input id="linebreak" type="range" min="0" max="100" value="0">
-            <p class="help">左：密に配置 ／ 右：元の改行を優先。100%では元の改行をそのまま使います。複数行をまとめる時は「段落ごと」か「台詞だけ」が便利です。</p>
+            <p class="help">左：空いている場所へ密に配置 ／ 右：元の並びと改行を優先。0%では行位置を無視して隙間へ詰め、100%では元の流れを優先します。</p>
           </div>
 
           <div class="switchline">
@@ -631,10 +631,10 @@
     const mode=els.orientation.value;
     const ctx=els.canvas.getContext("2d");
     const random=rng(randomSeed);
-    const items=[];
-    let x=pad,y=pad,rowH=0;
     const maxW=width-pad*2, maxH=height-pad*2;
 
+    // Build item sizes first.
+    const rawItems=[];
     for(let index=0; index<words.length; index++){
       const word=words[index];
       const strong=isStrong(word);
@@ -644,37 +644,155 @@
 
       const weight = els.mixBold.checked && (strong || random()<.16) ? 700 : 500;
       const lines=linesFor(word.text,preserve,random);
+
       let orient=mode;
       if(mode==="mixed"){
         const len=[...word.text.replace(/\s/g,"")].length;
         orient=(len<=12 && random()<.32) ? "vertical" : "horizontal";
       }
-      const m = orient==="vertical"
-        ? measureVertical(lines,size)
-        : measure(ctx,lines,size,weight);
-      let w=m.w;
-      let h=m.h;
 
-      const maxItemW=maxW*.9, maxItemH=maxH*.30;
-      const shrink=Math.min(1,maxItemW/Math.max(1,w),maxItemH/Math.max(1,h));
+      const measureItem = (s) => {
+        const mm = orient==="vertical"
+          ? measureVertical(lines,s)
+          : measure(ctx,lines,s,weight);
+        return {w:mm.w + gap*2, h:mm.h + gap*2};
+      };
+
+      let box=measureItem(size);
+      const maxItemW=maxW*.90, maxItemH=maxH*.30;
+      const shrink=Math.min(1,maxItemW/Math.max(1,box.w),maxItemH/Math.max(1,box.h));
       if(shrink<1){
         size*=shrink;
-        const mm = orient==="vertical"
-          ? measureVertical(lines,size)
-          : measure(ctx,lines,size,weight);
-        w=mm.w; h=mm.h;
+        box=measureItem(size);
       }
-      w+=gap*2;h+=gap*2;
 
-      if(x+w>width-pad && x>pad){
-        x=pad;y+=rowH+gap;rowH=0;
-      }
-      if(y+h>height-pad) return null;
-      items.push({word,strong,size,weight,lines,orient,x,y,w,h,accent:strong || (!strong && random()<.22)});
-      x+=w+gap;
-      rowH=Math.max(rowH,h);
+      rawItems.push({
+        word,strong,size,weight,lines,orient,
+        w:box.w,h:box.h,
+        accent:strong || (!strong && random()<.22),
+        originalIndex:index
+      });
     }
-    return {items,pad,usedH:y+rowH+pad};
+
+    // 100% = source-flow layout.
+    // 0% = dense packing into any available gap.
+    // Intermediate values progressively favor source order.
+    const density = 1 - preserve/100;
+
+    if(density <= 0.02){
+      // Preserve source flow closely.
+      const items=[];
+      let x=pad,y=pad,rowH=0;
+      for(const item of rawItems){
+        if(x+item.w>width-pad && x>pad){
+          x=pad;
+          y+=rowH+gap;
+          rowH=0;
+        }
+        if(y+item.h>height-pad) return null;
+        items.push({...item,x,y});
+        x+=item.w+gap;
+        rowH=Math.max(rowH,item.h);
+      }
+      return {items,pad,usedH:y+rowH+pad};
+    }
+
+    // Dense skyline/free-rectangle packing.
+    // Larger blocks are placed first at 0%, while intermediate slider values
+    // retain more of the original source order.
+    let packItems = rawItems.slice();
+    if(density > 0.75){
+      packItems.sort((a,b)=>
+        Math.max(b.w,b.h)-Math.max(a.w,a.h) ||
+        (b.w*b.h)-(a.w*a.h) ||
+        a.originalIndex-b.originalIndex
+      );
+    }else if(density > 0.35){
+      // Mildly favor big blocks but keep nearby source items together.
+      packItems.sort((a,b)=>{
+        const aScore=(a.w*a.h)*density - a.originalIndex*(1-density)*baseSize*baseSize;
+        const bScore=(b.w*b.h)*density - b.originalIndex*(1-density)*baseSize*baseSize;
+        return bScore-aScore;
+      });
+    }
+
+    const placed=[];
+    const candidates=[{x:pad,y:pad}];
+
+    function overlaps(x,y,w,h,p){
+      return !(x+w+gap <= p.x || p.x+p.w+gap <= x ||
+               y+h+gap <= p.y || p.y+p.h+gap <= y);
+    }
+
+    function validCandidate(x,y,w,h){
+      if(x < pad || y < pad || x+w > width-pad || y+h > height-pad) return false;
+      return !placed.some(p=>overlaps(x,y,w,h,p));
+    }
+
+    function addCandidate(x,y){
+      if(x>width-pad || y>height-pad) return;
+      // Snap near-identical candidate points together to keep the list small.
+      if(!candidates.some(c=>Math.abs(c.x-x)<1 && Math.abs(c.y-y)<1)){
+        candidates.push({x,y});
+      }
+    }
+
+    for(const item of packItems){
+      let best=null;
+      const sourceBias=(1-density)*0.35;
+
+      // Remove points that are already inside placed rectangles.
+      for(let i=candidates.length-1;i>=0;i--){
+        const c=candidates[i];
+        if(placed.some(p=>c.x>=p.x && c.x<p.x+p.w+gap && c.y>=p.y && c.y<p.y+p.h+gap)){
+          candidates.splice(i,1);
+        }
+      }
+
+      for(const c of candidates){
+        if(!validCandidate(c.x,c.y,item.w,item.h)) continue;
+
+        // Top-left dense score plus a tiny source-order bias.
+        const bottom=c.y+item.h;
+        const right=c.x+item.w;
+        const score =
+          bottom*100000 +
+          right +
+          sourceBias*item.originalIndex*baseSize;
+
+        if(!best || score<best.score){
+          best={x:c.x,y:c.y,score};
+        }
+      }
+
+      if(!best) return null;
+
+      const placedItem={...item,x:best.x,y:best.y};
+      placed.push(placedItem);
+
+      // New useful corners around this block.
+      addCandidate(best.x + item.w + gap, best.y);
+      addCandidate(best.x, best.y + item.h + gap);
+
+      // Also project corners against existing blocks; this fills cavities
+      // beneath short horizontal phrases next to tall vertical phrases.
+      for(const p of placed){
+        addCandidate(p.x + p.w + gap, best.y);
+        addCandidate(best.x, p.y + p.h + gap);
+      }
+
+      // Prefer upper-left candidates.
+      candidates.sort((a,b)=>a.y-b.y || a.x-b.x);
+    }
+
+    // Restore source item order for drawing only; positions stay packed.
+    placed.sort((a,b)=>a.originalIndex-b.originalIndex);
+
+    const usedH = placed.length
+      ? Math.max(...placed.map(it=>it.y+it.h)) + pad
+      : pad*2;
+
+    return {items:placed,pad,usedH};
   }
 
   function drawPlan(plan,width,height){
@@ -747,13 +865,6 @@
     }
     if(!best) best=buildPlan(7,ordered,width,height,state.seed+31);
     if(!best){ alert("配置できませんでした。ことばの数や長さを少し減らしてください。"); return; }
-
-    // Center vertically when there is spare room.
-    const spare=Math.max(0,height-best.usedH);
-    if(spare>8){
-      const shift=spare/2;
-      best.items.forEach(it=>it.y+=shift);
-    }
 
     drawPlan(best,width,height);
     state.built=true;
