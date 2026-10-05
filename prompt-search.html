@@ -136,6 +136,48 @@
   }
 
   /* result cards */
+  .pinned-section{
+    margin-bottom:16px;
+    padding:12px;
+    border:1px solid rgba(47,93,70,0.25);
+    border-radius:10px;
+    background:rgba(255,255,255,0.35);
+  }
+  .pinned-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .pinned-heading h2{font-size:13px; margin:0;}
+  #pinnedCount{font-size:12px; color:var(--accent); font-weight:600;}
+  #pinnedEmpty{font-size:12px; line-height:1.6; color:#63665f; margin:0;}
+  #pinnedList{display:flex; flex-direction:column; gap:8px;}
+  .result-heading{display:flex; align-items:flex-start; gap:8px;}
+  .result-heading .result-phrase{flex:1; min-width:0;}
+  .result-pin{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+    width:44px;
+    min-height:44px;
+    padding:8px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--panel);
+    color:#63665f;
+    cursor:pointer;
+  }
+  .result-pin[aria-pressed="true"]{
+    color:var(--accent);
+    background:var(--accent-soft);
+    border-color:var(--accent);
+  }
+  .result-pin:disabled{opacity:0.35; cursor:default;}
+  .result-pin:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .result-pin svg{width:20px; height:20px; pointer-events:none;}
   #resultsList{
     display:flex;
     flex-direction:column;
@@ -382,6 +424,14 @@
 
   <!-- 検索ビュー -->
   <div class="view active" id="view-search">
+    <section class="pinned-section" aria-labelledby="pinnedHeading">
+      <div class="pinned-heading">
+        <h2 id="pinnedHeading">ピン留め</h2>
+        <span id="pinnedCount" aria-live="polite">0 / 10</span>
+      </div>
+      <p id="pinnedEmpty">よく使うフレーズのピンを押すと、ここに表示されます（最大10個）。</p>
+      <div id="pinnedList"></div>
+    </section>
     <div class="search-box">
       <input type="text" id="queryInput" placeholder="例：躍動感を出したい、光を印象的に">
     </div>
@@ -445,13 +495,17 @@
   <button class="btn ghost" id="clearSelectedBtn" style="width:100%; margin-top:8px;">選択解除</button>
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (function(){
   const STORAGE_KEY = 'promptWordEntries_v1';
+  const MAX_PINS = 10;
 
   const queryInput = document.getElementById('queryInput');
+  const pinnedList = document.getElementById('pinnedList');
+  const pinnedCount = document.getElementById('pinnedCount');
+  const pinnedEmpty = document.getElementById('pinnedEmpty');
   const categoryChips = document.getElementById('categoryChips');
   const resultsList = document.getElementById('resultsList');
   const emptyState = document.getElementById('emptyState');
@@ -533,9 +587,40 @@
   function saveEntries(){
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      return true;
     }catch(e){
       showToast('保存に失敗しました（ストレージの空き容量を確認してください）');
+      return false;
     }
+  }
+
+  // Pin state belongs to each entry so existing JSON backups include it.
+  function normalizePins(){
+    let count = 0;
+    entries.forEach(entry=>{
+      entry.pinned = entry.pinned === true && count < MAX_PINS;
+      if(entry.pinned) count++;
+    });
+  }
+
+  function togglePin(entry, sourceList){
+    if(!entry.pinned && entries.filter(e=>e.pinned).length >= MAX_PINS){
+      showToast('ピン留めは最大10個です。先に1個外してください');
+      return;
+    }
+    const previous = entry.pinned;
+    entry.pinned = !previous;
+    if(!saveEntries()){
+      entry.pinned = previous;
+      return;
+    }
+    renderResults();
+    showToast(entry.pinned ? 'ピン留めしました' : 'ピン留めを外しました');
+    // Keep keyboard focus on the action after cards are rebuilt.
+    const card = Array.from(sourceList.children).find(c=>c.dataset.entryId === entry.id)
+      || Array.from(resultsList.children).find(c=>c.dataset.entryId === entry.id);
+    if(card) card.querySelector('.result-pin').focus({preventScroll:true});
+    else queryInput.focus({preventScroll:true});
   }
 
   function defaultSeed(){
@@ -9500,26 +9585,50 @@
     resultsList.innerHTML = '';
     emptyState.style.display = filtered.length ? 'none' : 'block';
 
-    filtered.forEach(entry=>{
-      const card = document.createElement('div');
-      card.className = 'result-card' + (selectedIds.has(entry.id) ? ' picked' : '');
-      card.innerHTML = `
-        <div class="result-check">${selectedIds.has(entry.id) ? '✓' : ''}</div>
-        <div class="result-body">
+    const pins = entries.filter(e=>e.pinned);
+    pinnedList.innerHTML = '';
+    pinnedCount.textContent = pins.length + ' / ' + MAX_PINS;
+    pinnedEmpty.style.display = pins.length ? 'none' : 'block';
+    pins.forEach(entry=>pinnedList.appendChild(createResultCard(entry, pinnedList, pins.length)));
+    filtered.forEach(entry=>resultsList.appendChild(createResultCard(entry, resultsList, pins.length)));
+  }
+
+  function createResultCard(entry, sourceList, pinCount){
+    const card = document.createElement('div');
+    card.className = 'result-card' + (selectedIds.has(entry.id) ? ' picked' : '');
+    card.dataset.entryId = entry.id;
+    card.innerHTML = `
+      <div class="result-check">${selectedIds.has(entry.id) ? '✓' : ''}</div>
+      <div class="result-body">
+        <div class="result-heading">
           <div class="result-phrase">${escapeHtml(entry.phrase)}</div>
-          ${entry.translation ? `<div class="result-translation">${escapeHtml(entry.translation)}</div>` : ''}
-          ${entry.description ? `<div class="result-description">${escapeHtml(entry.description)}</div>` : ''}
-          <div class="result-tags">${(entry.categories||[]).map(c=>`<span class="result-tag">${escapeHtml(c)}</span>`).join('')}</div>
+          <button type="button" class="result-pin" aria-pressed="${!!entry.pinned}"
+            aria-label="${entry.pinned ? 'ピン留めを外す' : 'ピン留めする'}：${escapeHtml(entry.phrase)}"
+            title="${entry.pinned ? 'ピン留めを外す' : pinCount >= MAX_PINS ? '最大10個です。先に1個外してください' : 'ピン留めする'}"
+            ${!entry.pinned && pinCount >= MAX_PINS ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="${entry.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M8 3h8M9 3v6l-3 4v2h12v-2l-3-4V3M12 15v6" />
+            </svg>
+          </button>
         </div>
-      `;
-      card.addEventListener('click', ()=>{
-        if(selectedIds.has(entry.id)) selectedIds.delete(entry.id);
-        else selectedIds.add(entry.id);
-        renderResults();
-        renderSelectedBar();
-      });
-      resultsList.appendChild(card);
+        ${entry.translation ? `<div class="result-translation">${escapeHtml(entry.translation)}</div>` : ''}
+        ${entry.description ? `<div class="result-description">${escapeHtml(entry.description)}</div>` : ''}
+        <div class="result-tags">${(entry.categories||[]).map(c=>`<span class="result-tag">${escapeHtml(c)}</span>`).join('')}</div>
+      </div>
+    `;
+    card.querySelector('.result-pin').addEventListener('click', event=>{
+      event.stopPropagation();
+      togglePin(entry, sourceList);
     });
+    card.addEventListener('click', event=>{
+      // A disabled pin must not accidentally select the surrounding card.
+      if(event.target.closest('.result-pin')) return;
+      if(selectedIds.has(entry.id)) selectedIds.delete(entry.id);
+      else selectedIds.add(entry.id);
+      renderResults();
+      renderSelectedBar();
+    });
+    return card;
   }
 
   function escapeHtml(s){
@@ -9682,10 +9791,15 @@
         description: e.description || '',
         categories: Array.isArray(e.categories) ? e.categories : [],
         keywords: e.keywords || '',
-        seeded: !!e.seeded
+        seeded: !!e.seeded,
+        pinned: e.pinned === true
       }));
+      const importedPinCount = entries.filter(e=>e.pinned).length;
+      normalizePins();
+      selectedIds.clear();
       saveEntries();
-      showToast('読み込みました');
+      renderSelectedBar();
+      showToast(importedPinCount > MAX_PINS ? '読み込みました（ピン留めは先頭10個を復元）' : '読み込みました');
       renderChips();
       renderResults();
       renderManageList();
@@ -9696,6 +9810,7 @@
 
   // ---------- init ----------
   loadEntries();
+  normalizePins();
   renderChips();
   renderResults();
   renderManageList();
