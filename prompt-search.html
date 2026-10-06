@@ -426,7 +426,7 @@
   <div class="view active" id="view-search">
     <section class="pinned-section" aria-labelledby="pinnedHeading">
       <div class="pinned-heading">
-        <h2 id="pinnedHeading">ピン留め</h2>
+        <h2 id="pinnedHeading" tabindex="-1">ピン留め</h2>
         <span id="pinnedCount" aria-live="polite">0 / 10</span>
       </div>
       <p id="pinnedEmpty">よく使うフレーズのピンを押すと、ここに表示されます（最大10個）。</p>
@@ -631,19 +631,65 @@
       showToast('ピン留めは最大10個です。先に1個外してください');
       return;
     }
+    const sourceCard = Array.from(sourceList.children).find(c=>c.dataset.entryId === entry.id);
+    const removingPinnedCard = sourceList === pinnedList && entry.pinned;
+    const anchor = removingPinnedCard
+      ? sourceCard?.nextElementSibling || sourceCard?.previousElementSibling || document.querySelector('.search-box')
+      : sourceCard;
+    const anchorTop = anchor?.getBoundingClientRect().top;
+    const restoreFocus = removingPinnedCard && sourceCard?.contains(document.activeElement);
     const previous = entry.pinned;
     entry.pinned = !previous;
     if(!saveEntries()){
       entry.pinned = previous;
       return;
     }
-    renderResults();
+    // Keep search cards in place: rebuilding them discards the browser's scroll anchor.
+    const pins = entries.filter(e=>e.pinned);
+    renderPinnedList(pins);
+    const byId = new Map(entries.map(e=>[e.id, e]));
+    [resultsList, pinnedList].forEach(list=>{
+      Array.from(list.children).forEach(card=>{
+        const item = byId.get(card.dataset.entryId);
+        if(item) updatePinButton(card, item, pins.length);
+      });
+    });
+    if(restoreFocus){
+      const focusTarget = anchor?.querySelector('.result-pin') || document.getElementById('pinnedHeading');
+      focusTarget.focus({preventScroll:true});
+    }
+    // Compensate only for movement still present after native scroll anchoring.
+    // Do this synchronously so an intermediate shifted frame is never painted.
+    if(anchor?.isConnected && Number.isFinite(anchorTop)){
+      const delta = anchor.getBoundingClientRect().top - anchorTop;
+      if(Math.abs(delta) > 0.5) window.scrollBy({top:delta, left:0, behavior:'instant'});
+    }
     showToast(entry.pinned ? 'ピン留めしました' : 'ピン留めを外しました');
-    // Keep keyboard focus on the action after cards are rebuilt.
-    const card = Array.from(sourceList.children).find(c=>c.dataset.entryId === entry.id)
-      || Array.from(resultsList.children).find(c=>c.dataset.entryId === entry.id);
-    if(card) card.querySelector('.result-pin').focus({preventScroll:true});
-    else queryInput.focus({preventScroll:true});
+  }
+
+  function updatePinButton(card, entry, pinCount){
+    const button = card.querySelector('.result-pin');
+    button.setAttribute('aria-pressed', String(!!entry.pinned));
+    button.setAttribute('aria-label', (entry.pinned ? 'ピン留めを外す' : 'ピン留めする') + '：' + entry.phrase);
+    button.title = entry.pinned ? 'ピン留めを外す' : pinCount >= MAX_PINS ? '最大10個です。先に1個外してください' : 'ピン留めする';
+    button.disabled = !entry.pinned && pinCount >= MAX_PINS;
+    button.querySelector('svg').setAttribute('fill', entry.pinned ? 'currentColor' : 'none');
+  }
+
+  function renderPinnedList(pins){
+    const ids = new Set(pins.map(e=>e.id));
+    Array.from(pinnedList.children).forEach(card=>{
+      if(!ids.has(card.dataset.entryId)) card.remove();
+    });
+    const cards = new Map(Array.from(pinnedList.children).map(card=>[card.dataset.entryId, card]));
+    pins.forEach((entry, index)=>{
+      const card = cards.get(entry.id) || createResultCard(entry, pinnedList, pins.length);
+      card.classList.toggle('picked', selectedIds.has(entry.id));
+      card.querySelector('.result-check').textContent = selectedIds.has(entry.id) ? '✓' : '';
+      if(pinnedList.children[index] !== card) pinnedList.insertBefore(card, pinnedList.children[index] || null);
+    });
+    pinnedCount.textContent = pins.length + ' / ' + MAX_PINS;
+    pinnedEmpty.style.display = pins.length ? 'none' : 'block';
   }
 
   function defaultSeed(){
