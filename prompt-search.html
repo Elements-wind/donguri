@@ -545,13 +545,35 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 28; // bump when the baseline entry set changes below
+  const SEED_VERSION = 33; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
+
+  // Keep all stored and imported wording aligned with the male character setting.
+  function masculineText(text){
+    const words = {her:'him', she:'he', hers:'his', herself:'himself', female:'male', girl:'man', girls:'men', woman:'man', women:'men', lady:'man', ladies:'men', feminine:'masculine', goddess:'god', princess:'prince', queen:'king'};
+    text = text.replace(/\bher\b(?=\s+(?:body|hair|face|eyes|dress|outline|silhouette|wings|hands|clothes|clothing|head|skin|voice|arms|legs|back|shoulders)\b)/gi, match=>match[0]==='H' ? 'His' : 'his');
+    text = text.replace(/\b(?:her|she|hers|herself|female|girl|girls|woman|women|lady|ladies|feminine|goddess|princess|queen)\b/gi, match=>{
+      const value = words[match.toLowerCase()];
+      return match[0]===match[0].toUpperCase() ? value[0].toUpperCase()+value.slice(1) : value;
+    });
+    const japanese = [['彼女','彼'],['女性','男性'],['少女','青年'],['女の子','男の子'],['女神','男神'],['女王','王'],['王女','王子']];
+    japanese.forEach(([from,to])=>{ text=text.split(from).join(to); });
+    return text;
+  }
+
+  function normalizeGenderEntries(){
+    entries.forEach(entry=>{
+      ['phrase','translation','description','keywords'].forEach(field=>{
+        if(typeof entry[field] === 'string') entry[field] = masculineText(entry[field]);
+      });
+    });
+  }
 
   function loadEntries(){
     let raw = null;
     try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){ /* ignore */ }
     entries = raw ? JSON.parse(raw) : [];
+    normalizeGenderEntries();
 
     let storedVersion = 0;
     try{ storedVersion = parseInt(localStorage.getItem(SEED_VERSION_KEY) || '0', 10); }catch(e){ /* ignore */ }
@@ -585,6 +607,7 @@
     }
   }
   function saveEntries(){
+    normalizeGenderEntries();
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
       return true;
@@ -9520,6 +9543,6953 @@
     "keywords": "遠距離 叶わぬ願い 故郷 郷愁 遠い目",
     "description": "遠くの対象へ視線を向け、目元や口元に恋しさや満たされない思いを滲ませる。遠い人や故郷を想う場面に使える。遠くを見ること自体は焦点のぼけを意味しないため、ぼんやりした眼差しを望む場合は追加指定する。",
     "seeded": false
+  },
+  {
+    "id": "winter_20261006_01",
+    "phrase": "snowy landscape",
+    "translation": "雪景色",
+    "categories": [
+      "背景",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪に覆われた風景を描く。山、森、街など、雪景色にしたい場所と組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_02",
+    "phrase": "winter atmosphere",
+    "translation": "冬の雰囲気",
+    "categories": [
+      "雰囲気",
+      "冬"
+    ],
+    "keywords": "雰囲気 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "冬らしい冷たさや静けさを画面全体に持たせる。積雪の有無や季節の光を添えると場面を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_03",
+    "phrase": "white winter air",
+    "translation": "白く霞む冬の空気感",
+    "categories": [
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "白い霞や淡い明暗で、冬の空気を白く柔らかく見せる。雪景色の余白や遠景の表現に使える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_04",
+    "phrase": "cold snowy air",
+    "translation": "雪の中の冷たい空気感",
+    "categories": [
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある場面に、ひんやりとした空気の印象を加える。寒色の光や白い息などと組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_05",
+    "phrase": "soft snow haze",
+    "translation": "雪による柔らかな霞",
+    "categories": [
+      "雰囲気",
+      "冬",
+      "雪",
+      "ソフトフォーカス"
+    ],
+    "keywords": "雰囲気 冬 雪 ソフトフォーカス 冬景色 寒い 寒さ 冷たい",
+    "description": "雪が空間に薄い霞を作り、遠景や輪郭を柔らかく見せる。雪粒を強調するより、奥行きや空気感を出したい場面に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_06",
+    "phrase": "frosty atmosphere",
+    "translation": "霜の冷たさを感じる雰囲気",
+    "categories": [
+      "雰囲気",
+      "冬",
+      "霜"
+    ],
+    "keywords": "雰囲気 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "霜がつくほど冷えた空気の印象を作る。実際に霜を描く場合は、髪、草木、窓など付着する対象も指定する。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_07",
+    "phrase": "quiet snow scene",
+    "translation": "静かな雪の情景",
+    "categories": [
+      "背景",
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある風景を静かで落ち着いた情景として描く。降雪中か積雪後か、人物の有無などを添える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_08",
+    "phrase": "snow-covered world",
+    "translation": "雪に覆われた世界",
+    "categories": [
+      "背景",
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "地面や建物、木々など広い範囲を雪で覆い、世界全体が白く染まった印象にする。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_09",
+    "phrase": "falling snow",
+    "translation": "降る雪",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "雪"
+    ],
+    "keywords": "エフェクト 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "空から雪が降る様子を描く。積もった雪だけでなく、空中の雪粒を加えたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_10",
+    "phrase": "soft falling snow",
+    "translation": "柔らかく舞い降りる雪",
+    "categories": [
+      "エフェクト",
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "エフェクト 雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪が柔らかく降る印象を作る。穏やかな動きや控えめな明暗で、場面を優しく見せたいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_11",
+    "phrase": "gentle snowfall",
+    "translation": "穏やかな降雪",
+    "categories": [
+      "エフェクト",
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "エフェクト 雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "激しさを抑えた穏やかな降雪を描く。静かな場面や、人物の表情を見せたい雪景色に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_12",
+    "phrase": "powder snow",
+    "translation": "粉雪",
+    "categories": [
+      "背景",
+      "エフェクト",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 エフェクト 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "細かく軽い雪の質感を描く。空中に舞う粉雪か、地面に積もったさらさらの雪かを添えると対象を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_13",
+    "phrase": "heavy snowfall",
+    "translation": "激しく降る雪",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "雪"
+    ],
+    "keywords": "エフェクト 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "大量の雪が降る様子を描く。風の強さや視界の悪さも表したい場合は、それぞれ追加指定する。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_14",
+    "phrase": "snowflakes drifting in the air",
+    "translation": "空中を漂う雪片",
+    "categories": [
+      "エフェクト",
+      "動き",
+      "冬",
+      "雪"
+    ],
+    "keywords": "エフェクト 動き 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪片が空気の流れに乗って漂う様子を描く。手前と奥で雪片の大きさを変える指定と組み合わせると奥行きを出せる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_15",
+    "phrase": "windblown snow",
+    "translation": "風に吹き流される雪",
+    "categories": [
+      "エフェクト",
+      "動き",
+      "冬",
+      "雪"
+    ],
+    "keywords": "エフェクト 動き 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪が風に押され、横や斜めへ流れる様子を描く。風向きや強さを添えると動きが伝わりやすい。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_16",
+    "phrase": "visible breath",
+    "translation": "目に見える吐息",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "吐息"
+    ],
+    "keywords": "エフェクト 冬 吐息 冬景色 寒い 寒さ 冷たい 白い息 呼吸 口元",
+    "description": "口元の吐息を、空気中に見える霧として描く。寒い場面で白い息を出したい場合は、寒さや息の色も添える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_17",
+    "phrase": "white breath in cold air",
+    "translation": "冷たい空気の中の白い吐息",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "吐息"
+    ],
+    "keywords": "エフェクト 冬 吐息 冬景色 寒い 寒さ 冷たい 白い息 呼吸 口元",
+    "description": "冷たい空気の中で、吐いた息が白く見える様子を描く。口元から広がる範囲や濃さを調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_18",
+    "phrase": "soft breath mist",
+    "translation": "柔らかな吐息の霧",
+    "categories": [
+      "エフェクト",
+      "雰囲気",
+      "吐息"
+    ],
+    "keywords": "エフェクト 雰囲気 吐息 白い息 呼吸 口元",
+    "description": "吐息が淡く柔らかな霧になって見える。顔を覆いすぎず、口元に繊細な空気の動きを添えたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_19",
+    "phrase": "warm breath turning white",
+    "translation": "白く変わる温かな吐息",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "吐息"
+    ],
+    "keywords": "エフェクト 冬 吐息 冬景色 寒い 寒さ 冷たい 白い息 呼吸 口元",
+    "description": "温かな吐息が冷たい空気に触れて白くなる様子を描く。口元の近くから白い霧が生じる表現に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_20",
+    "phrase": "breath fog near the mouth",
+    "translation": "口元にかかる吐息の霧",
+    "categories": [
+      "エフェクト",
+      "顔",
+      "冬",
+      "吐息"
+    ],
+    "keywords": "エフェクト 顔 冬 吐息 冬景色 寒い 寒さ 冷たい 白い息 呼吸 口元",
+    "description": "吐息の霧を口の近くに描く。顔全体を霞ませず、唇の周辺に白い息を見せたいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_21",
+    "phrase": "faint white exhale",
+    "translation": "かすかな白い吐息",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "吐息"
+    ],
+    "keywords": "エフェクト 冬 吐息 冬景色 寒い 寒さ 冷たい 白い息 呼吸 口元",
+    "description": "吐いた息を薄く控えめな白い霧として描く。小さな息や、静かな寒さを表す場面に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_22",
+    "phrase": "frost on the hair",
+    "translation": "髪についた霜",
+    "categories": [
+      "エフェクト",
+      "冬",
+      "霜"
+    ],
+    "keywords": "エフェクト 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "髪の表面や毛先に薄い霜を描く。髪色や毛束を残したい場合は、霜の量と付着する範囲を添える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_23",
+    "phrase": "frosted eyelashes",
+    "translation": "霜のついたまつげ",
+    "categories": [
+      "瞳",
+      "顔",
+      "冬",
+      "霜"
+    ],
+    "keywords": "瞳 顔 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "まつげに細かな霜が付着した様子を描く。目元の近景で、冷えた空気や繊細な白い粒を見せたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_24",
+    "phrase": "frost-covered clothing edges",
+    "translation": "霜に覆われた衣服の縁",
+    "categories": [
+      "服",
+      "冬",
+      "霜"
+    ],
+    "keywords": "服 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "袖口、襟、裾など衣服の縁に霜を描く。衣服全体ではなく、端の冷えた質感を強調する指定。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_25",
+    "phrase": "icy frost details",
+    "translation": "氷のような霜のディテール",
+    "categories": [
+      "画質",
+      "冬",
+      "霜"
+    ],
+    "keywords": "画質 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "霜の細かな氷の質感や反射を描き込む。付着する対象や、結晶を見せる距離を添えると表現を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_26",
+    "phrase": "delicate frost crystals",
+    "translation": "繊細な霜の結晶",
+    "categories": [
+      "画質",
+      "冬",
+      "霜"
+    ],
+    "keywords": "画質 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "小さく精細な霜の結晶を描く。大きな氷塊ではなく、表面に生じる細かな結晶を見せたい場面に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_27",
+    "phrase": "thin frost on the fabric",
+    "translation": "布地の表面の薄い霜",
+    "categories": [
+      "服",
+      "冬",
+      "霜"
+    ],
+    "keywords": "服 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "布地に薄く霜がついた質感を描く。織り目や元の布の色を残しつつ、冷えた表面を表す。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_28",
+    "phrase": "frosted window texture",
+    "translation": "霜のついた窓ガラスの質感",
+    "categories": [
+      "背景",
+      "画質",
+      "冬",
+      "霜"
+    ],
+    "keywords": "背景 画質 冬 霜 冬景色 寒い 寒さ 冷たい 氷 結晶 凍る",
+    "description": "窓ガラスに付着した霜の模様や白く曇った表面を描く。霜の厚さや、窓の向こうが見える範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_29",
+    "phrase": "cold blue shadows",
+    "translation": "冷たい青の影",
+    "categories": [
+      "色彩",
+      "ライティング",
+      "冬"
+    ],
+    "keywords": "色彩 ライティング 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "影を冷たい青系の色にする。雪の白さとの対比や、冬景色の冷えた印象を出したいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_30",
+    "phrase": "pale blue winter light",
+    "translation": "淡い青の冬の光",
+    "categories": [
+      "ライティング",
+      "光",
+      "冬"
+    ],
+    "keywords": "ライティング 光 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "冬の光を淡い青色で描く。強い青ではなく、柔らかな寒色の照明や雪景色の光に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_31",
+    "phrase": "white and soft blue palette",
+    "translation": "白と柔らかな青の配色",
+    "categories": [
+      "色彩",
+      "冬"
+    ],
+    "keywords": "色彩 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "画面全体を白と柔らかな青を中心とした配色に整える。雪、空、影などへ色を振り分ける指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_32",
+    "phrase": "icy blue ambient light",
+    "translation": "氷を思わせる青い環境光",
+    "categories": [
+      "ライティング",
+      "光",
+      "冬"
+    ],
+    "keywords": "ライティング 光 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "周囲から回り込む光を、氷のように冷たい青色にする。特定の光源だけでなく、場面全体の光の色を揃えたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_33",
+    "phrase": "cool blue-gray atmosphere",
+    "translation": "冷たい青灰色の雰囲気",
+    "categories": [
+      "色彩",
+      "雰囲気",
+      "冬"
+    ],
+    "keywords": "色彩 雰囲気 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "青灰色の落ち着いた色調で、冷たく静かな空気感を作る。曇り空や薄暗い冬景色にも使える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_34",
+    "phrase": "snowy white and pale blue tones",
+    "translation": "雪の白と淡い青の色調",
+    "categories": [
+      "色彩",
+      "冬",
+      "雪"
+    ],
+    "keywords": "色彩 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪の白を主役に、淡い青を光や影へ加える。明るい雪景色を寒色でまとめたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_35",
+    "phrase": "large white negative space",
+    "translation": "広い白い余白",
+    "categories": [
+      "構図",
+      "冬",
+      "雪"
+    ],
+    "keywords": "構図 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "描き込みを抑えた広い白い余白を画面に取る。雪原や白い背景を使い、人物の小ささや静けさを見せる構図に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_36",
+    "phrase": "minimal snowy landscape",
+    "translation": "要素を絞った雪景色",
+    "categories": [
+      "背景",
+      "構図",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 構図 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪景色の要素や描き込みを少なくし、簡潔な構成にする。雪面、空、少数の木など、残したい要素を添える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_37",
+    "phrase": "lonely figure in a vast snowfield",
+    "translation": "広大な雪原に佇む孤独な人物",
+    "categories": [
+      "背景",
+      "構図",
+      "雰囲気",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 構図 雰囲気 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "広い雪原に一人の人物を配置し、孤独な印象を作る。人物の大きさや立ち位置を添えると、空間との対比を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_38",
+    "phrase": "quiet empty winter scene",
+    "translation": "静かで人けのない冬の情景",
+    "categories": [
+      "背景",
+      "雰囲気",
+      "冬"
+    ],
+    "keywords": "背景 雰囲気 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "人けや動きを抑えた、静かな冬の風景を描く。空の情景に残す建物や草木などを指定すると背景を整えやすい。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_39",
+    "phrase": "wide snowy plain",
+    "translation": "広く開けた雪原",
+    "categories": [
+      "背景",
+      "構図",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 構図 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪に覆われた平原を広く描く。地平線の位置や遠景の有無を添えると、雪原の広がりを見せられる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_40",
+    "phrase": "small character against a vast white background",
+    "translation": "広大な白い背景の中の小さな人物",
+    "categories": [
+      "構図",
+      "冬",
+      "雪"
+    ],
+    "keywords": "構図 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "白い背景を大きく取り、人物を画面内で小さく配置する。人物の体格ではなく、背景に対する画面上の大きさを指定する表現。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_41",
+    "phrase": "footprints in the snow",
+    "translation": "雪の上の足跡",
+    "categories": [
+      "背景",
+      "冬",
+      "雪",
+      "足跡"
+    ],
+    "keywords": "背景 冬 雪 足跡 冬景色 寒い 寒さ 冷たい",
+    "description": "雪面に足跡を描く。人物や動物など、足跡の主と形を添えると場面に合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_42",
+    "phrase": "a trail of footprints",
+    "translation": "連なる足跡",
+    "categories": [
+      "背景",
+      "構図",
+      "足跡"
+    ],
+    "keywords": "背景 構図 足跡",
+    "description": "移動の経路に沿って足跡が続く様子を描く。雪や砂などの地面と、足跡の向かう方向を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_43",
+    "phrase": "lonely footprints across the snowfield",
+    "translation": "雪原を横切る寂しげな足跡",
+    "categories": [
+      "背景",
+      "構図",
+      "雰囲気",
+      "冬",
+      "雪",
+      "足跡"
+    ],
+    "keywords": "背景 構図 雰囲気 冬 雪 足跡 冬景色 寒い 寒さ 冷たい",
+    "description": "広い雪原に足跡だけが続くような、寂しさのある情景を描く。足跡以外の要素を抑えると印象を強められる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_44",
+    "phrase": "footprints fading in the falling snow",
+    "translation": "降る雪に埋もれて薄れていく足跡",
+    "categories": [
+      "背景",
+      "雰囲気",
+      "冬",
+      "雪",
+      "足跡"
+    ],
+    "keywords": "背景 雰囲気 冬 雪 足跡 冬景色 寒い 寒さ 冷たい",
+    "description": "降り積もる雪で足跡の輪郭が薄れていく様子を描く。はっきりした足跡から、雪に埋もれた跡へ変化をつけられる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_45",
+    "phrase": "single line of footprints in fresh snow",
+    "translation": "新雪に続く一筋の足跡",
+    "categories": [
+      "背景",
+      "構図",
+      "冬",
+      "雪",
+      "足跡"
+    ],
+    "keywords": "背景 構図 冬 雪 足跡 冬景色 寒い 寒さ 冷たい",
+    "description": "まだ踏まれていない雪面に、一筋の足跡が続く様子を描く。周囲の雪を乱さず、移動した道筋を見せる構図に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_46",
+    "phrase": "snow-covered path with footprints",
+    "translation": "足跡の残る雪道",
+    "categories": [
+      "背景",
+      "冬",
+      "雪",
+      "足跡"
+    ],
+    "keywords": "背景 冬 雪 足跡 冬景色 寒い 寒さ 冷たい",
+    "description": "雪に覆われた道に足跡を残す。道の形や、足跡が続く先の建物・森などを添えると場面を作りやすい。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_47",
+    "phrase": "winter fantasy atmosphere",
+    "translation": "冬の幻想的な雰囲気",
+    "categories": [
+      "雰囲気",
+      "冬",
+      "ファンタジー"
+    ],
+    "keywords": "雰囲気 冬 ファンタジー 冬景色 寒い 寒さ 冷たい",
+    "description": "冬景色に幻想的な印象を加える。魔法の光や不思議な氷など、幻想性を担う要素を添えると具体化できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_48",
+    "phrase": "magical snowy forest",
+    "translation": "魔法を感じる雪の森",
+    "categories": [
+      "背景",
+      "冬",
+      "雪",
+      "ファンタジー"
+    ],
+    "keywords": "背景 冬 雪 ファンタジー 冬景色 寒い 寒さ 冷たい",
+    "description": "雪に覆われた森を魔法的な風景として描く。発光する植物や魔力の光などを追加すると、普通の雪の森との差を示せる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_49",
+    "phrase": "glowing ice crystals",
+    "translation": "光る氷の結晶",
+    "categories": [
+      "光",
+      "エフェクト",
+      "冬",
+      "ファンタジー"
+    ],
+    "keywords": "光 エフェクト 冬 ファンタジー 冬景色 寒い 寒さ 冷たい",
+    "description": "氷の結晶が光を放つ様子を描く。発光色や結晶の大きさ、周囲を照らす強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_50",
+    "phrase": "pale blue magical light",
+    "translation": "淡い青の魔法の光",
+    "categories": [
+      "光",
+      "ライティング",
+      "ファンタジー"
+    ],
+    "keywords": "光 ライティング ファンタジー",
+    "description": "魔法による光を淡い青で描く。光源、魔法の粒子、結界など、光を持たせる対象と組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_51",
+    "phrase": "snow spirit atmosphere",
+    "translation": "雪の精霊を思わせる雰囲気",
+    "categories": [
+      "雰囲気",
+      "冬",
+      "雪",
+      "ファンタジー"
+    ],
+    "keywords": "雰囲気 冬 雪 ファンタジー 冬景色 寒い 寒さ 冷たい",
+    "description": "雪の精霊を連想させる静けさや不思議な空気感を作る。精霊そのものを登場させたい場合は、姿や位置も別に指定する。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_52",
+    "phrase": "frozen fantasy landscape",
+    "translation": "凍りついた幻想世界の風景",
+    "categories": [
+      "背景",
+      "冬",
+      "ファンタジー"
+    ],
+    "keywords": "背景 冬 ファンタジー 冬景色 寒い 寒さ 冷たい",
+    "description": "地形や建物、草木などが凍りついた幻想的な風景を描く。氷に覆う範囲や、雪との組み合わせを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_53",
+    "phrase": "moonlit snowfield",
+    "translation": "月明かりに照らされた雪原",
+    "categories": [
+      "背景",
+      "ライティング",
+      "夜",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 ライティング 夜 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "夜の雪原を月明かりで照らす。雪面の明るさや影の色を添えると、夜の暗さと雪の白さを調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_54",
+    "phrase": "Japanese shrine in the snow",
+    "translation": "雪景色の中の神社",
+    "categories": [
+      "背景",
+      "和風",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 和風 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある日本の神社を描く。社殿、参道、鳥居など、画面に入れたい要素を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_55",
+    "phrase": "kimono man in a snowy scene",
+    "translation": "雪景色の中の着物姿の青年",
+    "categories": [
+      "服",
+      "和風",
+      "冬",
+      "雪"
+    ],
+    "keywords": "服 和風 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある場面に着物姿の青年を描く。着物の色柄や防寒の装い、人物の表情・姿勢を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_56",
+    "phrase": "red umbrella in falling snow",
+    "translation": "降る雪の中の赤い傘",
+    "categories": [
+      "色彩",
+      "和風",
+      "冬",
+      "雪"
+    ],
+    "keywords": "色彩 和風 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "降雪の中に赤い傘を配置し、白い雪との色の対比を作る。和傘にしたい場合は、傘の種類も明示する。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_57",
+    "phrase": "snow-covered torii gate",
+    "translation": "雪をかぶった鳥居",
+    "categories": [
+      "背景",
+      "和風",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 和風 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "鳥居の上部などに雪が積もった様子を描く。鳥居の色や、参道・森など周囲の景色も指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_58",
+    "phrase": "quiet Japanese winter garden",
+    "translation": "静かな冬の日本庭園",
+    "categories": [
+      "背景",
+      "雰囲気",
+      "和風",
+      "冬"
+    ],
+    "keywords": "背景 雰囲気 和風 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "日本庭園を静かな冬の情景として描く。積雪や池、石、植栽など、残したい庭の要素を添える。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_59",
+    "phrase": "snowy stone lanterns",
+    "translation": "雪をかぶった石灯籠",
+    "categories": [
+      "背景",
+      "和風",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 和風 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "石灯籠の傘や上部に雪が積もった様子を描く。灯籠に明かりをともすかどうかは別に指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_60",
+    "phrase": "traditional winter atmosphere",
+    "translation": "伝統的な冬の雰囲気",
+    "categories": [
+      "雰囲気",
+      "和風",
+      "冬"
+    ],
+    "keywords": "雰囲気 和風 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "伝統的な建築や装いを使った冬の情景を作る。日本の場面なら神社、庭園、和服などと組み合わせ、文化や場所を具体化する。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_61",
+    "phrase": "soft diffused winter light",
+    "translation": "柔らかく拡散した冬の光",
+    "categories": [
+      "ライティング",
+      "光",
+      "冬"
+    ],
+    "keywords": "ライティング 光 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "冬の光を柔らかく拡散させ、強い影や明暗差を抑える。曇り空や雪に包まれた穏やかな場面に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_62",
+    "phrase": "gentle snowy lighting",
+    "translation": "雪景色の穏やかな光",
+    "categories": [
+      "ライティング",
+      "光",
+      "冬",
+      "雪"
+    ],
+    "keywords": "ライティング 光 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある場面を穏やかな光で照らす。強いぎらつきを抑え、雪面や人物を柔らかく見せたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_63",
+    "phrase": "muted winter sunlight",
+    "translation": "控えめな冬の日差し",
+    "categories": [
+      "ライティング",
+      "光",
+      "冬"
+    ],
+    "keywords": "ライティング 光 冬 冬景色 寒い 寒さ 冷たい",
+    "description": "冬の日差しを弱く落ち着いた印象にする。日光の存在を残しながら、強い輝きやまぶしさを抑えたい場面に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_64",
+    "phrase": "moonlight on snow",
+    "translation": "雪面に差す月明かり",
+    "categories": [
+      "ライティング",
+      "光",
+      "夜",
+      "冬",
+      "雪"
+    ],
+    "keywords": "ライティング 光 夜 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪面が月明かりを受ける様子を描く。照らされた部分と影を使い、夜の雪の質感を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_65",
+    "phrase": "warm window light in the snow",
+    "translation": "雪景色の中の窓から漏れる暖かな光",
+    "categories": [
+      "背景",
+      "ライティング",
+      "光",
+      "冬",
+      "雪"
+    ],
+    "keywords": "背景 ライティング 光 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある景色に、窓から漏れる暖色の光を描く。屋外の寒色と室内の暖かな光を対比させる表現に向く。",
+    "seeded": true
+  },
+  {
+    "id": "winter_20261006_66",
+    "phrase": "small lantern glow in a snowy scene",
+    "translation": "雪景色の中の小さなランタンの灯り",
+    "categories": [
+      "ライティング",
+      "光",
+      "冬",
+      "雪"
+    ],
+    "keywords": "ライティング 光 冬 雪 冬景色 寒い 寒さ 冷たい",
+    "description": "雪のある場面に、小さなランタンの光を添える。光の色や照らす範囲を控えめに指定すると、静かな雪景色の中で灯りを見せられる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_01",
+    "phrase": "foreground, midground, background composition",
+    "translation": "前景・中景・背景を分けた構図",
+    "categories": [
+      "構図",
+      "背景"
+    ],
+    "keywords": "構図 背景 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "手前、中間、奥の三つの距離に要素を配置して構図を組む。各層に置くものを指定すると、画面の奥行きを作りやすい。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_02",
+    "phrase": "layered depth composition",
+    "translation": "重なりで奥行きを出す構図",
+    "categories": [
+      "構図",
+      "背景"
+    ],
+    "keywords": "構図 背景 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "異なる距離の要素を重ね、奥行きを感じる構図にする。近いものと遠いものの大きさや重なり方を添える。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_03",
+    "phrase": "clear foreground elements",
+    "translation": "前景の要素を明確に描く",
+    "categories": [
+      "構図",
+      "背景"
+    ],
+    "keywords": "構図 背景 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "画面手前の要素を識別しやすく描く。前景に置く葉、岩、柱などを指定し、主役との重なりを調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_04",
+    "phrase": "character in the midground",
+    "translation": "中景に配置したキャラクター",
+    "categories": [
+      "構図",
+      "背景"
+    ],
+    "keywords": "構図 背景 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "人物を手前と遠景の間に置く。前景や背景の要素と組み合わせて、人物のいる距離を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_05",
+    "phrase": "distant background scenery",
+    "translation": "遠くに広がる背景の風景",
+    "categories": [
+      "背景",
+      "構図"
+    ],
+    "keywords": "背景 構図 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "人物や手前の要素より奥に、遠くの景色を描く。山、街並み、空など、遠景に入れる対象を添える。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_06",
+    "phrase": "depth through layered elements",
+    "translation": "要素の重なりによる奥行き",
+    "categories": [
+      "構図",
+      "背景"
+    ],
+    "keywords": "構図 背景 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "複数の要素を距離ごとに重ねて奥行きを表す。輪郭の重なりや大きさの差、遠景の明暗差を活かせる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_08",
+    "phrase": "close-up portrait composition",
+    "translation": "顔を大きく捉えたポートレート構図",
+    "categories": [
+      "構図",
+      "カメラ",
+      "顔"
+    ],
+    "keywords": "構図 カメラ 顔 配置 レイアウト 画面構成",
+    "description": "人物の顔を大きく入れた近景の構図。目元や表情を主役にし、肩や髪をどこまで含めるか指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_09",
+    "phrase": "full-body character composition",
+    "translation": "キャラクターの全身を入れた構図",
+    "categories": [
+      "構図",
+      "カメラ"
+    ],
+    "keywords": "構図 カメラ 配置 レイアウト 画面構成",
+    "description": "人物の頭から足先までを画面に入れる。靴や足元を切らず、姿勢や衣装全体を見せたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_10",
+    "phrase": "wide banner composition",
+    "translation": "横長バナー向けの構図",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "横に広い画面を活かして要素を配置する。人物を置く側や余白を指定でき、実際の縦横比は出力設定にも合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_11",
+    "phrase": "silhouette composition",
+    "translation": "シルエットを活かした構図",
+    "categories": [
+      "構図",
+      "シルエット"
+    ],
+    "keywords": "構図 シルエット 配置 レイアウト 画面構成",
+    "description": "被写体の外形を中心に構図を作る。背景との明暗差や重なりを整理し、姿勢や形が読み取れるようにする。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_12",
+    "phrase": "low-angle composition",
+    "translation": "見上げる構図",
+    "categories": [
+      "構図",
+      "カメラ"
+    ],
+    "keywords": "構図 カメラ 配置 レイアウト 画面構成",
+    "description": "低い位置から被写体を見上げる。人物の存在感や高さを強調でき、見上げる角度を添えると誇張の強さを調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_13",
+    "phrase": "high-angle composition",
+    "translation": "見下ろす構図",
+    "categories": [
+      "構図",
+      "カメラ"
+    ],
+    "keywords": "構図 カメラ 配置 レイアウト 画面構成",
+    "description": "高い位置から被写体を見下ろす。周囲の地面や人物の配置を見せる用途に使え、真上からの構図にしたい場合は別に明示する。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_14",
+    "phrase": "centered symmetrical composition",
+    "translation": "中央配置の左右対称構図",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "主役を画面中央に置き、左右の形や配置を対称に整える。建築や背景の要素を使い、安定感のある構図を作れる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_15",
+    "phrase": "rule of thirds composition",
+    "translation": "三分割法の構図",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "画面を縦横それぞれ三分割し、分割線や交点の近くに主役を配置する。人物や地平線を置く位置を具体的に添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_16",
+    "phrase": "leading lines composition",
+    "translation": "視線誘導の線を活かした構図",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "道、建築の線、光の筋などを使って注目点へ視線を導く。線が向かう対象と方向を指定すると構図を組みやすい。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_17",
+    "phrase": "small figure in a vast landscape",
+    "translation": "広大な風景の中の小さな人物",
+    "categories": [
+      "構図",
+      "背景"
+    ],
+    "keywords": "構図 背景 配置 レイアウト 画面構成",
+    "description": "風景を大きく取り、人物を画面内で小さく描く。身体を小柄にする指定ではなく、風景に対する人物の占有率を抑える表現。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_19",
+    "phrase": "character placed on the right third",
+    "translation": "画面右側の三分割線に配置したキャラクター",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "画面を縦に三分割したときの右側の線付近に人物を置く。右端に寄せきるのではなく、三分割法の配置を指定する。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_20",
+    "phrase": "face near the upper-right intersection",
+    "translation": "顔を右上の交点付近に配置",
+    "categories": [
+      "構図",
+      "顔"
+    ],
+    "keywords": "構図 顔 配置 レイアウト 画面構成",
+    "description": "三分割法の右側の縦線と上側の横線が交わる位置付近に顔を置く。顔を画面内のどこへ配置するかを具体化する指定。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_21",
+    "phrase": "main subject slightly off-center",
+    "translation": "主役を中央から少しずらす",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "主役を画面の中心からわずかに外して配置する。ずらす方向や空ける余白を添えると、自然な非対称の構図にできる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_22",
+    "phrase": "balanced asymmetrical composition",
+    "translation": "バランスの取れた非対称構図",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "左右を同じ形にせず、主役、背景、余白などの重みを釣り合わせる。片側へ人物を置き、反対側に景色や光を配する構図にも使える。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_23",
+    "phrase": "negative space on the opposite side",
+    "translation": "主役と反対側に余白を取る",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成 余白",
+    "description": "人物などを寄せた側とは反対側に、描き込みの少ない空間を残す。視線や動きの向かう側を空けたい場合は、その方向も指定する。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_24",
+    "phrase": "off-center character composition",
+    "translation": "キャラクターを中央から外した構図",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "人物を画面中央から外して配置する。左右どちらへ置くか、背景と余白をどれだけ見せるかを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_25",
+    "phrase": "clear main subject",
+    "translation": "主役を明確にする",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "画面の主役がすぐ分かるように、配置や明暗、描き込みを整理する。何を主役にするかを明示すると意図を伝えやすい。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_26",
+    "phrase": "one clear focal point",
+    "translation": "明確な注目点を一つに絞る",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "最初に視線を集める場所を一つに絞る。ここでの焦点は構図上の注目点を指し、カメラのピントとは別に指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_27",
+    "phrase": "main focus on the character's face",
+    "translation": "キャラクターの顔を主な注目点にする",
+    "categories": [
+      "構図",
+      "視線誘導",
+      "顔"
+    ],
+    "keywords": "構図 視線誘導 顔 配置 レイアウト 画面構成",
+    "description": "顔へ最も強く注意が向くように構図を整える。周囲の装飾や明暗を調整して表情を引き立てる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_28",
+    "phrase": "main focus on the eyes",
+    "translation": "瞳を主な注目点にする",
+    "categories": [
+      "構図",
+      "視線誘導",
+      "瞳"
+    ],
+    "keywords": "構図 視線誘導 瞳 配置 レイアウト 画面構成",
+    "description": "瞳を画面の主な注目点にする。目元の光や描き込みを活かし、周囲の情報量を抑える指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_29",
+    "phrase": "main focus on the weapon",
+    "translation": "武器を主な注目点にする",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "武器の形や装飾へ視線が集まる構図にする。人物の持ち方、武器の向き、背景との対比を添えると見せ場を作れる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_30",
+    "phrase": "main focus on the sky",
+    "translation": "空を主な注目点にする",
+    "categories": [
+      "構図",
+      "視線誘導",
+      "背景"
+    ],
+    "keywords": "構図 視線誘導 背景 配置 レイアウト 画面構成",
+    "description": "空を画面の主な見せ場にする。空の占める面積や雲、光、星などを指定し、地上の要素との比重を調整する。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_31",
+    "phrase": "clear visual priority",
+    "translation": "視覚的な優先順位を明確にする",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "主役、補助要素、背景の順に見る場所が伝わるよう、明暗や大きさ、描き込みを整理する。目立たせる対象の順序を添えると具体化できる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_32",
+    "phrase": "simple focal structure",
+    "translation": "注目点を整理したシンプルな構成",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "注目点の数や関係を整理し、視線の行き先が分かりやすい構成にする。主役を支える補助要素も控えめに配置できる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_33",
+    "phrase": "leading lines toward the character",
+    "translation": "キャラクターへ向かう視線誘導の線",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "道や柱、枝などの線が人物へ向かうよう配置する。人物に視線を集めるための方向性を作る。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_34",
+    "phrase": "visual flow toward the face",
+    "translation": "顔へ向かう視線の流れ",
+    "categories": [
+      "構図",
+      "視線誘導",
+      "顔"
+    ],
+    "keywords": "構図 視線誘導 顔 配置 レイアウト 画面構成",
+    "description": "画面内の形や光、配置によって顔へ視線が流れるようにする。周囲の要素を顔の見せ場へつなぐ指定。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_35",
+    "phrase": "light beams guiding the eye to the character",
+    "translation": "キャラクターへ視線を導く光の筋",
+    "categories": [
+      "構図",
+      "視線誘導",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "構図 視線誘導 ライティング 光 配置 レイアウト 画面構成",
+    "description": "光の筋を人物へ向け、見る側の視線を導く。光源の位置や筋の角度を添えると、人物を引き立てる配置にできる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_36",
+    "phrase": "weapon as a leading line",
+    "translation": "武器を視線誘導の線として使う",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "剣や槍などの長い形を使い、注目点へ視線を導く。武器の向きと、視線を集めたい対象を指定する。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_37",
+    "phrase": "gaze leading the viewer's eye",
+    "translation": "人物の視線で見る側の目を導く",
+    "categories": [
+      "構図",
+      "視線誘導",
+      "瞳"
+    ],
+    "keywords": "構図 視線誘導 瞳 配置 レイアウト 画面構成",
+    "description": "人物が見つめる方向や対象を通じて、見る側の視線を誘導する。人物の目線の先に見せたいものを配置する表現。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_38",
+    "phrase": "composition guiding the viewer's eye to the focal point",
+    "translation": "注目点へ見る側の視線を導く構図",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "線、明暗、色、要素の配置を使って、構図上の注目点へ視線を集める。注目点を顔、手、物などで明示すると効果的。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_39",
+    "phrase": "simple background",
+    "translation": "シンプルな背景",
+    "categories": [
+      "背景",
+      "構図"
+    ],
+    "keywords": "背景 構図 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "背景の形や要素を簡潔にする。無地に限らず、少ない情報で場所を伝えつつ主役を引き立てたいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_40",
+    "phrase": "not cluttered",
+    "translation": "ごちゃつかない画面",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "要素が密集しすぎないように、配置や重なりを整理する。主役の周囲の余白や、背景の情報量を調整する指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_41",
+    "phrase": "few props",
+    "translation": "小物を少なくする",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "画面に入れる小物の数を抑える。必要な小物だけを具体的に挙げると、場面を保ちながら情報量を減らせる。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_43",
+    "phrase": "decorations not covering the face",
+    "translation": "装飾で顔を隠さない",
+    "categories": [
+      "構図",
+      "顔",
+      "デザイン性"
+    ],
+    "keywords": "構図 顔 デザイン性 配置 レイアウト 画面構成",
+    "description": "飾りや周囲の装飾が顔にかからないよう配置する。衣装や背景の華やかさを残しながら、目鼻口と表情を見せたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_44",
+    "phrase": "effects kept subtle",
+    "translation": "エフェクトを控えめにする",
+    "categories": [
+      "エフェクト",
+      "構図"
+    ],
+    "keywords": "エフェクト 構図 配置 レイアウト 画面構成",
+    "description": "光、粒子、霞などの効果を控えめな強さにする。主役を隠したり、注目点を奪ったりしない程度に効果を添える。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_46",
+    "phrase": "minimal background details",
+    "translation": "背景の細部を最小限にする",
+    "categories": [
+      "背景",
+      "構図"
+    ],
+    "keywords": "背景 構図 配置 レイアウト 画面構成  前景 中景 遠景 奥行き",
+    "description": "背景の細かな描き込みを抑える。場所を伝える大きな形は残しつつ、主役の周囲をすっきり見せる指定。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_47",
+    "phrase": "avoid visual clutter",
+    "translation": "視覚的なごちゃつきを避ける",
+    "categories": [
+      "構図"
+    ],
+    "keywords": "構図 配置 レイアウト 画面構成",
+    "description": "細かな装飾、強い光、複雑な重なりなどが画面に集中しすぎないよう整理する。何を残して何を控えるかを添えると構図を保ちやすい。",
+    "seeded": true
+  },
+  {
+    "id": "composition_20261006_48",
+    "phrase": "readable composition",
+    "translation": "見やすく読み取りやすい構図",
+    "categories": [
+      "構図",
+      "視線誘導"
+    ],
+    "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
+    "description": "主役の形、姿勢、要素同士の関係が読み取りやすい構図にする。輪郭や余白、明暗を整理し、画面の見せ場を明確にする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_008",
+    "phrase": "Impressionist style",
+    "translation": "印象派のスタイル",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 空気感 光 色",
+    "description": "光や色の印象を中心に、筆触を残した印象派風の描き方にする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_009",
+    "phrase": "soft Impressionist painting",
+    "translation": "柔らかな印象派風の絵画",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "輪郭や色の対比を穏やかにし、柔らかな印象派風の絵画に仕上げる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_010",
+    "phrase": "light-focused painting",
+    "translation": "光を主役にした絵画",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "光の色や変化を中心に画面を組む。照らされる場所や光源を添えると見せ場を作れる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_011",
+    "phrase": "soft edges",
+    "translation": "柔らかな輪郭",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 空気感 光 色",
+    "description": "形の境界を穏やかにし、周囲の色となじむ輪郭にする。顔など明確に残したい部分を別に指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_012",
+    "phrase": "loose brushstrokes",
+    "translation": "自由でラフな筆触",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆を動かした跡を伸びやかに残す。細部を厳密に描き込むより、形や動きの印象を伝える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_013",
+    "phrase": "broken brushstrokes",
+    "translation": "途切れた短い筆触",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "連続した塗りを短い筆の跡に分け、色や光が細かく変化する表面を作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_014",
+    "phrase": "fleeting light effect",
+    "translation": "移ろう光の効果",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 空気感 光 色",
+    "description": "一瞬の光の変化を感じる表現にする。木漏れ日や水面など、光が変化する対象と組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_015",
+    "phrase": "atmospheric light and color",
+    "translation": "空気感を生む光と色",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 空気感 光 色",
+    "description": "光と配色を使って、その場所の空気や時間帯の印象を表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_016",
+    "phrase": "soft painterly atmosphere",
+    "translation": "柔らかな絵画的雰囲気",
+    "categories": [
+      "印象派",
+      "スタイル"
+    ],
+    "keywords": "印象派 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆触や色の重なりを穏やかに使い、柔らかな手描きの雰囲気を作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_017",
+    "phrase": "visible color strokes",
+    "translation": "色の筆跡が見える塗り",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "色を置いた筆の跡が見えるようにする。均一な塗りより、色の動きや手描きの質感を残す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_018",
+    "phrase": "broken color brushwork",
+    "translation": "色を細かく分けて置く筆使い",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "異なる色を小さな筆触で並べ、色の混ざり方を画面上の見え方で表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_019",
+    "phrase": "unblended color strokes",
+    "translation": "混ぜずに置いた色の筆触",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆触同士をなめらかに混ぜきらず、それぞれの色を残す。隣り合う色の対比を活かせる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_020",
+    "phrase": "soft color dabs",
+    "translation": "柔らかな色の点置き",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "小さな色の点や短い筆跡を柔らかく置き、形や光を表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_021",
+    "phrase": "small touches of pure color",
+    "translation": "混ぜない色を小さく置く",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 空気感 光 色",
+    "description": "単独の色が見える小さな筆触を点在させる。全体の印象や光のアクセントを作る表現。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_022",
+    "phrase": "color vibration",
+    "translation": "色が響き合う印象",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 空気感 光 色",
+    "description": "隣り合う色の対比や細かな変化で、色が揺らめくような印象を作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_023",
+    "phrase": "painterly color patches",
+    "translation": "絵画的な色の面",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆で置いた色のまとまりを残す。小さな色面の組み合わせで形や景色を描く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_024",
+    "phrase": "light color strokes",
+    "translation": "淡い色の筆触",
+    "categories": [
+      "印象派",
+      "色彩",
+      "筆触"
+    ],
+    "keywords": "印象派 色彩 筆触 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "明るく淡い色の筆跡を使う。濃い塗りを抑え、軽やかな色の重なりを見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_025",
+    "phrase": "short visible brushstrokes",
+    "translation": "目に見える短い筆触",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "短い筆跡を残し、塗りの方向や色の変化を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_026",
+    "phrase": "soft broken brushstrokes",
+    "translation": "柔らかく途切れる筆触",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "短く分かれた筆跡を柔らかな明暗で描く。細かな光や色の変化を穏やかに表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_027",
+    "phrase": "loose painterly brushwork",
+    "translation": "ラフで絵画的な筆使い",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆の動きを残した自由な塗りにする。厳密な細部より、画面全体の形や色の印象を優先する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_028",
+    "phrase": "small delicate brush marks",
+    "translation": "小さく繊細な筆跡",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "小さな筆の跡を丁寧に置く。花、髪、光などの細やかな描写に使える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_029",
+    "phrase": "light textured brushstrokes",
+    "translation": "軽やかな質感の筆触",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆跡の質感を薄く軽く残す。厚い塗りを抑えつつ、絵の具らしい表面を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_030",
+    "phrase": "gentle oil paint strokes",
+    "translation": "穏やかな油彩の筆触",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "油絵の具を思わせる筆跡を穏やかに使う。厚みや強い凹凸を控えたい場合は、その程度も添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_031",
+    "phrase": "impressionist brush texture",
+    "translation": "印象派風の筆触の質感",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "小さな色の筆跡や塗りの重なりで、印象派風の表面を作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_032",
+    "phrase": "fine dabs of paint",
+    "translation": "細かな絵の具の点置き",
+    "categories": [
+      "印象派",
+      "筆触",
+      "スタイル"
+    ],
+    "keywords": "印象派 筆触 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "小さな絵の具の点を重ねて形や色を描く。花や水面の反射などに使える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_033",
+    "phrase": "morning light Impressionist scene",
+    "translation": "朝の光に包まれた印象派風の情景",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 空気感 光 色",
+    "description": "朝の光の色や柔らかさを印象派風の筆触で描く。時刻や景色の対象を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_034",
+    "phrase": "golden hour Impressionist painting",
+    "translation": "黄金色の時間帯の印象派風絵画",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "朝夕の低い太陽による暖かな光を印象派風に描く。日の出と日没のどちらかを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_035",
+    "phrase": "rainy Impressionist street",
+    "translation": "雨の街路を描いた印象派風の絵",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 空気感 光 色",
+    "description": "雨の街並みを印象派風の色と筆触で描く。濡れた路面や傘、光の反射を加えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_036",
+    "phrase": "after the rain atmosphere",
+    "translation": "雨上がりの雰囲気",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 空気感 光 色",
+    "description": "湿った空気や濡れた地面などで雨上がりを表す。残る雲や差し始める光も添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_037",
+    "phrase": "soft sunlight through trees",
+    "translation": "木々の間から差す柔らかな日光",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 空気感 光 色",
+    "description": "木々の隙間を通る日光を柔らかく描く。地面や人物に落ちる木漏れ日と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_038",
+    "phrase": "riverbank in Impressionist style",
+    "translation": "印象派風の川岸",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 空気感 光 色",
+    "description": "川岸の草木や水辺を印象派風に描く。水面の反射や時間帯を添えると光の印象を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_039",
+    "phrase": "flower garden with soft light",
+    "translation": "柔らかな光の花園",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 空気感 光 色",
+    "description": "花園を穏やかな光で照らす。花の色と光の色を組み合わせ、柔らかな景色を作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_040",
+    "phrase": "plein air painting atmosphere",
+    "translation": "戸外で描いた絵を思わせる雰囲気",
+    "categories": [
+      "印象派",
+      "背景",
+      "ライティング"
+    ],
+    "keywords": "印象派 背景 ライティング 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "屋外の自然な光や空気の変化を捉えた絵の印象にする。場所や時刻を添えると具体化できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_041",
+    "phrase": "Impressionist water reflections",
+    "translation": "印象派風の水面の反射",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "水面に映る景色や光を、小さな色の筆触で印象派風に描く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_042",
+    "phrase": "shimmering water surface",
+    "translation": "きらめく水面",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "細かな光の変化が見える水面を描く。波の大きさや光源を添えると輝き方を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_043",
+    "phrase": "soft reflections on the river",
+    "translation": "川面の柔らかな反射",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "川に映る光や景色を柔らかく描く。反射の輪郭や揺らぎを穏やかにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_044",
+    "phrase": "painterly water reflections",
+    "translation": "絵画的な水面の反射",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "水面の反射を筆触や色面で描く。映るものの形を残す程度も指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_045",
+    "phrase": "light sparkling on water",
+    "translation": "水面にきらめく光",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "水面の細かな反射光を描く。光源の色や、きらめきを入れる範囲を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_046",
+    "phrase": "broken color reflections",
+    "translation": "色を細かく分けた反射",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "反射する色を小さな筆触や色面に分け、水の揺れや光の変化を表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_047",
+    "phrase": "soft ripples with reflected light",
+    "translation": "反射光を伴う柔らかな波紋",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "穏やかな波紋に沿って光が反射する様子を描く。波紋の間隔や光の強さを調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_048",
+    "phrase": "Impressionist riverside scene",
+    "translation": "印象派風の川辺の情景",
+    "categories": [
+      "印象派",
+      "背景",
+      "水面"
+    ],
+    "keywords": "印象派 背景 水面 空気感 光 色",
+    "description": "川、水面、岸辺の草木などを印象派風にまとめる。景色を照らす光と色の印象を重視する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_049",
+    "phrase": "Impressionist flower field",
+    "translation": "印象派風の花畑",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 空気感 光 色",
+    "description": "花畑を小さな色の筆触で描く。花の種類や色、遠景との関係を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_050",
+    "phrase": "flower garden with color dabs",
+    "translation": "色の点置きで描く花園",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "小さな色の点や短い筆跡を重ね、花園の花や葉を表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_051",
+    "phrase": "soft colorful flower meadow",
+    "translation": "柔らかく色彩豊かな花の草原",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 空気感 光 色",
+    "description": "草原に咲く花を柔らかな色で豊かに描く。花と草の割合や光の強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_052",
+    "phrase": "painterly floral landscape",
+    "translation": "絵画的な花の風景",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "花のある景色を筆触や色面で描く。花の細部と風景全体の比重を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_053",
+    "phrase": "field of flowers with broken brushstrokes",
+    "translation": "短く途切れた筆触で描く花畑",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "花畑を細かく分かれた筆跡で描く。色の変化を残し、花と葉のまとまりを作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_054",
+    "phrase": "small color touches forming flowers",
+    "translation": "小さな色の筆触で形作る花",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 空気感 光 色",
+    "description": "小さな色の置き方で花の姿を表す。花びらを一本ずつ描くより、色のまとまりで花を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_055",
+    "phrase": "sunlit flower field in Impressionist style",
+    "translation": "日差しに照らされた印象派風の花畑",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 空気感 光 色",
+    "description": "日光を受けた花畑を印象派風に描く。花に当たる光と影の色を添えると印象を整えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_056",
+    "phrase": "delicate floral color strokes",
+    "translation": "花を描く繊細な色の筆触",
+    "categories": [
+      "印象派",
+      "背景",
+      "花"
+    ],
+    "keywords": "印象派 背景 花 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "繊細な色の筆跡で花を描く。花びらや葉の色の違いを細やかに見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_057",
+    "phrase": "Impressionist anime portrait",
+    "translation": "印象派風のアニメ調ポートレート",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 空気感 光 色",
+    "description": "アニメ調の顔立ちに、印象派風の筆触や光の表現を組み合わせる。顔の形や目元を残す指定と相性がよい。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_058",
+    "phrase": "soft painterly portrait",
+    "translation": "柔らかな絵画的ポートレート",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "人物の肖像を柔らかな筆触で描く。表情や髪を見せる範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_059",
+    "phrase": "clear eyes with soft brushwork",
+    "translation": "柔らかな筆使いと明瞭な瞳",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "全体を柔らかな筆触で描きつつ、目元ははっきり残す。瞳の形や視線を読み取りやすくする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_060",
+    "phrase": "soft edges around the hair",
+    "translation": "髪まわりの柔らかな輪郭",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 空気感 光 色",
+    "description": "髪と背景の境界を穏やかにする。髪型の形を残しながら、外側の輪郭を柔らかく描ける。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_061",
+    "phrase": "character blended into the atmosphere",
+    "translation": "空気感になじむキャラクター",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 空気感 光 色",
+    "description": "人物と周囲の光や色をなじませ、同じ空間にいる印象を作る。顔や姿を明確に残す程度も添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_062",
+    "phrase": "gentle painterly face",
+    "translation": "柔らかな筆致で描く顔",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "顔を穏やかな絵画的筆致で描く。元の顔立ちや表情を保つ指定と組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_063",
+    "phrase": "soft light on the face",
+    "translation": "顔に当たる柔らかな光",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 空気感 光 色",
+    "description": "顔を柔らかな光で照らす。光の向きと色を添えると、陰影を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_064",
+    "phrase": "readable face with Impressionist texture",
+    "translation": "顔立ちが読み取れる印象派風の質感",
+    "categories": [
+      "印象派",
+      "顔",
+      "スタイル"
+    ],
+    "keywords": "印象派 顔 スタイル 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "印象派風の筆触を加えながら、目鼻口や表情が分かるように顔を描く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_065",
+    "phrase": "soft atmospheric perspective",
+    "translation": "柔らかな空気遠近法",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "遠景ほど輪郭や明暗差を穏やかにし、空気を介した距離感を表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_066",
+    "phrase": "distant objects fading into light",
+    "translation": "光の中に薄れていく遠景のもの",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "遠くの対象を光や淡い色になじませる。近景との描き分けで奥行きを見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_067",
+    "phrase": "hazy Impressionist background",
+    "translation": "霞がかった印象派風の背景",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "背景を薄い霞と印象派風の筆触で描く。主役より柔らかく描く指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_068",
+    "phrase": "soft distant trees",
+    "translation": "柔らかく描いた遠くの木々",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "遠景の木々の細部や輪郭を控えめに描く。木のまとまりや色で距離を表す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_069",
+    "phrase": "pale blue distance",
+    "translation": "淡い青で表す遠景",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "遠くの景色を淡い青系の色で描く。近景との色の差で空間の広がりを見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_070",
+    "phrase": "atmospheric depth",
+    "translation": "空気感による奥行き",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "距離に応じて色、明暗、輪郭を変え、空気の層を感じる奥行きを作る。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_071",
+    "phrase": "misty light in the distance",
+    "translation": "遠景の霞を含んだ光",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "遠くの光を薄い霧や霞越しに見せる。光源の形や強さを柔らかくする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_072",
+    "phrase": "soft background depth",
+    "translation": "柔らかな背景の奥行き",
+    "categories": [
+      "背景",
+      "構図",
+      "空気遠近法"
+    ],
+    "keywords": "背景 構図 空気遠近法",
+    "description": "背景の前後関係を柔らかな輪郭や色で表す。主役を引き立てながら空間の深さを残す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_073",
+    "phrase": "soft outlines",
+    "translation": "柔らかな輪郭線",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "輪郭線の強さや色の対比を抑え、穏やかな外形にする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_074",
+    "phrase": "no harsh outlines",
+    "translation": "強すぎない輪郭線",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "硬く強い輪郭を控える。顔や姿を見せる線は残しつつ、線の強弱を穏やかにできる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_075",
+    "phrase": "painterly edges",
+    "translation": "絵画的な輪郭",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭 筆使い 筆跡 絵の具",
+    "description": "形の境界を筆触や色の重なりで描く。線だけで区切らず、塗りで形を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_076",
+    "phrase": "edges softened by light",
+    "translation": "光で柔らかくなる輪郭",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "明るい光が当たる部分の境界を柔らかく描く。光源と柔らかくする部位を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_077",
+    "phrase": "forms suggested by color",
+    "translation": "色でほのめかす形",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "輪郭や細部をすべて描かず、色の置き方から形が伝わるようにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_078",
+    "phrase": "gentle contour lines",
+    "translation": "穏やかな輪郭線",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "形をなぞる線を柔らかな強さで描く。線の太さや色を添えると表現を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_079",
+    "phrase": "soft transition between subject and background",
+    "translation": "被写体と背景の柔らかなつながり",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "被写体と背景の境界を部分的になじませる。主役を識別できる形は残し、色や光でつなぐ。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_080",
+    "phrase": "lightly defined shapes",
+    "translation": "控えめに形を示す",
+    "categories": [
+      "スタイル",
+      "線画",
+      "輪郭"
+    ],
+    "keywords": "スタイル 線画 輪郭",
+    "description": "形の輪郭や細部を弱く示す。少ない線や色の変化で対象の姿を伝える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_081",
+    "phrase": "unfinished painterly impression",
+    "translation": "描きかけを思わせる絵画的な印象",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "筆跡や余白を残し、すべてを描き切らない絵画的な仕上がりにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_082",
+    "phrase": "loose finished painting",
+    "translation": "ラフな筆致で仕上げた絵画",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 筆使い 筆跡 絵の具 空気感 光 色",
+    "description": "自由な筆触を残した完成作品の印象にする。主役や構図を整えつつ、塗りのラフさを保つ。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_083",
+    "phrase": "suggestive details",
+    "translation": "細部をほのめかす描写",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 空気感 光 色",
+    "description": "細部を明示しすぎず、少ない色や線から形や素材が伝わるように描く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_084",
+    "phrase": "not overly detailed",
+    "translation": "細部を描き込みすぎない",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 空気感 光 色",
+    "description": "細かな装飾や表面の描写を控え、主役と全体の印象を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_085",
+    "phrase": "softly suggested forms",
+    "translation": "柔らかくほのめかす形",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 空気感 光 色",
+    "description": "穏やかな色面や筆触で形を示す。輪郭を強く区切らずに対象を伝える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_086",
+    "phrase": "impression of the moment",
+    "translation": "その瞬間の印象",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 空気感 光 色",
+    "description": "光、色、姿勢などで、その時の情景の印象を捉える。描きたい瞬間を具体的に添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_087",
+    "phrase": "fleeting atmosphere",
+    "translation": "移ろう一瞬の空気感",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 空気感 光 色",
+    "description": "短い時間に変わる光や空気の印象を描く。夕暮れ、雨上がりなどの場面を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_088",
+    "phrase": "capturing the moment rather than details",
+    "translation": "細部より瞬間の印象を捉える",
+    "categories": [
+      "印象派",
+      "スタイル",
+      "描き込み"
+    ],
+    "keywords": "印象派 スタイル 描き込み 空気感 光 色",
+    "description": "細かな形の再現より、光や色、動きが作る瞬間の印象を重視する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_089",
+    "phrase": "soft pastel color palette",
+    "translation": "柔らかなパステルカラーの配色",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "淡く柔らかな色を中心に配色する。主役と背景の色の差を控えめに調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_090",
+    "phrase": "bright but gentle colors",
+    "translation": "明るく穏やかな色",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "明るさを保ちつつ、色の強さや対比を穏やかにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_091",
+    "phrase": "fresh light colors",
+    "translation": "爽やかで淡い色",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "明るく淡い色を使って爽やかな印象を作る。緑や青など、中心にする色を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_092",
+    "phrase": "pale blue and soft pink palette",
+    "translation": "淡い青と柔らかなピンクの配色",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "淡い青とピンクを中心に配色する。人物、背景、光などへ色を振り分けられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_093",
+    "phrase": "warm sunlight colors",
+    "translation": "暖かな日光の色",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "日光を黄や橙などの暖かな色で表す。光の強さや時間帯も添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_094",
+    "phrase": "delicate color harmony",
+    "translation": "繊細な色の調和",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "色同士の関係を細やかに整える。近い色の変化や穏やかな補色の組み合わせを活かせる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_095",
+    "phrase": "luminous pastel colors",
+    "translation": "光を感じるパステルカラー",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "淡い色に明るさや光の印象を持たせる。発光そのものを描く場合は、光る対象を別に指定する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_096",
+    "phrase": "clean Impressionist colors",
+    "translation": "濁りのない印象派風の色彩",
+    "categories": [
+      "色彩",
+      "印象派"
+    ],
+    "keywords": "色彩 印象派 空気感 光 色",
+    "description": "色の鮮やかさや分離を保ち、印象派風の筆触で澄んだ色を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_097",
+    "phrase": "highly detailed illustration",
+    "translation": "非常に細密なイラスト",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 細密 精細 細部",
+    "description": "人物や背景の細部を豊かに描く。細密にしたい対象や範囲も指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_098",
+    "phrase": "finely detailed artwork",
+    "translation": "細やかに描き込まれた作品",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 細密 精細 細部",
+    "description": "細部を丁寧に描き、線や塗りを細やかに整える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_100",
+    "phrase": "controlled intricate details",
+    "translation": "精巧な細部を整理して描く",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 細密 精細 細部",
+    "description": "複雑な装飾や構造を、量や配置を調整しながら描く。主役の見やすさを保ちたいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_101",
+    "phrase": "detailed but readable composition",
+    "translation": "細密でありながら見やすい構図",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 筆使い 筆跡 絵の具 細密 精細 細部",
+    "description": "豊かな細部を描きつつ、主役や要素の位置関係を読み取りやすくする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_102",
+    "phrase": "high detail on the main subject",
+    "translation": "主役を重点的に描き込む",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 細密 精細 細部",
+    "description": "主役の細部に描き込みを集中させる。背景との差で注目点を明確にできる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_103",
+    "phrase": "clean focal point with rich details",
+    "translation": "豊かな細部を持つ明確な注目点",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 細密 精細 細部",
+    "description": "構図上の注目点をはっきりさせ、その周囲に細密な描写を加える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_104",
+    "phrase": "precise and organized detail",
+    "translation": "精密に整理された細部",
+    "categories": [
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "画質 描き込み 細密 精細 細部",
+    "description": "細部の形や配置を整え、複雑さが読み取りやすい描写にする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_107",
+    "phrase": "detailed eyelashes",
+    "translation": "細かく描いたまつげ",
+    "categories": [
+      "画質",
+      "顔",
+      "瞳"
+    ],
+    "keywords": "画質 顔 瞳 細密 精細 細部",
+    "description": "まつげの長さ、束、向きを細やかに描く。太さや量を添えると目元を整えやすい。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_108",
+    "phrase": "finely rendered hair strands",
+    "translation": "細やかに描画した髪の束や筋",
+    "categories": [
+      "画質",
+      "髪"
+    ],
+    "keywords": "画質 髪 細密 精細 細部",
+    "description": "髪の流れに沿って毛束や細い筋を描く。髪型のまとまりを保つ指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_109",
+    "phrase": "intricate costume embroidery",
+    "translation": "精巧な衣装の刺繍",
+    "categories": [
+      "画質",
+      "服",
+      "デザイン性"
+    ],
+    "keywords": "画質 服 デザイン性 細密 精細 細部",
+    "description": "衣装の刺繍模様や糸の重なりを細かく描く。刺繍する部位や模様を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_110",
+    "phrase": "detailed lace patterns",
+    "translation": "細密なレース模様",
+    "categories": [
+      "画質",
+      "服",
+      "デザイン性"
+    ],
+    "keywords": "画質 服 デザイン性 細密 精細 細部",
+    "description": "レースの網目や模様を細かく描く。襟、袖、裾など使う部位を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_111",
+    "phrase": "ornate jewelry details",
+    "translation": "装飾的なジュエリーの細部",
+    "categories": [
+      "画質",
+      "服",
+      "デザイン性"
+    ],
+    "keywords": "画質 服 デザイン性 細密 精細 細部",
+    "description": "宝飾品の彫刻、石留め、装飾模様を描き込む。素材や宝石の色を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_112",
+    "phrase": "highly detailed weapon design",
+    "translation": "非常に細密な武器デザイン",
+    "categories": [
+      "画質",
+      "服",
+      "デザイン性"
+    ],
+    "keywords": "画質 服 デザイン性 細密 精細 細部",
+    "description": "武器の構造や装飾、表面の質感を細かく描く。武器の種類と形を指定すると方向を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_113",
+    "phrase": "precise architectural details",
+    "translation": "精密な建築のディテール",
+    "categories": [
+      "画質",
+      "背景",
+      "建築"
+    ],
+    "keywords": "画質 背景 建築 細密 精細 細部",
+    "description": "柱、窓、壁面など建築の細部を精密に描く。建築様式と見せたい範囲を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_114",
+    "phrase": "intricate magical symbols",
+    "translation": "精巧な魔法の紋様",
+    "categories": [
+      "画質",
+      "デザイン性",
+      "ファンタジー"
+    ],
+    "keywords": "画質 デザイン性 ファンタジー 細密 精細 細部",
+    "description": "魔法の印や紋様を複雑かつ細やかに描く。模様の形、位置、発光色を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_115",
+    "phrase": "clear face",
+    "translation": "明瞭な顔",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "目鼻口や表情がはっきり見えるように顔を描く。顔を遮るものや強い霞を控える指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_116",
+    "phrase": "clean facial features",
+    "translation": "整った顔の各パーツ",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "目鼻口や輪郭の線と塗りを整理する。人物固有の顔立ちを保つ場合は参照への忠実さも添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_117",
+    "phrase": "sharp eyes",
+    "translation": "くっきりした目元",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "目の輪郭や瞳を鮮明に描く。鋭い表情を求める場合は、まぶたや視線の指定も添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_118",
+    "phrase": "symmetrical eyes",
+    "translation": "左右のバランスが取れた目",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "左右の目の位置や形を整える。顔の向きに応じた遠近差は残す指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_120",
+    "phrase": "beautiful detailed face",
+    "translation": "美しく細密に描いた顔",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "顔の細部を丁寧に描き、整った仕上がりにする。元の骨格や表情を残す指定を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_121",
+    "phrase": "highly detailed eyes, clean face",
+    "translation": "細密な瞳とすっきり整った顔",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "瞳は細かく描き、顔全体の線や陰影は整理する。目元を主役にした描写に向く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_122",
+    "phrase": "clear face and silhouette",
+    "translation": "明瞭な顔とシルエット",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "顔の表情と人物の外形が読み取りやすい状態にする。背景との重なりも整理できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_123",
+    "phrase": "face not covered by ornaments",
+    "translation": "装飾で顔を隠さない",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "飾りが目鼻口や表情を遮らないよう配置する。装飾の種類や残す場所を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_124",
+    "phrase": "decorations around the face, not over it",
+    "translation": "顔を覆わず周囲に配した装飾",
+    "categories": [
+      "顔",
+      "瞳",
+      "画質"
+    ],
+    "keywords": "顔 瞳 画質 細密 精細 細部",
+    "description": "装飾を顔まわりに置き、顔そのものは見えるようにする。額や頬にかからない範囲を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_125",
+    "phrase": "fine linework",
+    "translation": "繊細な線の描写",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "細やかな線で形や細部を描く。線の太さや使う部位を添えると画面のまとまりを調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_126",
+    "phrase": "delicate linework",
+    "translation": "繊細で柔らかな線の描写",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "細く穏やかな線で輪郭や装飾を描く。強い線の対比を控えたい場面に使える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_127",
+    "phrase": "precise line art",
+    "translation": "精密な線画",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "形や位置関係を丁寧に整えた線画にする。人物や建築の構造を明確に見せられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_128",
+    "phrase": "clean thin outlines",
+    "translation": "すっきりした細い輪郭線",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "輪郭線を細く整理し、重複や乱れを抑える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_129",
+    "phrase": "detailed ink linework",
+    "translation": "細密なインクの線描",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "インクを思わせる線で細部を描き込む。線の強弱や密度を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_130",
+    "phrase": "elegant fine lines",
+    "translation": "上品で細い線",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "細い線の流れを整え、優雅な印象にする。髪や衣装の模様などと組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_131",
+    "phrase": "crisp line art",
+    "translation": "くっきりした線画",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "線の輪郭を明瞭にし、形を読み取りやすくする。太い線にしたい場合は別に指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_132",
+    "phrase": "ornate line details",
+    "translation": "装飾的な線のディテール",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "模様や彫刻などの細部を装飾的な線で描く。使う範囲を添えると主役の見やすさを保てる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_133",
+    "phrase": "thin decorative outlines",
+    "translation": "細い装飾的な輪郭線",
+    "categories": [
+      "線画",
+      "画質"
+    ],
+    "keywords": "線画 画質 細密 精細 細部",
+    "description": "細い線で装飾の形や縁を描く。模様の密度や強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_134",
+    "phrase": "detailed focal area",
+    "translation": "注目点の周囲を細密に描く",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "構図上の注目点の近くへ描き込みを集中させる。対象を顔、手、物などで明示できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_135",
+    "phrase": "high detail around the face",
+    "translation": "顔まわりの豊かな描き込み",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "目元、髪、顔に近い衣装などを細かく描く。顔を隠さない配置と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_136",
+    "phrase": "simple background with detailed character",
+    "translation": "細密なキャラクターとシンプルな背景",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "人物を詳しく描き、背景の情報量を抑える。描き込みの差で主役を引き立てる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_137",
+    "phrase": "rich details on the costume, clean background",
+    "translation": "衣装の豊かな細部とすっきりした背景",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "衣装の素材や装飾を描き込み、背景は整理する。衣装を見せたい構図に向く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_138",
+    "phrase": "detailed center, simplified edges",
+    "translation": "中央を細密に、周辺を簡潔に描く",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "画面中央に描き込みを集め、周辺の形や細部を簡略化する。中心の見せ場を指定すると整えやすい。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_139",
+    "phrase": "ornate subject with calm negative space",
+    "translation": "装飾豊かな被写体と落ち着いた余白",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "被写体の装飾を豊かに描き、周囲には穏やかな余白を残す。複雑な主役を見やすくする構図。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_140",
+    "phrase": "high detail where it matters",
+    "translation": "重要な部分を重点的に描き込む",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "見せたい場所に細密描写を集中させる。重要な部分を具体的に指定すると描き込みの比重を伝えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_141",
+    "phrase": "balanced detail density",
+    "translation": "バランスの取れた描き込み密度",
+    "categories": [
+      "構図",
+      "画質",
+      "描き込み"
+    ],
+    "keywords": "構図 画質 描き込み 細密 精細 細部",
+    "description": "主役と背景、中心と周辺で描き込み量を調整する。細部の集中による見づらさを抑える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_142",
+    "phrase": "velvet dress with silver embroidery",
+    "translation": "銀の刺繍を施したベルベットのドレス",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "ベルベットの光沢と毛足に、銀色の刺繍を組み合わせる。刺繍の位置や柄を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_143",
+    "phrase": "silk robe with gold thread patterns",
+    "translation": "金糸の模様をあしらった絹のローブ",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "絹の滑らかな光沢と金糸の模様を描く。布の色や模様の密度を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_144",
+    "phrase": "transparent organza sleeves",
+    "translation": "透けるオーガンジーの袖",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "薄く透けるオーガンジー素材の袖を描く。布の重なりや透け具合を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_145",
+    "phrase": "delicate lace trim",
+    "translation": "繊細なレースの縁飾り",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "襟、袖、裾などの縁に細やかなレースを添える。柄や幅を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_146",
+    "phrase": "gemstone ornaments on the costume",
+    "translation": "衣装に付けた宝石の装飾",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "衣装に宝石を使った飾りを配置する。石の色、大きさ、付ける場所を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_147",
+    "phrase": "ornate brocade fabric",
+    "translation": "華やかな錦織の布地",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "装飾的な織り模様を持つ厚みのある布地を描く。柄や光沢、色を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_148",
+    "phrase": "embroidered kimono pattern",
+    "translation": "刺繍で描いた着物の模様",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "着物の柄を刺繍の糸や凹凸で表す。花、鳥、幾何学模様などを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_149",
+    "phrase": "fine filigree decorations",
+    "translation": "繊細な金属の透かし細工",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "細い金属線や透かし模様を使った装飾を描く。金属の色と使う対象を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_150",
+    "phrase": "layered fabric details",
+    "translation": "重なった布のディテール",
+    "categories": [
+      "服",
+      "画質",
+      "デザイン性"
+    ],
+    "keywords": "服 画質 デザイン性 細密 精細 細部",
+    "description": "衣装の布の重なり、折り目、縁を細かく描く。素材ごとの色や厚みも添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_152",
+    "phrase": "detailed cathedral interior",
+    "translation": "細密な大聖堂の内部",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "大聖堂の柱、天井、窓、装飾などを細かく描く。内部の配置や光源を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_153",
+    "phrase": "ornate gothic architecture",
+    "translation": "装飾豊かなゴシック建築",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "尖頭アーチや細かな装飾を持つゴシック風の建築を描く。外観と内部のどちらを描くかも指定する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_154",
+    "phrase": "clear linear perspective",
+    "translation": "明確な線遠近法",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "奥へ向かう線の関係を整え、距離や空間の形を読み取りやすくする。消失点や視点の位置を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_155",
+    "phrase": "converging architectural lines",
+    "translation": "奥へ収束する建築の線",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "廊下、柱、壁面などの線が遠近に沿って収束する様子を描く。視線誘導にも使える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_156",
+    "phrase": "detailed background with depth",
+    "translation": "奥行きのある細密な背景",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "背景の細部と前後関係を描き込む。近景から遠景までの対象と距離を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_157",
+    "phrase": "intricate but organized background",
+    "translation": "複雑な細部を整理した背景",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "多くの構造や装飾を描きながら、配置を整えて読み取りやすくする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_158",
+    "phrase": "deep perspective corridor",
+    "translation": "奥行きの深い廊下",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "廊下が遠くへ続く構図を描く。壁や床、天井の線で奥行きを示す。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_159",
+    "phrase": "detailed room with clean layout",
+    "translation": "配置を整理した細密な部屋",
+    "categories": [
+      "背景",
+      "建築",
+      "構図",
+      "画質"
+    ],
+    "keywords": "背景 建築 構図 画質 細密 精細 細部",
+    "description": "家具や内装の細部を描きつつ、部屋の配置と通路をすっきり見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_160",
+    "phrase": "detailed character with simple background",
+    "translation": "細密なキャラクターとシンプルな背景",
+    "categories": [
+      "構図",
+      "画質",
+      "視線誘導"
+    ],
+    "keywords": "構図 画質 視線誘導 細密 精細 細部",
+    "description": "人物を細かく描き、背景の形や要素を少なくする。主役の衣装や表情を引き立てる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_161",
+    "phrase": "detailed background with clean character silhouette",
+    "translation": "細密な背景と明瞭なキャラクターの外形",
+    "categories": [
+      "構図",
+      "画質",
+      "視線誘導"
+    ],
+    "keywords": "構図 画質 視線誘導 細密 精細 細部",
+    "description": "背景を描き込みながら、人物のシルエットは見分けやすく残す。重なりや明暗を整理する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_163",
+    "phrase": "one main focal subject",
+    "translation": "主な注目対象を一つに絞る",
+    "categories": [
+      "構図",
+      "画質",
+      "視線誘導"
+    ],
+    "keywords": "構図 画質 視線誘導 細密 精細 細部",
+    "description": "画面で最も目を引く被写体を一つにする。周囲の要素の強さを調整して主役を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_164",
+    "phrase": "organized composition",
+    "translation": "整理された構図",
+    "categories": [
+      "構図",
+      "画質",
+      "視線誘導"
+    ],
+    "keywords": "構図 画質 視線誘導 細密 精細 細部",
+    "description": "主役、背景、余白の位置を整え、要素同士の関係が伝わるようにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_166",
+    "phrase": "readable visual hierarchy",
+    "translation": "読み取りやすい視覚的な優先順位",
+    "categories": [
+      "構図",
+      "画質",
+      "視線誘導"
+    ],
+    "keywords": "構図 画質 視線誘導 筆使い 筆跡 絵の具 細密 精細 細部",
+    "description": "主役、補助要素、背景の順に注目が移るよう、明暗や大きさを整理する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_167",
+    "phrase": "precise but uncluttered illustration",
+    "translation": "精密ですっきりしたイラスト",
+    "categories": [
+      "構図",
+      "画質",
+      "視線誘導"
+    ],
+    "keywords": "構図 画質 視線誘導 細密 精細 細部",
+    "description": "形や細部を精密に描きながら、要素の数や配置を整理する。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_168",
+    "phrase": "single clear light source",
+    "translation": "明確な光源を一つにする",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "主な光源を一つに絞り、光の方向や影を分かりやすくする。光源の位置と色を添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_169",
+    "phrase": "soft window light",
+    "translation": "窓から差す柔らかな光",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "窓を通して入る光を穏やかに描く。窓の向きや照らす対象を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_170",
+    "phrase": "moonlight rim light",
+    "translation": "月明かりによる輪郭光",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "月明かりが被写体の縁を照らす様子を描く。光を入れる側や輪郭光の強さを添える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_171",
+    "phrase": "warm candlelight",
+    "translation": "暖かな蝋燭の光",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "蝋燭の暖色の光で周囲を照らす。炎の数や照らす範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_172",
+    "phrase": "stained-glass light rays",
+    "translation": "ステンドグラスを通る光の筋",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "色ガラスを通った光が空間へ差し込む様子を描く。ガラスの色や光の角度を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_174",
+    "phrase": "soft diffused lighting",
+    "translation": "柔らかな拡散光",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "光を柔らかく回し、影の境界や明暗差を穏やかにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_175",
+    "phrase": "volumetric light beams",
+    "translation": "空間に立体感を持つ光の筋",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "霧や埃を通る光の筋を描き、光の通る空間の厚みを見せる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_176",
+    "phrase": "controlled lighting",
+    "translation": "光の強さと配置を整える",
+    "categories": [
+      "ライティング",
+      "光"
+    ],
+    "keywords": "ライティング 光",
+    "description": "光源や反射、明暗差を調整し、主役や細部が見やすい照明にする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_177",
+    "phrase": "crisp details",
+    "translation": "くっきりしたディテール",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "細部の輪郭や描き分けを明瞭にする。対象を指定して使う範囲を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_178",
+    "phrase": "sharp focal details",
+    "translation": "注目点の鮮明なディテール",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "構図上の注目点の細部を鮮明に描く。背景との描き分けで見せ場を強調できる。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_179",
+    "phrase": "clean high-detail finish",
+    "translation": "細密ですっきりした仕上がり",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "豊かな描き込みを整理し、線や色の乱れを抑えた仕上がりにする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_180",
+    "phrase": "refined detailed illustration",
+    "translation": "洗練された細密イラスト",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "細部を丁寧に描き、構図や配色、線のまとまりを整える。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_181",
+    "phrase": "polished illustration",
+    "translation": "完成度の高いイラスト",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "線、塗り、光、構図を整え、仕上げまで丁寧に描いた印象にする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_182",
+    "phrase": "precise but soft rendering",
+    "translation": "精密で柔らかな描画",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "形や細部は精密に描き、輪郭や陰影の移り変わりは柔らかくする。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_183",
+    "phrase": "clear face with crisp details",
+    "translation": "顔立ちが明瞭で細部もくっきりした顔",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "目鼻口と表情を読み取りやすくし、顔の細部を鮮明に描く。",
+    "seeded": true
+  },
+  {
+    "id": "painting_20261006_184",
+    "phrase": "fine detail without harshness",
+    "translation": "強すぎない繊細なディテール",
+    "categories": [
+      "画質",
+      "完成度"
+    ],
+    "keywords": "画質 完成度 細密 精細 細部",
+    "description": "細部を繊細に描きつつ、線や影の強さを穏やかにする。柔らかな印象の細密描写に向く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_001",
+    "phrase": "transparent watercolor glazing",
+    "translation": "透明な水彩の重ね塗り",
+    "categories": [
+      "水彩",
+      "スタイル",
+      "色彩"
+    ],
+    "keywords": "水彩 スタイル 色彩 淡彩 にじみ 絵の具 顔料",
+    "description": "乾いた色の上に透ける薄い色を重ね、透明感や深みを出す。重ねる色と範囲を添えると表現を絞れる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_002",
+    "phrase": "delicate layered washes",
+    "translation": "繊細な淡彩の重ね塗り",
+    "categories": [
+      "水彩",
+      "スタイル",
+      "色彩"
+    ],
+    "keywords": "水彩 スタイル 色彩 淡彩 にじみ 絵の具 顔料",
+    "description": "薄い水彩の色面を繊細に重ねる。濃い塗りを抑え、色の層や紙の明るさを残す。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_003",
+    "phrase": "translucent color layers",
+    "translation": "半透明の色の層",
+    "categories": [
+      "水彩",
+      "スタイル",
+      "色彩"
+    ],
+    "keywords": "水彩 スタイル 色彩 淡彩 にじみ 絵の具 顔料",
+    "description": "下の色が透けて見える層を重ねる。層の色や濃さで、柔らかな深みを作る。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_004",
+    "phrase": "the ends of his hair softly dissolve into the watercolor wash",
+    "translation": "彼の髪の先が水彩の淡い塗りへ柔らかく溶け込む",
+    "categories": [
+      "水彩",
+      "スタイル",
+      "色彩"
+    ],
+    "keywords": "水彩 スタイル 色彩 淡彩 にじみ 絵の具 顔料",
+    "description": "髪の先の輪郭を淡い水彩の色面になじませる。髪型の主要な形を残し、毛先の境界を柔らかくする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_005",
+    "phrase": "the hem of his dress fades into pale pigment",
+    "translation": "彼のドレスの裾が淡い色へ溶け込む",
+    "categories": [
+      "水彩",
+      "スタイル",
+      "色彩"
+    ],
+    "keywords": "水彩 スタイル 色彩 淡彩 にじみ 絵の具 顔料",
+    "description": "ドレスの裾を薄い顔料の色になじませ、境界を穏やかに消していく。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_006",
+    "phrase": "wet-on-dry watercolor for the face",
+    "translation": "乾いた面に色を置く水彩で顔を描く",
+    "categories": [
+      "水彩",
+      "顔",
+      "画質"
+    ],
+    "keywords": "水彩 顔 画質 淡彩 にじみ 絵の具 顔料",
+    "description": "乾いた紙や乾いた色面に水彩を置く描き方で、顔の形や細部を整理する。目鼻口の輪郭を残したいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_007",
+    "phrase": "controlled soft facial outlines",
+    "translation": "柔らかさを調整した顔の輪郭",
+    "categories": [
+      "水彩",
+      "顔",
+      "画質"
+    ],
+    "keywords": "水彩 顔 画質 淡彩 にじみ 絵の具 顔料",
+    "description": "顔の輪郭を柔らかく描きながら、形が読み取れる程度に明瞭さを保つ。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_008",
+    "phrase": "clear readable eyes",
+    "translation": "明瞭で読み取りやすい瞳",
+    "categories": [
+      "水彩",
+      "顔",
+      "画質"
+    ],
+    "keywords": "水彩 顔 画質 淡彩 にじみ 絵の具 顔料",
+    "description": "瞳の形、反射、視線が分かるように目元を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_009",
+    "phrase": "delicate facial features",
+    "translation": "繊細な顔立ち",
+    "categories": [
+      "水彩",
+      "顔",
+      "画質"
+    ],
+    "keywords": "水彩 顔 画質 淡彩 にじみ 絵の具 顔料",
+    "description": "目鼻口や輪郭を細やかに描く。人物固有の骨格や年齢感を保つ指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_010",
+    "phrase": "subtle watercolor shading on the skin",
+    "translation": "肌の控えめな水彩の陰影",
+    "categories": [
+      "水彩",
+      "顔",
+      "画質"
+    ],
+    "keywords": "水彩 顔 画質 淡彩 にじみ 絵の具 顔料",
+    "description": "肌へ淡い水彩の色を重ね、穏やかな陰影を付ける。色の濃さや影を入れる位置を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_011",
+    "phrase": "delicate pencil lines",
+    "translation": "繊細な鉛筆の線",
+    "categories": [
+      "線画",
+      "水彩"
+    ],
+    "keywords": "線画 水彩 淡彩 にじみ 絵の具 顔料",
+    "description": "鉛筆を思わせる細やかな線で形を描く。線の濃さや紙の質感を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_012",
+    "phrase": "light warm-gray outlines",
+    "translation": "淡い暖色寄りの灰色の輪郭線",
+    "categories": [
+      "線画",
+      "水彩"
+    ],
+    "keywords": "線画 水彩 淡彩 にじみ 絵の具 顔料",
+    "description": "輪郭線を薄いウォームグレーで描く。黒い線より穏やかな境界を作る。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_013",
+    "phrase": "wet-on-wet watercolor background",
+    "translation": "濡れた面に色を置く水彩の背景",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "濡れた紙や色面に水彩を置いたような背景にする。色同士のにじみや柔らかな境界を残す。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_014",
+    "phrase": "soft bleeding colors",
+    "translation": "柔らかくにじむ色",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "色が周囲へ穏やかに広がり、隣の色となじむように描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_015",
+    "phrase": "organic watercolor blooms",
+    "translation": "自然に広がる水彩のにじみ模様",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "水分や顔料の広がりを思わせる、不規則な水彩のにじみ模様を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_016",
+    "phrase": "gentle pigment backruns",
+    "translation": "穏やかな顔料の逆流によるにじみ",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "水分が戻って顔料を押し広げたような、縁のある柔らかなにじみ模様を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_017",
+    "phrase": "diffused background shapes",
+    "translation": "柔らかく広がる背景の形",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "背景の形の境界を拡散させ、穏やかな色面として見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_018",
+    "phrase": "watercolor blooms in the background only",
+    "translation": "水彩のにじみ模様を背景だけに入れる",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "水彩特有の不規則なにじみを背景に限定する。人物の顔や目元の明瞭さを残す指定に使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_019",
+    "phrase": "soft pigment bleeding around the flowers, not covering the face",
+    "translation": "顔を覆わず花の周囲で柔らかくにじむ顔料",
+    "categories": [
+      "水彩",
+      "背景",
+      "エフェクト"
+    ],
+    "keywords": "水彩 背景 エフェクト 淡彩 にじみ 絵の具 顔料",
+    "description": "花のまわりに水彩のにじみを加え、顔には広げない。花と人物を近くに配置する場面にも使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_021",
+    "phrase": "dramatic light and shadow",
+    "translation": "ドラマチックな光と影",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "光と影の配置で劇的な印象を作る。光源の方向と明暗の強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_022",
+    "phrase": "strong contrast between light and dark",
+    "translation": "明部と暗部の強い対比",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "明るい部分と暗い部分の差を強くする。目立たせたい部分を明部に置く指定と組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_023",
+    "phrase": "high contrast lighting",
+    "translation": "コントラストの強い照明",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "照明による明暗差を大きくする。影の範囲と明部の強さを添えると印象を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_024",
+    "phrase": "deep shadows",
+    "translation": "深い影",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "影を暗く深く描く。影の中に残す細部や、暗くする範囲も指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_025",
+    "phrase": "single light source",
+    "translation": "光源を一つにする",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "主な光源を一つに絞り、照らす方向や影の関係を分かりやすくする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_026",
+    "phrase": "spotlight effect",
+    "translation": "スポットライトの効果",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "限られた範囲へ光を集中させる。照らす対象や光の広がりを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_027",
+    "phrase": "face emerging from darkness",
+    "translation": "暗闇から浮かび上がる顔",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "暗い背景や影の中で、光を受けた顔が見えるように描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_028",
+    "phrase": "half-lit face",
+    "translation": "半分を照らされた顔",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "顔の一部を照らし、もう一方に影を残す。照らす側と光の強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_029",
+    "phrase": "one side of the face in shadow",
+    "translation": "片側が影になった顔",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "顔の左右どちらかを影に入れる。影の中で目鼻口を残す程度も添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_030",
+    "phrase": "face half covered in darkness",
+    "translation": "半分が暗闇に沈む顔",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "顔の半分ほどを強い暗部に入れる。明るい側の表情や輪郭を見せる構図に使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_031",
+    "phrase": "dramatic shadow across the face",
+    "translation": "顔を横切る劇的な影",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "顔の上に強い影を走らせる。影の角度や、覆う目・頬などの部位を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_032",
+    "phrase": "sharp light on one cheek",
+    "translation": "片頬に当たる鋭い光",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "片側の頬へ明瞭で強い光を当てる。光の境界や反対側の影を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_033",
+    "phrase": "eyes glowing in deep shadow",
+    "translation": "深い影の中で光る瞳",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "暗い目元の中で瞳が光を放つように描く。発光色や強さを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_034",
+    "phrase": "mysterious half-lit portrait",
+    "translation": "半分を照らした謎めいたポートレート",
+    "categories": [
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "顔や身体の一部を光で見せ、暗部を残した肖像にする。表情の見せ方も指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_035",
+    "phrase": "dark background",
+    "translation": "暗い背景",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "背景の明るさを抑える。色や残す背景要素を添えると主役との対比を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_036",
+    "phrase": "figure emerging from darkness",
+    "translation": "暗闇から浮かび上がる人物",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "暗い空間から人物の姿を光で見せる。顔、手、輪郭など見せる範囲を指定する。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_037",
+    "phrase": "character emerging from shadow",
+    "translation": "影から浮かび上がるキャラクター",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "影の中で人物の形が徐々に見えるように描く。照らす部位を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_038",
+    "phrase": "deep black shadows",
+    "translation": "深い黒の影",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "影を黒に近い暗さで描く。細部を残す部分と黒く沈める部分を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_039",
+    "phrase": "soft smoke in the dark background",
+    "translation": "暗い背景の柔らかな煙",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "暗い背景へ薄く柔らかな煙を加える。煙の位置や明るさを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_040",
+    "phrase": "dramatic spotlight in darkness",
+    "translation": "暗闇の中の劇的なスポットライト",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "暗い空間へ集中した光を当て、強い見せ場を作る。光を受ける対象を添える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_041",
+    "phrase": "subject illuminated against a dark background",
+    "translation": "暗い背景を背に照らされた被写体",
+    "categories": [
+      "背景",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "背景 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "背景を暗く保ちながら被写体を照らす。被写体の形や表情を光で引き立てる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_043",
+    "phrase": "one strong light source",
+    "translation": "強い光源を一つにする",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "一つの強い光で被写体を照らす。光源の位置、色、明るさを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_044",
+    "phrase": "dramatic light from the upper left",
+    "translation": "左上から差すドラマチックな光",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "画面左上から光を当て、陰影を印象的に描く。顔や身体に影が落ちる範囲を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_045",
+    "phrase": "candlelight chiaroscuro",
+    "translation": "蝋燭の光による明暗法",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "蝋燭の光と周囲の暗さを対比させる。近くの顔や手を暖色の光で見せる表現に向く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_046",
+    "phrase": "moonlit chiaroscuro",
+    "translation": "月明かりによる明暗法",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "月明かりを受けた明部と深い影を使い、形や立体感を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_047",
+    "phrase": "spotlight lighting",
+    "translation": "スポットライト照明",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "特定の対象を狭い範囲の光で照らす。光の角度や照らす面積を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_048",
+    "phrase": "narrow beam of light",
+    "translation": "細く絞った光の筋",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "狭い光の筋を差し込ませる。光が通る方向と照らす対象を添える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_049",
+    "phrase": "light from a small window",
+    "translation": "小さな窓から差す光",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "光"
+    ],
+    "keywords": "ライティング 明暗法 光 キアロスクーロ 光と影",
+    "description": "小さな窓を光源にする。窓の形や位置に合わせて光と影を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_050",
+    "phrase": "eyes catching the light",
+    "translation": "光を受ける瞳",
+    "categories": [
+      "瞳",
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "瞳 顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "瞳へ光が届き、反射が見えるように描く。光源の位置や色を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_052",
+    "phrase": "sharp eyes in deep shadow",
+    "translation": "深い影の中のくっきりした目元",
+    "categories": [
+      "瞳",
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "瞳 顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "顔まわりを暗くしながら、瞳や目の輪郭を鮮明に残す。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_053",
+    "phrase": "bright eyes in a dark portrait",
+    "translation": "暗いポートレートの中の明るい瞳",
+    "categories": [
+      "瞳",
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "瞳 顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "暗めの肖像で瞳を明るく見せる。光の反射や瞳の色で注目を集める。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_054",
+    "phrase": "emotional gaze in chiaroscuro lighting",
+    "translation": "明暗法の光の中の感情を帯びた眼差し",
+    "categories": [
+      "瞳",
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "瞳 顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "光と影の対比を使い、人物の視線や目元の感情を見せる。表情の内容も添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_055",
+    "phrase": "eyes highlighted by a narrow beam of light",
+    "translation": "細い光で強調された瞳",
+    "categories": [
+      "瞳",
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "瞳 顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "狭い光を目元へ当て、瞳を主な注目点にする。照らす範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_056",
+    "phrase": "clear eyes surrounded by deep shadows",
+    "translation": "深い影に囲まれた明瞭な瞳",
+    "categories": [
+      "瞳",
+      "顔",
+      "ライティング",
+      "明暗法"
+    ],
+    "keywords": "瞳 顔 ライティング 明暗法 キアロスクーロ 光と影",
+    "description": "目元の周囲に深い影を残し、瞳の形や視線をはっきり見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_057",
+    "phrase": "hands illuminated by a single light source",
+    "translation": "一つの光源に照らされた手",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "一つの光で手を照らし、指や手の形を陰影で見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_058",
+    "phrase": "dramatic light on the hands",
+    "translation": "手に当たるドラマチックな光",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "手の動きや形が印象的に見える光を当てる。照らす方向や影の強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_059",
+    "phrase": "object highlighted in darkness",
+    "translation": "暗闇の中で強調された物",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "暗い空間で一つの物を明るく見せる。物の形や素材、光源を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_060",
+    "phrase": "glowing key in shadow",
+    "translation": "影の中で光る鍵",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "暗い場所で鍵が光を放つ様子を描く。発光色と周囲を照らす強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_061",
+    "phrase": "candlelight on the fingers",
+    "translation": "指に当たる蝋燭の光",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "指を蝋燭の暖かな光で照らす。手の姿勢や光源との距離を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_062",
+    "phrase": "hands emerging from deep shadow",
+    "translation": "深い影から浮かび上がる手",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "手の一部を照らし、深い影の中から形を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_063",
+    "phrase": "small object lit against a dark background",
+    "translation": "暗い背景の前で照らされた小さな物",
+    "categories": [
+      "ライティング",
+      "明暗法",
+      "手"
+    ],
+    "keywords": "ライティング 明暗法 手 キアロスクーロ 光と影",
+    "description": "小物を暗い背景と対比させて描く。物の種類と照らす範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_064",
+    "phrase": "candlelit chiaroscuro",
+    "translation": "蝋燭に照らされた明暗法の表現",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "蝋燭の暖かな明部と深い暗部を使って被写体を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_065",
+    "phrase": "lantern light in darkness",
+    "translation": "暗闇の中のランタンの光",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "暗い空間をランタンで照らす。光の色や照らされる人物・物を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_066",
+    "phrase": "moonlight and deep shadows",
+    "translation": "月明かりと深い影",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "月明かりを受ける明部と、暗く深い影を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_067",
+    "phrase": "fireplace light on the face",
+    "translation": "顔を照らす暖炉の光",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "暖炉の火から来る暖色の光を顔に当てる。顔の向きと影の位置を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_068",
+    "phrase": "window light cutting through darkness",
+    "translation": "暗闇を切るように差す窓の光",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "暗い空間へ窓の光を差し込ませ、明るい範囲と暗部を分ける。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_069",
+    "phrase": "narrow beam of moonlight",
+    "translation": "細く差し込む月明かり",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "月明かりを狭い光の筋として描く。通る窓や隙間、照らす対象を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_070",
+    "phrase": "theatrical spotlight and deep shadow",
+    "translation": "舞台的なスポットライトと深い影",
+    "categories": [
+      "ライティング",
+      "光",
+      "明暗法"
+    ],
+    "keywords": "ライティング 光 明暗法 キアロスクーロ 光と影",
+    "description": "舞台照明を思わせる集中した光と強い暗部を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_071",
+    "phrase": "his face remains clean and readable",
+    "translation": "彼の顔をすっきり読み取りやすく保つ",
+    "categories": [
+      "多重露光",
+      "顔",
+      "構図"
+    ],
+    "keywords": "多重露光 顔 構図",
+    "description": "重ねた映像や効果を加えても、目鼻口と表情が見える状態を保つ。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_072",
+    "phrase": "the double exposure does not cover his eyes",
+    "translation": "多重露光で彼の瞳を覆わない",
+    "categories": [
+      "多重露光",
+      "顔",
+      "構図"
+    ],
+    "keywords": "多重露光 顔 構図",
+    "description": "重ねる景色や映像を目元へかけず、瞳の形と視線を残す。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_073",
+    "phrase": "the landscape is restricted to his hair and dress",
+    "translation": "風景を彼の髪とドレスの中に限定する",
+    "categories": [
+      "多重露光",
+      "顔",
+      "構図"
+    ],
+    "keywords": "多重露光 顔 構図",
+    "description": "重ねる風景を髪とドレスの範囲に収める。顔や肌などを別の状態に保ちたいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_074",
+    "phrase": "clean facial features and a clearly defined outline",
+    "translation": "整った顔の各パーツと明確な輪郭",
+    "categories": [
+      "多重露光",
+      "顔",
+      "構図"
+    ],
+    "keywords": "多重露光 顔 構図",
+    "description": "目鼻口を整理し、人物の輪郭を読み取りやすく描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_075",
+    "phrase": "soft transparent blending",
+    "translation": "柔らかく透ける重なり",
+    "categories": [
+      "多重露光",
+      "エフェクト",
+      "透明感"
+    ],
+    "keywords": "多重露光 エフェクト 透明感",
+    "description": "画像や色を半透明に重ね、境界を柔らかくなじませる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_076",
+    "phrase": "his silhouette gently dissolves into mist",
+    "translation": "彼のシルエットが穏やかに霧へ溶け込む",
+    "categories": [
+      "多重露光",
+      "エフェクト",
+      "透明感"
+    ],
+    "keywords": "多重露光 エフェクト 透明感",
+    "description": "人物の外形の一部を霧となじませる。顔や身体の形を残す範囲も指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_077",
+    "phrase": "tiny luminous particles drifting from his outline",
+    "translation": "彼の輪郭から漂う小さな光の粒",
+    "categories": [
+      "多重露光",
+      "エフェクト",
+      "透明感"
+    ],
+    "keywords": "多重露光 エフェクト 透明感",
+    "description": "人物の外縁から小さな発光粒子を漂わせる。粒の色、量、流れる方向を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_078",
+    "phrase": "glowing fragments floating around his silhouette",
+    "translation": "彼のシルエットの周囲に浮かぶ光る欠片",
+    "categories": [
+      "多重露光",
+      "エフェクト",
+      "透明感"
+    ],
+    "keywords": "多重露光 エフェクト 透明感",
+    "description": "人物の外形のまわりへ発光する欠片を配置する。欠片の形や密度を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_079",
+    "phrase": "his hair transforms into tree branches",
+    "translation": "彼の髪が木の枝へ変わる",
+    "categories": [
+      "多重露光",
+      "エフェクト",
+      "透明感"
+    ],
+    "keywords": "多重露光 エフェクト 透明感",
+    "description": "髪の形や流れを木の枝へつなげる。変化させる範囲や枝の形を添える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_080",
+    "phrase": "the hem of his dress dissolves into flower petals",
+    "translation": "彼のドレスの裾が花びらへほどける",
+    "categories": [
+      "多重露光",
+      "エフェクト",
+      "透明感"
+    ],
+    "keywords": "多重露光 エフェクト 透明感",
+    "description": "ドレスの裾から花びらへ形が変わる様子を描く。花びらの色や流れる方向を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_081",
+    "phrase": "sfumato",
+    "translation": "スフマート",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "輪郭や明暗の境界を煙のように柔らかくなじませる描き方。顔や背景のどこに使うかを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_082",
+    "phrase": "sfumato effect",
+    "translation": "スフマートの効果",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "明暗や色の境界を細やかにぼかし、柔らかくつながる印象を作る。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_083",
+    "phrase": "soft smoky transitions",
+    "translation": "煙のように柔らかな移り変わり",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "色や明暗の境界を、煙を思わせる柔らかな変化として描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_084",
+    "phrase": "blurred contours",
+    "translation": "ぼかした輪郭",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "外形の境界をぼかす。瞳や口など明確に残す部分を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_085",
+    "phrase": "soft blended edges",
+    "translation": "柔らかくなじむ輪郭",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "形の境界を周囲の色へ穏やかになじませる。対象の主要な形は残す指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_087",
+    "phrase": "subtle tonal gradation",
+    "translation": "繊細な明暗の階調",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "明るさの変化を細やかに描き、強い段差を抑える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_088",
+    "phrase": "smooth transition between light and shadow",
+    "translation": "光と影の滑らかな移り変わり",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "明部から暗部までをなめらかにつなぐ。陰影の範囲や強さを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_089",
+    "phrase": "soft skin shading",
+    "translation": "肌の柔らかな陰影",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "肌の影を柔らかな境界で描く。肌色と光源の色を添えると印象を整えやすい。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_090",
+    "phrase": "delicate facial shadows",
+    "translation": "顔の繊細な陰影",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "顔の起伏に沿って、薄く細やかな影を付ける。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_091",
+    "phrase": "smooth skin transitions",
+    "translation": "肌の色と明暗の滑らかなつながり",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "肌の色や明暗がなめらかに移り変わるように描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_092",
+    "phrase": "soft blended shadows on the face",
+    "translation": "顔になじむ柔らかな影",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "顔の影を肌の明部へ柔らかくなじませる。目鼻口の形を保つ指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_093",
+    "phrase": "gentle tonal gradation on the cheeks",
+    "translation": "頬の穏やかな明暗の階調",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "頬の丸みをなだらかな明暗変化で描く。影の色や照らす方向を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_094",
+    "phrase": "subtle shadow around the eyes",
+    "translation": "目元の控えめな影",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "目の周囲に薄い影を入れる。瞳やまぶたを読み取りやすく残す指定にも使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_095",
+    "phrase": "smooth transition from light to shadow",
+    "translation": "明部から影への滑らかな移り変わり",
+    "categories": [
+      "スフマート",
+      "顔",
+      "ライティング"
+    ],
+    "keywords": "スフマート 顔 ライティング 煙 ぼかし 明暗 階調",
+    "description": "明るい場所から影へと、境界をなめらかにつなぐ。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_097",
+    "phrase": "ambiguous smile",
+    "translation": "意味を曖昧に残す微笑み",
+    "categories": [
+      "表情",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "表情 顔 雰囲気",
+    "description": "口元や目元の表情を抑え、感情を一つに断定しにくい微笑みにする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_098",
+    "phrase": "mysterious soft expression",
+    "translation": "柔らかく謎めいた表情",
+    "categories": [
+      "表情",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "表情 顔 雰囲気",
+    "description": "穏やかな表情に、感情を読み切れない印象を加える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_099",
+    "phrase": "gentle unreadable expression",
+    "translation": "穏やかで読み取りにくい表情",
+    "categories": [
+      "表情",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "表情 顔 雰囲気",
+    "description": "顔の形は見せながら、感情を強く表に出さない表情にする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_100",
+    "phrase": "soft shadow around the eyes and mouth",
+    "translation": "目と口のまわりの柔らかな影",
+    "categories": [
+      "表情",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "表情 顔 雰囲気",
+    "description": "目元と口元へ穏やかな陰影を付ける。表情の細かな変化を引き立てられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_101",
+    "phrase": "quiet emotional gaze",
+    "translation": "静かに感情を帯びた眼差し",
+    "categories": [
+      "表情",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "表情 顔 雰囲気",
+    "description": "目元や視線に控えめな感情を表す。視線の方向と感情の内容を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_102",
+    "phrase": "faint smile with soft shadows",
+    "translation": "柔らかな陰影を伴うかすかな微笑み",
+    "categories": [
+      "表情",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "表情 顔 雰囲気",
+    "description": "口元のわずかな微笑みを穏やかな影とともに描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_103",
+    "phrase": "figure emerging from shadow",
+    "translation": "影から浮かび上がる人物",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "影の中から光を受けた人物の形を見せる。顔や手など、見せる部分を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_104",
+    "phrase": "soft edges dissolving into the background",
+    "translation": "背景へ溶け込む柔らかな輪郭",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "外形の一部を背景となじませ、境界を穏やかにする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_105",
+    "phrase": "smoky blurred silhouette",
+    "translation": "煙のようにぼかしたシルエット",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "人物の外形を煙のように柔らかくぼかす。主要な姿勢や形を残す程度を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_106",
+    "phrase": "portrait emerging from darkness",
+    "translation": "暗闇から浮かび上がるポートレート",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "暗い背景の中で顔や身体を光によって見せる肖像にする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_107",
+    "phrase": "soft contour blending into mist",
+    "translation": "霧になじむ柔らかな輪郭",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "被写体の輪郭を薄い霧と柔らかくつなぐ。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_108",
+    "phrase": "edges fading into shadow",
+    "translation": "影へ薄れていく輪郭",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "形の境界が暗部になじみ、部分的に見えなくなるよう描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_109",
+    "phrase": "character softly emerging from a dark background",
+    "translation": "暗い背景から柔らかく浮かび上がるキャラクター",
+    "categories": [
+      "スフマート",
+      "輪郭",
+      "背景"
+    ],
+    "keywords": "スフマート 輪郭 背景 煙 ぼかし 明暗 階調",
+    "description": "暗い背景と人物の境界を穏やかに描き、光を受ける部分から姿を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_110",
+    "phrase": "misty atmosphere",
+    "translation": "霧を感じる空気感",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "薄い霧を使って空間の湿りや距離感を表す。霧の範囲や濃さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_111",
+    "phrase": "soft smoky atmosphere",
+    "translation": "煙のように柔らかな空気感",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "空間の輪郭や明暗を柔らかく描き、薄い煙を思わせる雰囲気にする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_112",
+    "phrase": "hazy portrait lighting",
+    "translation": "霞がかったポートレートの光",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "肖像を照らす光を霞越しのように柔らかくする。目元など明確に残す部分を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_113",
+    "phrase": "thin mist around the character",
+    "translation": "キャラクターの周囲の薄い霧",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "人物のまわりへ薄い霧を配置する。顔や身体を覆う範囲を調整できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_114",
+    "phrase": "smoke-like soft shadows",
+    "translation": "煙のような柔らかな影",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "影の境界を薄い煙のように柔らかく描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_115",
+    "phrase": "dreamlike misty background",
+    "translation": "夢のような霧の背景",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "背景を薄い霧で包み、夢を思わせる曖昧な奥行きにする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_116",
+    "phrase": "soft atmospheric haze",
+    "translation": "空間を包む柔らかな霞",
+    "categories": [
+      "雰囲気",
+      "背景",
+      "スフマート"
+    ],
+    "keywords": "雰囲気 背景 スフマート 煙 ぼかし 明暗 階調",
+    "description": "空気中の薄い霞で、遠景や光の境界を穏やかにする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_117",
+    "phrase": "soft diffused light",
+    "translation": "柔らかな拡散光",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "光を柔らかく広げ、強い影や明暗の段差を抑える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_118",
+    "phrase": "gentle indirect lighting",
+    "translation": "穏やかな間接光",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "壁や周囲から回り込む光で、被写体を穏やかに照らす。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_119",
+    "phrase": "low contrast soft lighting",
+    "translation": "明暗差を抑えた柔らかな照明",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "光と影の差を小さくし、全体を穏やかな明るさで描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_120",
+    "phrase": "light softly wrapping around the face",
+    "translation": "顔を柔らかく包む光",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "顔の側面へも穏やかに光を回し、陰影をなだらかに描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_121",
+    "phrase": "subtle light and shadow",
+    "translation": "繊細な光と影",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "控えめな明暗変化で形や空気感を表す。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_122",
+    "phrase": "soft painterly lighting",
+    "translation": "柔らかな絵画的照明",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "筆触や色の重なりを活かし、光と影を柔らかく描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_123",
+    "phrase": "delicate chiaroscuro with sfumato",
+    "translation": "スフマートを伴う繊細な明暗法",
+    "categories": [
+      "ライティング",
+      "光",
+      "スフマート"
+    ],
+    "keywords": "ライティング 光 スフマート 煙 ぼかし 明暗 階調",
+    "description": "明暗で立体感を作りながら、境界はスフマートで柔らかくつなぐ。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_124",
+    "phrase": "dark soft background",
+    "translation": "暗く柔らかな背景",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "暗い色を使いながら、背景の輪郭や明暗変化を穏やかにする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_125",
+    "phrase": "soft shadowy background",
+    "translation": "柔らかな影に包まれた背景",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "背景に柔らかな暗部を置き、主役の周囲を落ち着いた印象にする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_126",
+    "phrase": "deep brown and gray background",
+    "translation": "深い茶色と灰色の背景",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "暗い茶色と灰色を中心に背景を描く。色の割合や明るさを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_127",
+    "phrase": "subtle smoky darkness",
+    "translation": "控えめに煙を感じる暗さ",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "暗部へ薄い煙や霞を思わせる変化を加える。強い煙の形を抑えたいときに使える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_128",
+    "phrase": "painterly dark background",
+    "translation": "絵画的な暗い背景",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "暗い背景を筆触や色面で描く。主役に比べて描き込みを抑える指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_129",
+    "phrase": "face emerging from a soft dark background",
+    "translation": "柔らかな暗い背景から浮かび上がる顔",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "背景の暗部を柔らかく保ち、照らされた顔を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_130",
+    "phrase": "low contrast background with soft edges",
+    "translation": "明暗差を抑えた柔らかな輪郭の背景",
+    "categories": [
+      "背景",
+      "スフマート",
+      "雰囲気"
+    ],
+    "keywords": "背景 スフマート 雰囲気 煙 ぼかし 明暗 階調",
+    "description": "背景のコントラストと境界の強さを抑え、主役を引き立てる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_131",
+    "phrase": "sharp eyes with soft facial shadows",
+    "translation": "くっきりした目元と柔らかな顔の陰影",
+    "categories": [
+      "顔",
+      "瞳",
+      "スフマート",
+      "画質"
+    ],
+    "keywords": "顔 瞳 スフマート 画質 煙 ぼかし 明暗 階調",
+    "description": "瞳や目の輪郭を鮮明に残し、顔の影は穏やかにつなぐ。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_132",
+    "phrase": "clear eyes, soft blended contours",
+    "translation": "明瞭な瞳と柔らかくなじむ輪郭",
+    "categories": [
+      "顔",
+      "瞳",
+      "スフマート",
+      "画質"
+    ],
+    "keywords": "顔 瞳 スフマート 画質 煙 ぼかし 明暗 階調",
+    "description": "瞳の形や視線を見せながら、顔や人物の外縁を柔らかくなじませる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_133",
+    "phrase": "detailed eyes and mouth, smoky edges",
+    "translation": "細密な目と口、煙のように柔らかな輪郭",
+    "categories": [
+      "顔",
+      "瞳",
+      "スフマート",
+      "画質"
+    ],
+    "keywords": "顔 瞳 スフマート 画質 煙 ぼかし 明暗 階調",
+    "description": "目元と口元へ描き込みを集中させ、外側の輪郭は柔らかく描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_134",
+    "phrase": "clear facial features with sfumato effect",
+    "translation": "顔立ちが明瞭なスフマートの表現",
+    "categories": [
+      "顔",
+      "瞳",
+      "スフマート",
+      "画質"
+    ],
+    "keywords": "顔 瞳 スフマート 画質 煙 ぼかし 明暗 階調",
+    "description": "目鼻口を読み取りやすく残し、陰影や外縁へスフマートを加える。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_135",
+    "phrase": "soft face modeling, sharp emotional gaze",
+    "translation": "柔らかな顔の立体表現と鮮明な感情の眼差し",
+    "categories": [
+      "顔",
+      "瞳",
+      "スフマート",
+      "画質"
+    ],
+    "keywords": "顔 瞳 スフマート 画質 煙 ぼかし 明暗 階調",
+    "description": "顔の起伏を穏やかな陰影で描き、視線や目元の感情を明確に見せる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_136",
+    "phrase": "subtle blur only around the contours",
+    "translation": "輪郭の周囲だけを控えめにぼかす",
+    "categories": [
+      "顔",
+      "瞳",
+      "スフマート",
+      "画質"
+    ],
+    "keywords": "顔 瞳 スフマート 画質 煙 ぼかし 明暗 階調",
+    "description": "ぼかす範囲を外形の近くに限定する。顔の主要な部分や細部を残したいときに使う。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_137",
+    "phrase": "mysterious portrait",
+    "translation": "謎めいたポートレート",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "表情や光、背景の描き方で謎めいた印象の肖像にする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_138",
+    "phrase": "Renaissance-inspired anime portrait",
+    "translation": "ルネサンスに着想を得たアニメ調ポートレート",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "ルネサンス絵画を思わせる構図や陰影と、アニメ調の顔立ちを組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_139",
+    "phrase": "dreamlike male portrait",
+    "translation": "夢のような男性のポートレート",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "男性の肖像を柔らかな光や霞で描き、夢を思わせる印象にする。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_140",
+    "phrase": "soft painterly character illustration",
+    "translation": "柔らかな絵画的キャラクターイラスト",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "人物を柔らかな筆触と陰影で描く。顔立ちや衣装の形を維持する指定と組み合わせられる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_141",
+    "phrase": "foggy portrait atmosphere",
+    "translation": "霧に包まれたポートレートの雰囲気",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "肖像の周囲へ霧や霞を加え、柔らかな空気感を作る。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_142",
+    "phrase": "gentle mysterious smile",
+    "translation": "穏やかで謎めいた微笑み",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "口元や目元を柔らかくし、感情を読み切れない微笑みを描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_143",
+    "phrase": "quiet poetic portrait",
+    "translation": "静かで詩情のあるポートレート",
+    "categories": [
+      "スタイル",
+      "顔",
+      "雰囲気"
+    ],
+    "keywords": "スタイル 顔 雰囲気",
+    "description": "落ち着いた姿勢や控えめな表情、光を使って静かな印象の肖像を描く。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_146",
+    "phrase": "soft blended contours",
+    "translation": "柔らかくなじむ輪郭",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "外形の境界を周囲の色や明暗へ穏やかになじませる。",
+    "seeded": true
+  },
+  {
+    "id": "sfumato_20261006_147",
+    "phrase": "smooth tonal gradation",
+    "translation": "滑らかな明暗の階調",
+    "categories": [
+      "スフマート",
+      "スタイル",
+      "輪郭"
+    ],
+    "keywords": "スフマート スタイル 輪郭 煙 ぼかし 明暗 階調",
+    "description": "明るさの段階をなめらかに描き、形の起伏を穏やかに見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_001",
+    "phrase": "large wings",
+    "translation": "大きな翼",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "身体に対して大きな翼を描く。翼の種類と大きさを添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_002",
+    "phrase": "wide spread wings",
+    "translation": "大きく広げた翼",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "左右に広く翼を開く。広げる角度や画面内の範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_003",
+    "phrase": "dramatic wing silhouette",
+    "translation": "ドラマチックな翼のシルエット",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "翼の外形を強調し、印象的な姿を作る。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_004",
+    "phrase": "angel wings spread wide",
+    "translation": "大きく広げた天使の翼",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "天使の羽根の翼を左右へ大きく開く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_005",
+    "phrase": "huge wings behind the character",
+    "translation": "キャラクターの背後の巨大な翼",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "人物の背後へ巨大な翼を配置する。人物と翼の比率を添える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_006",
+    "phrase": "wings filling the frame",
+    "translation": "画面いっぱいに広がる翼",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "翼が画面の大部分を占める構図にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_007",
+    "phrase": "majestic wing silhouette",
+    "translation": "威厳のある翼のシルエット",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "翼の形や広がりで堂々とした印象を作る。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_008",
+    "phrase": "powerful winged character design",
+    "translation": "力強い翼のあるキャラクターデザイン",
+    "categories": [
+      "翼",
+      "シルエット"
+    ],
+    "keywords": "翼 シルエット",
+    "description": "翼の形と人物の姿を組み合わせ、力強い印象にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_009",
+    "phrase": "white angel wings",
+    "translation": "白い天使の翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "白い羽根の天使の翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_010",
+    "phrase": "large white feathered wings",
+    "translation": "大きな白い羽根の翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "大きく広がる白い羽根の翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_011",
+    "phrase": "soft white wings",
+    "translation": "柔らかな白い翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "白い翼の羽根や輪郭を柔らかく描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_012",
+    "phrase": "angelic wings with delicate feathers",
+    "translation": "繊細な羽根を持つ天使の翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "羽根の細部を繊細に描いた天使の翼にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_013",
+    "phrase": "white wings with pale blue shadows",
+    "translation": "淡い青の影を持つ白い翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "白い翼の陰影を淡い青で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_014",
+    "phrase": "golden rim light on white wings",
+    "translation": "白い翼の縁を照らす黄金色の光",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "翼の外縁へ金色の輪郭光を入れる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_015",
+    "phrase": "ethereal white feather wings",
+    "translation": "幻想的な白い羽根の翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "白い羽根の翼を柔らかな光や淡い色で幻想的に描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_016",
+    "phrase": "divine angel wings",
+    "translation": "神聖な天使の翼",
+    "categories": [
+      "翼",
+      "天使",
+      "色彩"
+    ],
+    "keywords": "翼 天使 色彩",
+    "description": "光や姿の印象で神聖さを感じる天使の翼にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_017",
+    "phrase": "black wings",
+    "translation": "黒い翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "黒を中心とした翼を描く。羽根や膜など素材を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_018",
+    "phrase": "dark angel wings",
+    "translation": "暗い色の天使の翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "天使の羽根の翼を暗い色で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_019",
+    "phrase": "fallen angel wings",
+    "translation": "堕天使の翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "堕天使を思わせる翼を描く。色や傷みの程度を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_020",
+    "phrase": "large black feathered wings",
+    "translation": "大きな黒い羽根の翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "大きく広がる黒い羽根の翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_021",
+    "phrase": "black wings with moonlight rim light",
+    "translation": "月明かりの輪郭光を持つ黒い翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "黒い翼の縁を月明かりで照らす。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_022",
+    "phrase": "dark wings with violet highlights",
+    "translation": "紫のハイライトを持つ暗い翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "暗い翼に紫色の光や反射を加える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_023",
+    "phrase": "gothic black wings",
+    "translation": "ゴシック風の黒い翼",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "黒い翼をゴシック風の装飾や暗い雰囲気で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_024",
+    "phrase": "dramatic fallen angel silhouette",
+    "translation": "ドラマチックな堕天使のシルエット",
+    "categories": [
+      "翼",
+      "堕天使",
+      "色彩"
+    ],
+    "keywords": "翼 堕天使 色彩",
+    "description": "翼と身体の外形で堕天使の印象的な姿を作る。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_025",
+    "phrase": "layered feathers",
+    "translation": "層をなす羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "羽根を前後に重ね、層の構造を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_026",
+    "phrase": "overlapping feathers",
+    "translation": "重なり合う羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "羽根同士の重なりで翼の形を作る。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_027",
+    "phrase": "detailed feather layers",
+    "translation": "細密な羽根の層",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "羽根の重なりや境界を細かく描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_028",
+    "phrase": "long primary feathers",
+    "translation": "長い初列風切羽",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "翼の外側の長い風切羽を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_029",
+    "phrase": "short secondary feathers",
+    "translation": "短めの次列風切羽",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "翼の内側に並ぶ風切羽を外側より短めに描く。長さは翼の形に合わせて指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_030",
+    "phrase": "soft down feathers near the base",
+    "translation": "付け根近くの柔らかな綿羽",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "翼の根元へ柔らかく細かな羽毛を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_031",
+    "phrase": "feathers arranged in natural layers",
+    "translation": "自然な層に並んだ羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "羽根を翼の形に沿って自然に重ねる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_032",
+    "phrase": "realistic feather structure",
+    "translation": "写実的な羽根の構造",
+    "categories": [
+      "翼",
+      "羽根",
+      "画質"
+    ],
+    "keywords": "翼 羽根 画質",
+    "description": "羽軸や羽の広がり、重なりを写実的に描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_033",
+    "phrase": "wings spread wide",
+    "translation": "大きく広げた翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "翼を左右へ大きく広げる。角度や姿勢を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_034",
+    "phrase": "wings folded around the body",
+    "translation": "身体の周囲に畳んだ翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "翼を身体の側へ折り畳み、姿を囲うように配置する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_035",
+    "phrase": "one wing partially visible",
+    "translation": "片方の翼が一部だけ見える",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "片翼の一部分を画面に入れる。見せる側と範囲を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_036",
+    "phrase": "wings wrapping around the character",
+    "translation": "キャラクターを包む翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "翼を人物のまわりへ回し、身体を包む姿にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_037",
+    "phrase": "wings opening behind him",
+    "translation": "彼の背後で開く翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "人物の背後で翼が開く様子を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_038",
+    "phrase": "closed wings like a cloak",
+    "translation": "マントのように閉じた翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "閉じた翼を身体に沿わせ、外套を思わせる形にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_039",
+    "phrase": "half-open wings",
+    "translation": "半開きの翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "完全に開ききらず、途中の角度で翼を広げる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_040",
+    "phrase": "protective wings around him",
+    "translation": "彼を守るように囲む翼",
+    "categories": [
+      "翼",
+      "構図",
+      "動き"
+    ],
+    "keywords": "翼 構図 動き",
+    "description": "人物の周囲に翼を配置し、守るような姿を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_041",
+    "phrase": "mechanical wings",
+    "translation": "機械の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "機械部品で構成された翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_042",
+    "phrase": "robotic wings",
+    "translation": "ロボットの翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "ロボットを思わせる構造や関節を持つ翼にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_043",
+    "phrase": "cyber angel wings",
+    "translation": "サイバー風の天使の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "天使の翼に未来的な機械構造や発光を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_044",
+    "phrase": "metallic mechanical wings",
+    "translation": "金属製の機械の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "金属の板や部品でできた翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_045",
+    "phrase": "articulated mechanical wing joints",
+    "translation": "可動関節を持つ機械の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "翼の関節や接続部に可動構造を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_046",
+    "phrase": "glowing energy lines on the wings",
+    "translation": "翼を走る光るエネルギーの線",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "翼の表面へ発光する回路やエネルギーの筋を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_047",
+    "phrase": "futuristic wing panels",
+    "translation": "未来的な翼のパネル",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "翼を未来的な形のパネルで構成する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_048",
+    "phrase": "hard-surface mechanical wing design",
+    "translation": "硬質な機械の翼デザイン",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "硬い板や明確な稜線を使った機械の翼にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_049",
+    "phrase": "black mechanical wings",
+    "translation": "黒い機械の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "機械の翼を黒い金属や部品で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_050",
+    "phrase": "cyber fallen angel wings",
+    "translation": "サイバー風の堕天使の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "堕天使の翼と未来的な機械・発光を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_051",
+    "phrase": "dark robotic wings with cyan lights",
+    "translation": "シアンの光を持つ暗い機械の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "暗い機械の翼へ青緑色の発光を加える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_052",
+    "phrase": "black metal wings with red accents",
+    "translation": "赤いアクセントを持つ黒い金属の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "黒い金属の翼に赤い部品や光を添える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_053",
+    "phrase": "mechanical fallen angel",
+    "translation": "機械仕掛けの堕天使",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "機械の翼や身体の構造を持つ堕天使を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_054",
+    "phrase": "android man with black mechanical wings",
+    "translation": "黒い機械の翼を持つ男性型アンドロイド",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "男性型アンドロイドに黒い機械の翼を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_055",
+    "phrase": "futuristic dark angel wings",
+    "translation": "未来的な暗い天使の翼",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "暗い天使の翼を未来的な構造や素材で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_056",
+    "phrase": "hard-surface black wing design",
+    "translation": "硬質な黒い翼デザイン",
+    "categories": [
+      "翼",
+      "機械",
+      "サイバー"
+    ],
+    "keywords": "翼 機械 サイバー",
+    "description": "硬い面や稜線で構成した黒い翼にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_057",
+    "phrase": "demon wings",
+    "translation": "悪魔の翼",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "悪魔を思わせる翼を描く。膜や色、形を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_058",
+    "phrase": "bat-like wings",
+    "translation": "コウモリのような翼",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "骨組みと膜を持つコウモリ風の翼にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_059",
+    "phrase": "black leathery wings",
+    "translation": "黒い革のような翼",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "黒い革を思わせる質感の翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_060",
+    "phrase": "large membrane wings",
+    "translation": "大きな膜の翼",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "骨組みの間に膜が張った大きな翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_061",
+    "phrase": "sharp wing tips",
+    "translation": "鋭い翼の先端",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "翼の先を尖った形で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_062",
+    "phrase": "torn demon wings",
+    "translation": "破れた悪魔の翼",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "悪魔の翼に裂け目や欠損を描く。破れの位置と程度を指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_063",
+    "phrase": "dark red bat wings",
+    "translation": "暗赤色のコウモリの翼",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "コウモリ風の膜の翼を暗い赤で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_064",
+    "phrase": "gothic demon wing silhouette",
+    "translation": "ゴシック風の悪魔の翼のシルエット",
+    "categories": [
+      "翼",
+      "悪魔",
+      "シルエット"
+    ],
+    "keywords": "翼 悪魔 シルエット",
+    "description": "悪魔の翼の外形をゴシック風の印象で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_065",
+    "phrase": "butterfly wings",
+    "translation": "蝶の翅",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "蝶の翅を描く。模様や色、形を添えられる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_066",
+    "phrase": "large butterfly wings",
+    "translation": "大きな蝶の翅",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "人物に対して大きな蝶の翅を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_067",
+    "phrase": "transparent butterfly wings",
+    "translation": "透ける蝶の翅",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "蝶の翅を透ける素材として幻想的に描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_068",
+    "phrase": "iridescent butterfly wings",
+    "translation": "虹色に輝く蝶の翅",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "角度で色が変わる光沢を蝶の翅へ加える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_069",
+    "phrase": "fairy wings",
+    "translation": "妖精の翅",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "妖精を思わせる軽やかな翅を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_070",
+    "phrase": "delicate wing patterns",
+    "translation": "繊細な翅の模様",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "翅の模様や筋を細やかに描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_071",
+    "phrase": "symmetrical butterfly wing design",
+    "translation": "左右対称の蝶の翅デザイン",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "左右の翅の形や模様を対称に整える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_072",
+    "phrase": "ethereal fairy wing silhouette",
+    "translation": "幻想的な妖精の翅のシルエット",
+    "categories": [
+      "翼",
+      "蝶",
+      "妖精"
+    ],
+    "keywords": "翼 蝶 妖精",
+    "description": "妖精の翅の外形を淡い光や柔らかな色で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_073",
+    "phrase": "decorative wing silhouette",
+    "translation": "装飾的な翼のシルエット",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "翼の外形に装飾的な曲線や形を取り入れる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_074",
+    "phrase": "wings filled with stars",
+    "translation": "星で満ちた翼",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "翼の内部に星や星空を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_075",
+    "phrase": "wings containing floral motifs",
+    "translation": "花のモチーフを含む翼",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "翼の中へ花や植物の模様を入れる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_076",
+    "phrase": "moon and roses inside dark wings",
+    "translation": "暗い翼の中の月と薔薇",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "暗い翼の内部に月と薔薇を配置する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_077",
+    "phrase": "snowflake patterns inside ice wings",
+    "translation": "氷の翼の中の雪の結晶模様",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "氷の翼の内部へ雪の結晶の模様を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_078",
+    "phrase": "circuit patterns inside mechanical wings",
+    "translation": "機械の翼の中の回路模様",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "機械の翼の内部に回路の筋や配置を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_079",
+    "phrase": "sacred geometric patterns on angel wings",
+    "translation": "天使の翼の上の神聖幾何学模様",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "天使の翼へ幾何学的な象徴模様を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_080",
+    "phrase": "symbolic motifs inside the wings",
+    "translation": "翼の中の象徴的なモチーフ",
+    "categories": [
+      "翼",
+      "デザイン性",
+      "模様"
+    ],
+    "keywords": "翼 デザイン性 模様",
+    "description": "翼の内部へ人物や世界観を表す象徴を配置する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_081",
+    "phrase": "wings naturally attached to the back",
+    "translation": "背中へ自然につながる翼",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "翼の付け根が身体に自然につながる形で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_082",
+    "phrase": "wings emerging from the shoulder blades",
+    "translation": "肩甲骨のあたりから生える翼",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "背中の肩甲骨付近を翼の付け根として描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_083",
+    "phrase": "feather roots at the back",
+    "translation": "背中の翼の付け根の羽根",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "背中と翼がつながる部分へ羽根を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_084",
+    "phrase": "clothing designed around the wings",
+    "translation": "翼に合わせた衣服のデザイン",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "翼の付け根や動きに合わせて衣服の形を作る。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_085",
+    "phrase": "natural wing attachment",
+    "translation": "自然な翼の付け根",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "身体と翼の接続を自然な形や質感で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_086",
+    "phrase": "wings integrated into the character design",
+    "translation": "キャラクターデザインに組み込んだ翼",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "人物の姿や衣装と翼の形を一体として整える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_087",
+    "phrase": "mechanical wings connected to a back frame",
+    "translation": "背部フレームにつながる機械の翼",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "背中のフレームを介して機械の翼を接続する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_088",
+    "phrase": "shadow of the wings on the back",
+    "translation": "背中に落ちる翼の影",
+    "categories": [
+      "翼",
+      "構造",
+      "デザイン性"
+    ],
+    "keywords": "翼 構造 デザイン性",
+    "description": "翼の位置と光源に沿って、背中へ影を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_089",
+    "phrase": "backlit wings",
+    "translation": "逆光を受ける翼",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "翼の背後から光を当てる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_090",
+    "phrase": "rim light on the wings",
+    "translation": "翼の縁の輪郭光",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "翼の外縁へ光を入れて形を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_091",
+    "phrase": "light passing through feathers",
+    "translation": "羽根を透過する光",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "羽根を通る光を描き、薄さや重なりを見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_092",
+    "phrase": "glowing feather edges",
+    "translation": "光る羽根の縁",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "羽根の縁を発光させる。光の色と強さを指定できる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_093",
+    "phrase": "golden backlight behind the wings",
+    "translation": "翼の背後の黄金色の逆光",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "翼の後ろから金色の光を当てる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_094",
+    "phrase": "moonlight outlining the wings",
+    "translation": "翼の輪郭をなぞる月明かり",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "月明かりで翼の外形を照らす。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_095",
+    "phrase": "dramatic wing rim light",
+    "translation": "ドラマチックな翼の輪郭光",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "翼の縁に強い光を入れ、外形を印象的に見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_096",
+    "phrase": "sunlight shining through the wings",
+    "translation": "翼を透かして差す日光",
+    "categories": [
+      "翼",
+      "ライティング",
+      "光"
+    ],
+    "keywords": "翼 ライティング 光",
+    "description": "翼を通る日光を描く。羽根や膜の透け具合を添える。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_097",
+    "phrase": "falling feathers",
+    "translation": "舞い落ちる羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "羽根が下へ落ちる様子を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_098",
+    "phrase": "floating feathers",
+    "translation": "浮かぶ羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "空中に浮かぶ羽根を配置する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_099",
+    "phrase": "white feathers drifting in the air",
+    "translation": "空中を漂う白い羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "白い羽根が空気の流れに乗って漂う様子を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_100",
+    "phrase": "black feathers falling around him",
+    "translation": "彼の周囲に舞い落ちる黒い羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "人物のまわりへ黒い羽根を落とす。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_101",
+    "phrase": "golden feathers in the light",
+    "translation": "光の中の黄金色の羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "光を受けた金色の羽根を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_102",
+    "phrase": "feathers scattered by the wind",
+    "translation": "風に散らされる羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "羽根が風で散る方向や広がりを描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_103",
+    "phrase": "feathers flying from the wings",
+    "translation": "翼から舞う羽根",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "翼のまわりから羽根が飛び出す様子を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_104",
+    "phrase": "soft feather particles",
+    "translation": "柔らかな羽根の粒子",
+    "categories": [
+      "翼",
+      "羽根",
+      "エフェクト"
+    ],
+    "keywords": "翼 羽根 エフェクト",
+    "description": "小さな羽根や羽毛を柔らかな粒子として散らす。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_105",
+    "phrase": "wings folded like a cloak",
+    "translation": "マントのように畳んだ翼",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "翼を身体に沿って畳み、外套を思わせる形にする。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_106",
+    "phrase": "black wings wrapping around his body",
+    "translation": "彼の身体を包む黒い翼",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "黒い翼を身体のまわりへ回して包む。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_107",
+    "phrase": "angel wings covering part of the face",
+    "translation": "顔の一部を覆う天使の翼",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "天使の翼を顔へ重ね、一部分を隠す。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_108",
+    "phrase": "protective wings around the character",
+    "translation": "キャラクターを守るように囲む翼",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "翼で人物の周囲を囲み、守るような姿を作る。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_109",
+    "phrase": "cloak-like wings",
+    "translation": "マントのような翼",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "翼をマントに似た形や配置で描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_110",
+    "phrase": "half-hidden face behind wings",
+    "translation": "翼の後ろで半分隠れた顔",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "翼を顔に重ね、顔の一部を見せる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_111",
+    "phrase": "character wrapped in dark wings",
+    "translation": "暗い翼に包まれたキャラクター",
+    "categories": [
+      "翼",
+      "構図",
+      "顔"
+    ],
+    "keywords": "翼 構図 顔",
+    "description": "暗い翼で人物の身体を包む姿を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_112",
+    "phrase": "angel wings and divine halo",
+    "translation": "天使の翼と神聖な光輪",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "天使の翼に光輪を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_113",
+    "phrase": "fallen angel with black feathers and red moon",
+    "translation": "黒い羽根と赤い月を伴う堕天使",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "堕天使に黒い羽根と赤い月を配置する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_114",
+    "phrase": "mechanical wings with HUD overlay",
+    "translation": "HUD表示を重ねた機械の翼",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "機械の翼へ視界内表示を思わせる図形や情報を重ねる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_115",
+    "phrase": "butterfly wings with floral motifs",
+    "translation": "花のモチーフを持つ蝶の翅",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "蝶の翅に花の模様を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_116",
+    "phrase": "demon wings under a Halloween moon",
+    "translation": "ハロウィンの月の下の悪魔の翼",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "ハロウィンを思わせる月夜に悪魔の翼を描く。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_117",
+    "phrase": "ice wings with snowflakes",
+    "translation": "雪の結晶を伴う氷の翼",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "氷の翼に雪の結晶を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_118",
+    "phrase": "wings and floating feathers",
+    "translation": "翼と浮かぶ羽根",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "翼のまわりに浮かぶ羽根を配置する。",
+    "seeded": true
+  },
+  {
+    "id": "wings_20261006_119",
+    "phrase": "wings with crepuscular rays",
+    "translation": "光芒を伴う翼",
+    "categories": [
+      "翼",
+      "ファンタジー",
+      "構図"
+    ],
+    "keywords": "翼 ファンタジー 構図",
+    "description": "雲や隙間を通る光の筋と翼を組み合わせる。",
+    "seeded": true
   }
 ];
   }
