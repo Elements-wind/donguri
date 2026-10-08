@@ -2,13 +2,13 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>プロンプト単語検索</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="単語検索">
-<meta name="theme-color" content="#cde5e2">
+<meta name="theme-color" content="#eef5f5">
 
 <style>
   :root{
@@ -407,15 +407,90 @@
     opacity:1;
     transform:translateX(-50%) translateY(0);
   }
+
+  /* Mobile-first wordbook, UI revision 2026-10 */
+  :root{--ink:#233e45;--paper:#eef5f5;--panel:#fff;--line:#d7e5e7;--accent:#386771;--accent-soft:#e1f0ef;--muted:#5a737b;--dock-height:0px;}
+  body{background:linear-gradient(150deg,#e0eeee 0,#f5f8fa 620px);}
+  button,input,textarea,select{font-family:inherit;}
+  button{touch-action:manipulation;}
+  button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #5796a2;outline-offset:3px;}
+  [hidden]{display:none!important;}
+  .wrap{max-width:860px;padding:22px 16px calc(var(--dock-height) + 32px);}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;margin:0;padding:0 2px 20px;}
+  h1{font-size:21px;letter-spacing:.02em;margin:4px 0 5px;}
+  .eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--accent);}
+  .sub{font-size:12px;color:var(--muted);}
+  .book-mark{width:44px;height:48px;border-radius:13px 13px 17px 5px;display:grid;place-items:center;background:#d7e9e9;font-size:25px;color:var(--accent);}
+  .tabs{background:#dfeaec;padding:4px;border-radius:13px;gap:4px;margin-bottom:16px;}
+  .tabs button{border:0;background:transparent;min-height:42px;border-radius:10px;color:var(--muted);}
+  .tabs button.on{background:white;color:var(--ink);box-shadow:0 2px 5px #304b5010;}
+  .tabs button.on .tab-badge{color:var(--accent);background:var(--accent-soft);}
+  .search-tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#eef5f5f5;backdrop-filter:blur(16px);padding:10px 0 12px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .search-box{margin:0 0 10px;}
+  .search-icon{position:absolute;left:14px;top:15px;width:19px;height:19px;color:var(--muted);pointer-events:none;}
+  #queryInput{font-size:16px;min-height:50px;padding:12px 46px 12px 42px;border-radius:14px;border-color:#b8d3d6;box-shadow:0 3px 12px #233e4505;}
+  #queryInput::-webkit-search-cancel-button{display:none;}
+  #clearQuery{position:absolute;right:4px;top:3px;width:44px;height:44px;border:0;background:transparent;color:var(--muted);font-size:24px;}
+  .filter-row{display:flex;gap:8px;align-items:center;}
+  .filter-row .btn{padding:8px 11px;font-size:12px;min-height:40px;}
+  #categoryButton{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #matchMode{width:106px;font-size:12px;min-height:40px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink);padding:0 5px;}
+  .pinned-section{padding:0;border:1px solid #cfdee3;background:#f8fbfc;border-radius:12px;margin:0 0 18px;overflow:hidden;}
+  .pinned-section>summary{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 14px;cursor:pointer;font-size:13px;font-weight:600;list-style:none;}
+  .pinned-section>summary::-webkit-details-marker{display:none;}
+  .pinned-section>summary::after{content:'＋';color:var(--muted);margin-left:10px;}
+  .pinned-section[open]>summary::after{content:'−';}
+  #pinnedCount{margin-left:auto;}
+  #pinnedList{padding:0 10px 10px;} #pinnedList:empty{padding:0;}
+  #pinnedEmpty{padding:0 14px 14px;}
+  .list-heading{display:flex;align-items:center;justify-content:space-between;margin:0 1px 12px;gap:8px;}
+  #resultCount{font-size:13px;font-weight:700;}
+  .list-hint{font-size:11px;color:var(--muted);margin:4px 0 0;}
+  #detailToggle{min-height:40px;padding:6px 10px;font-size:12px;}
+  #detailToggle[aria-pressed=true]{background:var(--accent-soft);color:var(--accent);}
+  .result-card{border-radius:13px;padding:12px;gap:10px;box-shadow:0 2px 4px #19384303;}
+  .result-card.picked{background:#e8f3f2;border-color:#7baeb3;}
+  .result-check{width:26px;height:26px;margin-top:7px;padding:0;background:white;border-width:1.5px;border-radius:8px;cursor:pointer;}
+  .result-phrase{font-size:14px;font-weight:600;padding-top:4px;line-height:1.55;}
+  .result-translation{font-size:13px;color:#526e77;line-height:1.6;margin-top:0;}
+  .result-pin{width:38px;min-height:38px;padding:9px;border-color:transparent;background:transparent;border-radius:9px;}
+  .result-description{font-size:12px;color:#526e77;font-style:normal;line-height:1.65;border-color:#a3c4c7;margin-top:10px;}
+  body.compact .result-description{display:none;}
+  .result-tags{gap:5px;margin-top:8px;} .result-tag{font-size:10px;background:#f0f5f6;color:#5a747b;border:0;padding:3px 6px;}
+  #loadMore,#manageMore{width:100%;margin-top:14px;min-height:46px;}
+  #emptyState{padding:32px 14px;text-align:center;font-size:13px;line-height:1.9;color:var(--muted);}
+  #selectedBar{left:50%;right:auto;transform:translateX(-50%);width:min(100%,860px);border:1px solid #c8dcdf;border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -5px 24px #233e4512;padding:9px 16px calc(12px + env(safe-area-inset-bottom));}
+  .selection-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+  #selectionToggle{min-height:36px;padding:5px 0;background:none;border:0;color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;text-align:left;}
+  #clearSelectedBtn{width:auto!important;margin:0!important;min-height:36px;padding:5px 8px;font-size:12px;border:0;}
+  #selectedPreview{max-height:min(33dvh,260px);background:#f1f6f6;margin-bottom:10px;}
+  .preview-line{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);}
+  .preview-line:last-child{border:0;}.preview-line span{flex:1;word-break:break-word;}
+  .preview-ja{font-size:11px;color:var(--muted);display:block;margin-top:2px;}
+  .remove-picked{width:40px;min-height:40px;background:white;border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:20px;flex:none;cursor:pointer;}
+  #copyEnBtn{flex:1.4;}#copyJaBtn{flex:1;} .selected-actions .btn{min-height:44px;}
+  #toast{bottom:calc(var(--dock-height) + 18px);font-size:12px;width:max-content;}
+  dialog{border:1px solid var(--line);border-radius:20px;padding:20px;width:min(560px,calc(100% - 24px));max-height:80dvh;color:var(--ink);background:#f7fbfb;}
+  dialog::backdrop{background:#17303966;backdrop-filter:blur(3px);}
+  .dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}.dialog-heading h2{font-size:17px;margin:0;}
+  #categorySearch,#manageQuery{width:100%;min-height:46px;font-size:16px;border:1px solid var(--line);background:white;border-radius:10px;padding:10px 12px;margin-bottom:14px;color:var(--ink);}
+  .chip-row{max-height:48dvh;overflow:auto;gap:8px;margin:0;padding:3px;}.chip{min-height:40px;padding:8px 12px;font-size:13px;}
+  .chip small{margin-left:6px;opacity:.7;font-size:10px;}
+  .form-block{border-radius:12px;padding:0;overflow:hidden;}.form-block>summary{padding:16px;font-size:14px;font-weight:600;cursor:pointer;}.form-content{padding:0 16px 16px;}
+  .form-row input[type=text],.form-row textarea,.manage-tag-input{font-size:16px;}
+  .form-row label{font-size:12px;}.form-hint{color:var(--muted);line-height:1.7;}
+  .manage-card{border-radius:13px;padding:14px;}.manage-phrase{font-size:14px;font-weight:600;}.manage-row-actions .btn{min-height:42px;font-size:13px;}
+  .manage-label{display:block;font-size:11px;color:var(--muted);margin:8px 0 4px;}
+  #manageStatus{font-size:12px;color:var(--muted);margin:0 0 12px;}
+  @media(min-width:700px){.wrap{padding-top:32px;}#resultsList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.result-card{height:100%;}h1{font-size:25px;}.search-tools{padding-top:12px;} }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;}}
+
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <header>
-    <h1>プロンプト単語検索</h1>
-    <p class="sub">出したい効果からAIイラスト用の英語プロンプトを探して、まとめてコピーできます。</p>
-  </header>
+  <header><div><div class="eyebrow">PROMPT WORDBOOK</div><h1>プロンプト単語帳</h1><p class="sub">描きたいイメージを、ことばに。</p></div><div class="book-mark" aria-hidden="true">❧</div></header>
 
   <div class="tabs">
     <button class="on" data-tab="search">検索</button>
@@ -424,76 +499,64 @@
 
   <!-- 検索ビュー -->
   <div class="view active" id="view-search">
-    <section class="pinned-section" aria-labelledby="pinnedHeading">
-      <div class="pinned-heading">
-        <h2 id="pinnedHeading" tabindex="-1">ピン留め</h2>
-        <span id="pinnedCount" aria-live="polite">0 / 10</span>
-      </div>
-      <p id="pinnedEmpty">よく使うフレーズのピンを押すと、ここに表示されます（最大10個）。</p>
-      <div id="pinnedList"></div>
-    </section>
-    <div class="search-box">
-      <input type="text" id="queryInput" placeholder="例：躍動感を出したい、光を印象的に">
+    <div class="search-tools">
+      <div class="search-box"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="queryInput" aria-label="単語を検索" placeholder="日本語・英語で探す" autocomplete="off"><button id="clearQuery" aria-label="検索語を消す" hidden>×</button></div>
+      <div class="filter-row"><button class="btn" id="categoryButton" aria-haspopup="dialog">カテゴリ：すべて ▾</button><select id="matchMode" aria-label="複数の検索語の条件"><option value="any">いずれか一致</option><option value="all">すべて一致</option></select><button class="btn ghost" id="resetFilters">リセット</button></div>
     </div>
-    <div class="chip-row" id="categoryChips"></div>
+    <details class="pinned-section"><summary id="pinnedHeading">ピン留め <span id="pinnedCount">0 / 10</span></summary><p id="pinnedEmpty">よく使う単語をピン留めできます（最大10個）。</p><div id="pinnedList"></div></details>
+    <div class="list-heading"><div><span id="resultCount" role="status" aria-live="polite"></span><p class="list-hint">タップで選択 · 選んだ順にコピー</p></div><button class="btn ghost" id="detailToggle" aria-pressed="true">説明を表示</button></div>
     <div id="resultsList"></div>
-    <div id="emptyState" style="display:none;">条件に合う単語がまだ登録されていません。「登録・管理」から追加できます。</div>
+    <div id="emptyState" style="display:none;">見つかりませんでした。<br>検索語を短くするか、カテゴリを「すべて」に戻してみてください。</div><button class="btn ghost" id="loadMore" hidden>さらに表示</button>
   </div>
 
   <!-- 登録・管理ビュー -->
   <div class="view" id="view-manage">
-    <div class="form-block">
-      <h2>1件ずつ追加</h2>
+    <details class="form-block"><summary>1件ずつ追加</summary><div class="form-content">
       <div class="form-row">
-        <label>英語フレーズ（1つだけ）</label>
+        <label for="addPhrase">英語フレーズ（1つだけ）</label>
         <textarea id="addPhrase" placeholder="例：dynamic camera angle"></textarea>
       </div>
       <div class="form-row">
-        <label>日本語訳（任意）</label>
+        <label for="addTranslation">日本語訳（任意）</label>
         <textarea id="addTranslation" placeholder="例：ダイナミックなカメラアングル" style="min-height:40px;"></textarea>
       </div>
       <div class="form-row">
-        <label>意味の説明・メモ（任意・長文OK）</label>
+        <label for="addDescription">意味の説明・メモ（任意・長文OK）</label>
         <textarea id="addDescription" placeholder="例：映画のワンシーンのような角度" style="min-height:60px;"></textarea>
       </div>
       <div class="form-row">
-        <label>カテゴリ（カンマ区切り、複数OK）</label>
+        <label for="addTags">カテゴリ（カンマ区切り、複数OK）</label>
         <input type="text" id="addTags" placeholder="例：構図, カメラ">
       </div>
       <button class="btn primary" id="addOneBtn" style="width:100%;">追加する</button>
-    </div>
+    </div></details>
 
-    <div class="form-block">
-      <h2>まとめて追加（1行＝1件）</h2>
+    <details class="form-block"><summary>まとめて追加（1行＝1件）</summary><div class="form-content">
       <div class="form-row">
-        <textarea id="bulkPhrase" placeholder="1行に1フレーズずつ貼り付け" style="min-height:90px;"></textarea>
+        <textarea aria-label="まとめて追加するフレーズ" id="bulkPhrase" placeholder="1行に1フレーズずつ貼り付け" style="min-height:90px;"></textarea>
         <p class="form-hint">カテゴリは未設定で登録されます。下の一覧から後でタグ付けできます。</p>
       </div>
       <button class="btn primary" id="addBulkBtn" style="width:100%;">まとめて追加する</button>
-    </div>
+    </div></details>
 
-    <div class="form-block">
-      <h2>バックアップ</h2>
+    <details class="form-block"><summary>バックアップ</summary><div class="form-content">
       <div class="selected-actions">
         <button class="btn ghost" id="exportBtn" style="flex:1;">書き出す</button>
         <button class="btn ghost" id="importBtn" style="flex:1;">読み込む</button>
       </div>
       <p class="form-hint">機種変更やブラウザが変わる前に「書き出す」でバックアップしておくと安心です。</p>
-    </div>
+    </div></details>
 
     <h2 style="font-size:14px; margin:4px 0 10px;">登録済み一覧（<span id="totalCount">0</span>件）</h2>
-    <div class="manage-list" id="manageList"></div>
+    <input id="manageQuery" type="search" placeholder="編集したい単語を検索" aria-label="登録済み単語を検索"><p id="manageStatus" role="status"></p><div class="manage-list" id="manageList"></div><button class="btn ghost" id="manageMore" hidden>さらに表示</button>
   </div>
 </div>
 
-<div id="selectedBar">
-  <div id="selectedPreview"></div>
-  <div class="selected-actions">
-    <button class="btn primary" id="copyEnBtn">英語をコピー</button>
-    <button class="btn ghost" id="copyJaBtn">日本語をコピー</button>
-  </div>
-  <button class="btn ghost" id="clearSelectedBtn" style="width:100%; margin-top:8px;">選択解除</button>
+<div id="selectedBar" role="region" aria-label="選択した単語">
+  <div class="selection-top"><button id="selectionToggle" aria-expanded="false" aria-controls="selectedPreview">選択中 <span id="selectedCount">0</span>件 · 確認する ▴</button><button class="btn ghost" id="clearSelectedBtn">すべて解除</button></div>
+  <div id="selectedPreview" hidden></div><div class="selected-actions"><button class="btn primary" id="copyEnBtn">英語をコピー</button><button class="btn ghost" id="copyJaBtn">日本語をコピー</button></div>
 </div>
+<dialog id="categoryDialog" aria-labelledby="categoryTitle"><div class="dialog-heading"><h2 id="categoryTitle">カテゴリから探す</h2><button class="btn ghost" id="closeCategories">閉じる</button></div><input type="search" id="categorySearch" placeholder="カテゴリ名を検索" aria-label="カテゴリ名を検索"><div class="chip-row" id="categoryChips"></div><p id="categoryEmpty" hidden>一致するカテゴリがありません。</p></dialog>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -532,6 +595,12 @@
   let activeCategory = null; // null = すべて
   let selectedIds = new Set();
   let toastTimer = null;
+  let resultLimit = 60, manageLimit = 40, filteredResults = [];
+  const $ = id => document.getElementById(id);
+  let showDescriptions = true;
+  try{ showDescriptions = localStorage.getItem('promptWordDescriptions') !== 'hide'; }catch(e){}
+  document.body.classList.toggle('compact', !showDescriptions);
+  $('detailToggle').setAttribute('aria-pressed', String(showDescriptions));
 
   function showToast(msg){
     toast.textContent = msg;
@@ -686,6 +755,7 @@
       const card = cards.get(entry.id) || createResultCard(entry, pinnedList, pins.length);
       card.classList.toggle('picked', selectedIds.has(entry.id));
       card.querySelector('.result-check').textContent = selectedIds.has(entry.id) ? '✓' : '';
+      card.querySelector('.result-check').setAttribute('aria-pressed',String(selectedIds.has(entry.id)));
       if(pinnedList.children[index] !== card) pinnedList.insertBefore(card, pinnedList.children[index] || null);
     });
     pinnedCount.textContent = pins.length + ' / ' + MAX_PINS;
@@ -16549,6 +16619,7 @@
       document.getElementById('view-search').classList.toggle('active', tab==='search');
       document.getElementById('view-manage').classList.toggle('active', tab==='manage');
       if(tab === 'manage') renderManageList();
+      window.scrollTo({top:0,behavior:'instant'});
     });
   });
 
@@ -16560,25 +16631,23 @@
   }
 
   function renderChips(){
-    const cats = allCategories();
-    categoryChips.innerHTML = '';
-    const allChip = document.createElement('button');
-    allChip.className = 'chip' + (activeCategory === null ? ' on' : '');
-    allChip.textContent = 'すべて';
-    allChip.addEventListener('click', ()=>{ activeCategory = null; renderChips(); renderResults(); });
-    categoryChips.appendChild(allChip);
-
-    cats.forEach(cat=>{
+    const term = $('categorySearch').value.trim().toLowerCase();
+    const cats = allCategories().filter(cat=>cat.toLowerCase().includes(term));
+    categoryChips.replaceChildren();
+    [null,...cats].forEach(cat=>{
       const chip = document.createElement('button');
       chip.className = 'chip' + (activeCategory === cat ? ' on' : '');
-      chip.textContent = cat;
+      chip.setAttribute('aria-pressed', String(activeCategory === cat));
+      const count = cat === null ? entries.length : entries.filter(e=>(e.categories||[]).includes(cat)).length;
+      chip.innerHTML = escapeHtml(cat || 'すべて') + '<small>' + count + '</small>';
       chip.addEventListener('click', ()=>{
-        activeCategory = (activeCategory === cat) ? null : cat;
-        renderChips();
-        renderResults();
+        activeCategory = cat;
+        $('categoryButton').textContent = 'カテゴリ：' + (cat || 'すべて') + ' ▾';
+        renderChips(); renderResults(); $('categoryDialog').close();
       });
       categoryChips.appendChild(chip);
     });
+    $('categoryEmpty').hidden = cats.length > 0 || !term;
   }
 
   // ---------- search + results ----------
@@ -16588,25 +16657,42 @@
     const hayLower = hay.toLowerCase();
     // split on spaces/commas, match if ANY token is found
     const tokens = q.toLowerCase().split(/[\s,、]+/).filter(Boolean);
-    return tokens.some(t => hayLower.includes(t));
+    return $('matchMode').value === 'all' ? tokens.every(t => hayLower.includes(t)) : tokens.some(t => hayLower.includes(t));
   }
 
   function renderResults(){
+    resultLimit = 60;
     const q = queryInput.value.trim();
-    const filtered = entries.filter(e=>{
-      const catOk = !activeCategory || (e.categories||[]).includes(activeCategory);
-      return catOk && matchesQuery(e, q);
+    filteredResults = entries.filter(e=>(!activeCategory || (e.categories||[]).includes(activeCategory)) && matchesQuery(e,q));
+    resultsList.replaceChildren();
+    emptyState.style.display = filteredResults.length ? 'none' : 'block';
+    $('resultCount').textContent = filteredResults.length.toLocaleString() + ' 件' + (q || activeCategory ? ' が見つかりました' : 'のことば');
+    $('clearQuery').hidden = !queryInput.value;
+    pinnedList.replaceChildren();
+    renderPinnedList(entries.filter(e=>e.pinned));
+    appendResults(0);
+  }
+  function appendResults(start){
+    const count = entries.filter(e=>e.pinned).length;
+    const fragment = document.createDocumentFragment();
+    filteredResults.slice(start,resultLimit).forEach(e=>fragment.appendChild(createResultCard(e,resultsList,count)));
+    resultsList.appendChild(fragment);
+    $('loadMore').hidden = resultLimit >= filteredResults.length;
+    $('loadMore').textContent = 'さらに60件表示（残り ' + Math.max(0,filteredResults.length-resultLimit) + ' 件）';
+  }
+  function syncSelection(){
+    document.querySelectorAll('.result-card').forEach(card=>{
+      const picked = selectedIds.has(card.dataset.entryId);
+      card.classList.toggle('picked',picked);
+      const button = card.querySelector('.result-check');
+      button.textContent = picked ? '✓' : '';
+      button.setAttribute('aria-pressed',String(picked));
     });
-
-    resultsList.innerHTML = '';
-    emptyState.style.display = filtered.length ? 'none' : 'block';
-
-    const pins = entries.filter(e=>e.pinned);
-    pinnedList.innerHTML = '';
-    pinnedCount.textContent = pins.length + ' / ' + MAX_PINS;
-    pinnedEmpty.style.display = pins.length ? 'none' : 'block';
-    pins.forEach(entry=>pinnedList.appendChild(createResultCard(entry, pinnedList, pins.length)));
-    filtered.forEach(entry=>resultsList.appendChild(createResultCard(entry, resultsList, pins.length)));
+    renderSelectedBar();
+  }
+  function pickedEntries(){
+    const byId = new Map(entries.map(e=>[e.id,e]));
+    return Array.from(selectedIds).map(id=>byId.get(id)).filter(Boolean);
   }
 
   function createResultCard(entry, sourceList, pinCount){
@@ -16614,7 +16700,7 @@
     card.className = 'result-card' + (selectedIds.has(entry.id) ? ' picked' : '');
     card.dataset.entryId = entry.id;
     card.innerHTML = `
-      <div class="result-check">${selectedIds.has(entry.id) ? '✓' : ''}</div>
+      <button type="button" class="result-check" aria-pressed="${selectedIds.has(entry.id)}" aria-label="選択：${escapeHtml(entry.phrase)}">${selectedIds.has(entry.id) ? '✓' : ''}</button>
       <div class="result-body">
         <div class="result-heading">
           <div class="result-phrase">${escapeHtml(entry.phrase)}</div>
@@ -16641,8 +16727,7 @@
       if(event.target.closest('.result-pin')) return;
       if(selectedIds.has(entry.id)) selectedIds.delete(entry.id);
       else selectedIds.add(entry.id);
-      renderResults();
-      renderSelectedBar();
+      syncSelection();
     });
     return card;
   }
@@ -16654,56 +16739,59 @@
   queryInput.addEventListener('input', renderResults);
 
   // ---------- selected bar ----------
+  function updateDockHeight(){
+    document.documentElement.style.setProperty('--dock-height', selectedBar.classList.contains('show') ? selectedBar.offsetHeight + 'px' : '0px');
+  }
+  if(window.ResizeObserver) new ResizeObserver(updateDockHeight).observe(selectedBar);
+  window.addEventListener('resize',updateDockHeight);
   function renderSelectedBar(){
-    if(selectedIds.size === 0){
-      selectedBar.classList.remove('show');
-      return;
-    }
-    selectedBar.classList.add('show');
-    const picked = entries.filter(e => selectedIds.has(e.id));
-    selectedPreview.innerHTML = picked.map(e=>{
-      const en = escapeHtml(e.phrase);
-      const ja = e.translation ? `<span class="preview-ja"> — ${escapeHtml(e.translation)}</span>` : '';
-      return `<div class="preview-line">${en}${ja}</div>`;
-    }).join('');
+    selectedBar.classList.toggle('show', selectedIds.size > 0);
+    const expanded = !selectedPreview.hidden;
+    $('selectionToggle').innerHTML = '選択中 <span id="selectedCount">' + selectedIds.size + '</span>件 · ' + (expanded ? '閉じる ▾' : '確認する ▴');
+    selectedPreview.innerHTML = pickedEntries().map(e=>`<div class="preview-line"><span>${escapeHtml(e.phrase)}${e.translation ? '<span class="preview-ja">'+escapeHtml(e.translation)+'</span>' : ''}</span><button class="remove-picked" data-id="${escapeHtml(e.id)}" aria-label="選択を外す：${escapeHtml(e.phrase)}">×</button></div>`).join('');
+    updateDockHeight();
   }
-
-  function copyText(text, emptyMsg){
-    if(!text){ showToast(emptyMsg); return; }
-    navigator.clipboard.writeText(text).then(()=>{
-      showToast('コピーしました');
-    }).catch(()=>{
-      // fallback for contexts where clipboard API is blocked
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      try{ document.execCommand('copy'); showToast('コピーしました'); }
-      catch(e){ showToast('コピーできませんでした'); }
-      ta.remove();
-    });
-  }
-
-  copyEnBtn.addEventListener('click', ()=>{
-    const phrases = entries.filter(e => selectedIds.has(e.id)).map(e => e.phrase);
-    copyText(phrases.join(', '), 'コピーする内容がありません');
-  });
-  copyJaBtn.addEventListener('click', ()=>{
-    const picked = entries.filter(e => selectedIds.has(e.id));
-    const translations = picked.map(e => e.translation).filter(Boolean);
-    if(translations.length === 0){
-      showToast('選択した項目に日本語訳がありません');
-      return;
+  async function copyText(text, emptyMsg){
+    if(!text){showToast(emptyMsg);return;}
+    try{
+      if(!navigator.clipboard) throw new Error('clipboard unavailable');
+      await navigator.clipboard.writeText(text); showToast('コピーしました');
+    }catch(e){
+      const previousFocus = document.activeElement;
+      const ta = document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;font-size:16px;';
+      document.body.appendChild(ta);ta.select();
+      try{showToast(document.execCommand('copy') ? 'コピーしました' : 'コピーできませんでした');}catch(e){showToast('コピーできませんでした');}
+      ta.remove();previousFocus?.focus({preventScroll:true});
     }
-    copyText(translations.join('\n'), 'コピーする内容がありません');
+  }
+  copyEnBtn.addEventListener('click',()=>copyText(pickedEntries().map(e=>e.phrase).join(', '),'コピーする内容がありません'));
+  copyJaBtn.addEventListener('click',()=>copyText(pickedEntries().map(e=>e.translation).filter(Boolean).join('\n'),'選択した項目に日本語訳がありません'));
+  clearSelectedBtn.addEventListener('click',()=>{selectedIds.clear();syncSelection();});
+  $('selectionToggle').addEventListener('click',()=>{
+    selectedPreview.hidden = !selectedPreview.hidden;
+    $('selectionToggle').setAttribute('aria-expanded',String(!selectedPreview.hidden));renderSelectedBar();
   });
-  clearSelectedBtn.addEventListener('click', ()=>{
-    selectedIds.clear();
-    renderResults();
-    renderSelectedBar();
+  selectedPreview.addEventListener('click',event=>{
+    const button = event.target.closest('.remove-picked');if(!button)return;
+    const index = Array.from(selectedPreview.querySelectorAll('.remove-picked')).indexOf(button);
+    selectedIds.delete(button.dataset.id);syncSelection();
+    const remaining = selectedPreview.querySelectorAll('.remove-picked');
+    (remaining[Math.min(index,remaining.length-1)] || (selectedIds.size ? $('selectionToggle') : queryInput)).focus({preventScroll:true});
   });
+  $('categoryButton').addEventListener('click',()=>{$('categorySearch').value='';renderChips();$('categoryDialog').showModal();});
+  $('closeCategories').addEventListener('click',()=>$('categoryDialog').close());
+  $('categorySearch').addEventListener('input',renderChips);
+  $('clearQuery').addEventListener('click',()=>{queryInput.value='';renderResults();queryInput.focus();});
+  $('matchMode').addEventListener('change',renderResults);
+  $('resetFilters').addEventListener('click',()=>{queryInput.value='';activeCategory=null;$('categoryButton').textContent='カテゴリ：すべて ▾';$('matchMode').value='any';renderChips();renderResults();});
+  $('detailToggle').addEventListener('click',()=>{
+    showDescriptions=!showDescriptions;document.body.classList.toggle('compact',!showDescriptions);
+    $('detailToggle').setAttribute('aria-pressed',String(showDescriptions));
+    try{localStorage.setItem('promptWordDescriptions',showDescriptions ? 'show' : 'hide');}catch(e){}
+  });
+  $('loadMore').addEventListener('click',()=>{const start=resultLimit;resultLimit+=60;appendResults(start);resultsList.children[start]?.querySelector('.result-check').focus({preventScroll:true});});
+  $('manageQuery').addEventListener('input',()=>{manageLimit=40;renderManageList();});
+  $('manageMore').addEventListener('click',()=>{const previous=manageLimit;manageLimit+=40;renderManageList(true);manageList.children[previous]?.querySelector('textarea').focus({preventScroll:true});});
 
   // ---------- add single ----------
   addOneBtn.addEventListener('click', ()=>{
@@ -16740,13 +16828,16 @@
   });
 
   // ---------- manage list ----------
-  function renderManageList(){
+  function renderManageList(append=false){
     totalCount.textContent = entries.length;
     tabBadge.textContent = entries.length;
-    manageList.innerHTML = '';
-    // newest first
-    const ordered = entries.slice().reverse();
-    ordered.forEach(entry=>{
+    const start = append ? manageList.children.length : 0;
+    if(!append) manageList.innerHTML = '';
+    const q = $('manageQuery').value.trim().toLowerCase();
+    const ordered = entries.slice().reverse().filter(e=>!q || [e.phrase,e.translation,e.description,...(e.categories||[])].join(' ').toLowerCase().includes(q));
+    $('manageStatus').textContent = ordered.length + ' 件中 ' + Math.min(manageLimit,ordered.length) + ' 件を表示';
+    $('manageMore').hidden = ordered.length <= manageLimit;
+    ordered.slice(start,manageLimit).forEach(entry=>{
       const card = document.createElement('div');
       card.className = 'manage-card';
       const tagStr = (entry.categories||[]).join(', ');
@@ -16760,6 +16851,11 @@
           <button class="btn ghost delete-entry-btn">削除</button>
         </div>
       `;
+      card.querySelectorAll('[data-field]').forEach(input=>{
+        const names={translation:'日本語訳',description:'説明・メモ',categories:'カテゴリ'};
+        input.id='edit-'+entry.id+'-'+input.dataset.field;
+        const label=document.createElement('label');label.className='manage-label';label.htmlFor=input.id;label.textContent=names[input.dataset.field];input.before(label);
+      });
       const translationInput = card.querySelector('[data-field="translation"]');
       const descriptionInput = card.querySelector('[data-field="description"]');
       const tagInput = card.querySelector('[data-field="categories"]');
@@ -16773,6 +16869,7 @@
         renderResults();
       });
       card.querySelector('.delete-entry-btn').addEventListener('click', ()=>{
+        if(!confirm('「'+entry.phrase+'」を削除しますか？')) return;
         entries = entries.filter(e => e.id !== entry.id);
         selectedIds.delete(entry.id);
         saveEntries();
@@ -16787,12 +16884,7 @@
 
   // ---------- export / import ----------
   exportBtn.addEventListener('click', ()=>{
-    const text = JSON.stringify(entries, null, 2);
-    navigator.clipboard.writeText(text).then(()=>{
-      showToast('データをコピーしました。メモ等に貼って保存してください');
-    }).catch(()=>{
-      showToast('コピーできませんでした');
-    });
+    copyText(JSON.stringify(entries, null, 2), '書き出すデータがありません');
   });
   importBtn.addEventListener('click', ()=>{
     const text = prompt('書き出したJSONデータを貼り付けてください（既存のデータは置き換わります）');
