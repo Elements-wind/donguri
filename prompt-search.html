@@ -136,27 +136,9 @@
   }
 
   /* result cards */
-  .pinned-section{
-    margin-bottom:16px;
-    padding:12px;
-    border:1px solid rgba(47,93,70,0.25);
-    border-radius:10px;
-    background:rgba(255,255,255,0.35);
-  }
-  .pinned-heading{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:8px;
-  }
-  .pinned-heading h2{font-size:13px; margin:0;}
-  #pinnedCount{font-size:12px; color:var(--accent); font-weight:600;}
-  #pinnedEmpty{font-size:12px; line-height:1.6; color:#63665f; margin:0;}
-  #pinnedList{display:flex; flex-direction:column; gap:8px;}
   .result-heading{display:flex; align-items:flex-start; gap:8px;}
   .result-heading .result-phrase{flex:1; min-width:0;}
-  .result-pin{
+  .result-favorite{
     display:flex;
     align-items:center;
     justify-content:center;
@@ -170,14 +152,14 @@
     color:#63665f;
     cursor:pointer;
   }
-  .result-pin[aria-pressed="true"]{
+  .result-favorite[aria-pressed="true"]{
     color:var(--accent);
     background:var(--accent-soft);
     border-color:var(--accent);
   }
-  .result-pin:disabled{opacity:0.35; cursor:default;}
-  .result-pin:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
-  .result-pin svg{width:20px; height:20px; pointer-events:none;}
+  .result-favorite:disabled{opacity:0.35; cursor:default;}
+  .result-favorite:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .result-favorite svg{width:20px; height:20px; pointer-events:none;}
   #resultsList{
     display:flex;
     flex-direction:column;
@@ -435,14 +417,6 @@
   .filter-row .btn{padding:8px 11px;font-size:12px;min-height:40px;}
   #categoryButton{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #matchMode{width:106px;font-size:12px;min-height:40px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink);padding:0 5px;}
-  .pinned-section{padding:0;border:1px solid #cfdee3;background:#f8fbfc;border-radius:12px;margin:0 0 18px;overflow:hidden;}
-  .pinned-section>summary{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 14px;cursor:pointer;font-size:13px;font-weight:600;list-style:none;}
-  .pinned-section>summary::-webkit-details-marker{display:none;}
-  .pinned-section>summary::after{content:'＋';color:var(--muted);margin-left:10px;}
-  .pinned-section[open]>summary::after{content:'−';}
-  #pinnedCount{margin-left:auto;}
-  #pinnedList{padding:0 10px 10px;} #pinnedList:empty{padding:0;}
-  #pinnedEmpty{padding:0 14px 14px;}
   .list-heading{display:flex;align-items:center;justify-content:space-between;margin:0 1px 12px;gap:8px;}
   #resultCount{font-size:13px;font-weight:700;}
   .list-hint{font-size:11px;color:var(--muted);margin:4px 0 0;}
@@ -453,7 +427,7 @@
   .result-check{width:26px;height:26px;margin-top:7px;padding:0;background:white;border-width:1.5px;border-radius:8px;cursor:pointer;}
   .result-phrase{font-size:14px;font-weight:600;padding-top:4px;line-height:1.55;}
   .result-translation{font-size:13px;color:#526e77;line-height:1.6;margin-top:0;}
-  .result-pin{width:38px;min-height:38px;padding:9px;border-color:transparent;background:transparent;border-radius:9px;}
+  .result-favorite{width:38px;min-height:38px;padding:9px;border-color:transparent;background:transparent;border-radius:9px;}
   .result-description{font-size:12px;color:#526e77;font-style:normal;line-height:1.65;border-color:#a3c4c7;margin-top:10px;}
   body.compact .result-description{display:none;}
   .result-tags{gap:5px;margin-top:8px;} .result-tag{font-size:10px;background:#f0f5f6;color:#5a747b;border:0;padding:3px 6px;}
@@ -485,6 +459,9 @@
   @media(min-width:700px){.wrap{padding-top:32px;}#resultsList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.result-card{height:100%;}h1{font-size:25px;}.search-tools{padding-top:12px;} }
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;}}
 
+  .tabs button{font-size:12px;padding:10px 4px;white-space:nowrap;}
+  .tabs .tab-badge{font-size:10px;padding:1px 4px;min-width:16px;}
+  .result-favorite{width:44px;min-height:44px;}
 </style>
 </head>
 <body>
@@ -494,6 +471,7 @@
 
   <div class="tabs">
     <button class="on" data-tab="search">検索</button>
+    <button data-tab="favorites">お気に入り <span class="tab-badge" id="favoriteBadge">0</span></button>
     <button data-tab="manage">登録・管理 <span class="tab-badge" id="tabBadge">0</span></button>
   </div>
 
@@ -503,7 +481,6 @@
       <div class="search-box"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="queryInput" aria-label="単語を検索" placeholder="日本語・英語で探す" autocomplete="off"><button id="clearQuery" aria-label="検索語を消す" hidden>×</button></div>
       <div class="filter-row"><button class="btn" id="categoryButton" aria-haspopup="dialog">カテゴリ：すべて ▾</button><select id="matchMode" aria-label="複数の検索語の条件"><option value="any">いずれか一致</option><option value="all">すべて一致</option></select><button class="btn ghost" id="resetFilters">リセット</button></div>
     </div>
-    <details class="pinned-section"><summary id="pinnedHeading">ピン留め <span id="pinnedCount">0 / 10</span></summary><p id="pinnedEmpty">よく使う単語をピン留めできます（最大10個）。</p><div id="pinnedList"></div></details>
     <div class="list-heading"><div><span id="resultCount" role="status" aria-live="polite"></span><p class="list-hint">タップで選択 · 選んだ順にコピー</p></div><button class="btn ghost" id="detailToggle" aria-pressed="true">説明を表示</button></div>
     <div id="resultsList"></div>
     <div id="emptyState" style="display:none;">見つかりませんでした。<br>検索語を短くするか、カテゴリを「すべて」に戻してみてください。</div><button class="btn ghost" id="loadMore" hidden>さらに表示</button>
@@ -563,12 +540,8 @@
 <script>
 (function(){
   const STORAGE_KEY = 'promptWordEntries_v1';
-  const MAX_PINS = 10;
 
   const queryInput = document.getElementById('queryInput');
-  const pinnedList = document.getElementById('pinnedList');
-  const pinnedCount = document.getElementById('pinnedCount');
-  const pinnedEmpty = document.getElementById('pinnedEmpty');
   const categoryChips = document.getElementById('categoryChips');
   const resultsList = document.getElementById('resultsList');
   const emptyState = document.getElementById('emptyState');
@@ -592,6 +565,11 @@
   const toast = document.getElementById('toast');
 
   let entries = [];
+  let activeTab = 'search';
+  const filterStates = {
+    search: {query:'', category:null, match:'any'},
+    favorites: {query:'', category:null, match:'any'}
+  };
   let activeCategory = null; // null = すべて
   let selectedIds = new Set();
   let toastTimer = null;
@@ -686,80 +664,60 @@
     }
   }
 
-  // Pin state belongs to each entry so existing JSON backups include it.
-  function normalizePins(){
-    let count = 0;
+  // Migrate the previous pin flag without discarding any saved favorites.
+  function normalizeFavorites(){
+    let changed = false;
     entries.forEach(entry=>{
-      entry.pinned = entry.pinned === true && count < MAX_PINS;
-      if(entry.pinned) count++;
+      const value = typeof entry.favorite === 'boolean' ? entry.favorite : entry.pinned === true;
+      if(entry.favorite !== value || Object.hasOwn(entry,'pinned')) changed = true;
+      entry.favorite = value;
+      delete entry.pinned;
     });
+    return changed;
   }
-
-  function togglePin(entry, sourceList){
-    if(!entry.pinned && entries.filter(e=>e.pinned).length >= MAX_PINS){
-      showToast('ピン留めは最大10個です。先に1個外してください');
-      return;
-    }
-    const sourceCard = Array.from(sourceList.children).find(c=>c.dataset.entryId === entry.id);
-    const removingPinnedCard = sourceList === pinnedList && entry.pinned;
-    const anchor = removingPinnedCard
-      ? sourceCard?.nextElementSibling || sourceCard?.previousElementSibling || document.querySelector('.search-box')
-      : sourceCard;
-    const anchorTop = anchor?.getBoundingClientRect().top;
-    const restoreFocus = removingPinnedCard && sourceCard?.contains(document.activeElement);
-    const previous = entry.pinned;
-    entry.pinned = !previous;
-    if(!saveEntries()){
-      entry.pinned = previous;
-      return;
-    }
-    // Keep search cards in place: rebuilding them discards the browser's scroll anchor.
-    const pins = entries.filter(e=>e.pinned);
-    renderPinnedList(pins);
-    const byId = new Map(entries.map(e=>[e.id, e]));
-    [resultsList, pinnedList].forEach(list=>{
-      Array.from(list.children).forEach(card=>{
-        const item = byId.get(card.dataset.entryId);
-        if(item) updatePinButton(card, item, pins.length);
-      });
-    });
-    if(restoreFocus){
-      const focusTarget = anchor?.querySelector('.result-pin') || document.getElementById('pinnedHeading');
-      focusTarget.focus({preventScroll:true});
-    }
-    // Compensate only for movement still present after native scroll anchoring.
-    // Do this synchronously so an intermediate shifted frame is never painted.
-    if(anchor?.isConnected && Number.isFinite(anchorTop)){
-      const delta = anchor.getBoundingClientRect().top - anchorTop;
-      if(Math.abs(delta) > 0.5) window.scrollBy({top:delta, left:0, behavior:'instant'});
-    }
-    showToast(entry.pinned ? 'ピン留めしました' : 'ピン留めを外しました');
+  function updateFavoriteBadge(){
+    $('favoriteBadge').textContent = entries.filter(e=>e.favorite).length;
   }
-
-  function updatePinButton(card, entry, pinCount){
-    const button = card.querySelector('.result-pin');
-    button.setAttribute('aria-pressed', String(!!entry.pinned));
-    button.setAttribute('aria-label', (entry.pinned ? 'ピン留めを外す' : 'ピン留めする') + '：' + entry.phrase);
-    button.title = entry.pinned ? 'ピン留めを外す' : pinCount >= MAX_PINS ? '最大10個です。先に1個外してください' : 'ピン留めする';
-    button.disabled = !entry.pinned && pinCount >= MAX_PINS;
-    button.querySelector('svg').setAttribute('fill', entry.pinned ? 'currentColor' : 'none');
+  function updateResultStatus(){
+    const q = queryInput.value.trim();
+    const favoriteView = activeTab === 'favorites';
+    emptyState.style.display = filteredResults.length ? 'none' : 'block';
+    emptyState.textContent = favoriteView && !entries.some(e=>e.favorite)
+      ? 'お気に入りはまだありません。「検索」で単語の星を押すと、ここにまとめられます。'
+      : '見つかりませんでした。検索語を短くするか、カテゴリを「すべて」に戻してみてください。';
+    $('resultCount').textContent = filteredResults.length.toLocaleString() + ' 件' + (q || activeCategory ? ' が見つかりました' : favoriteView ? 'のお気に入り' : 'のことば');
+    updateFavoriteBadge();
   }
-
-  function renderPinnedList(pins){
-    const ids = new Set(pins.map(e=>e.id));
-    Array.from(pinnedList.children).forEach(card=>{
-      if(!ids.has(card.dataset.entryId)) card.remove();
-    });
-    const cards = new Map(Array.from(pinnedList.children).map(card=>[card.dataset.entryId, card]));
-    pins.forEach((entry, index)=>{
-      const card = cards.get(entry.id) || createResultCard(entry, pinnedList, pins.length);
-      card.classList.toggle('picked', selectedIds.has(entry.id));
-      card.querySelector('.result-check').textContent = selectedIds.has(entry.id) ? '✓' : '';
-      card.querySelector('.result-check').setAttribute('aria-pressed',String(selectedIds.has(entry.id)));
-      if(pinnedList.children[index] !== card) pinnedList.insertBefore(card, pinnedList.children[index] || null);
-    });
-    pinnedCount.textContent = pins.length + ' / ' + MAX_PINS;
-    pinnedEmpty.style.display = pins.length ? 'none' : 'block';
+  function toggleFavorite(entry,card){
+    const previous = entry.favorite;
+    entry.favorite = !previous;
+    if(!saveEntries()){entry.favorite = previous;return;}
+    if(activeTab === 'favorites' && !entry.favorite){
+      const anchor = card.nextElementSibling || card.previousElementSibling;
+      const anchorTop = anchor?.getBoundingClientRect().top;
+      const hadFocus = card.contains(document.activeElement);
+      card.remove();
+      filteredResults = filteredResults.filter(e=>e.id !== entry.id);
+      appendResults(resultsList.children.length);
+      updateResultStatus();
+      if(hadFocus) (anchor?.querySelector('.result-favorite') || queryInput).focus({preventScroll:true});
+      if(anchor?.isConnected && Number.isFinite(anchorTop)){
+        const delta = anchor.getBoundingClientRect().top - anchorTop;
+        if(Math.abs(delta)>0.5) window.scrollBy({top:delta,left:0,behavior:'instant'});
+      }
+    }else{
+      updateFavoriteButton(card,entry);
+      updateFavoriteBadge();
+    }
+    showToast(entry.favorite ? 'お気に入りに追加しました' : 'お気に入りから外しました');
+  }
+  function updateFavoriteButton(card,entry){
+    const button = card.querySelector('.result-favorite');
+    const label = entry.favorite ? 'お気に入りから外す' : 'お気に入りに追加';
+    button.setAttribute('aria-pressed',String(entry.favorite));
+    button.setAttribute('aria-label',label+'：'+entry.phrase);
+    button.title = label;
+    button.querySelector('svg').setAttribute('fill',entry.favorite ? 'currentColor' : 'none');
   }
 
   function defaultSeed(){
@@ -16612,13 +16570,25 @@
 
   // ---------- tabs ----------
   document.querySelectorAll('.tabs button').forEach(btn=>{
+    btn.setAttribute('aria-pressed',String(btn.dataset.tab===activeTab));
     btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');
-      const tab = btn.dataset.tab;
-      document.getElementById('view-search').classList.toggle('active', tab==='search');
-      document.getElementById('view-manage').classList.toggle('active', tab==='manage');
-      if(tab === 'manage') renderManageList();
+      if(filterStates[activeTab]) filterStates[activeTab] = {query:queryInput.value,category:activeCategory,match:$('matchMode').value};
+      activeTab = btn.dataset.tab;
+      document.querySelectorAll('.tabs button').forEach(b=>{
+        b.classList.toggle('on',b===btn);
+        b.setAttribute('aria-pressed',String(b===btn));
+      });
+      $('view-search').classList.toggle('active',activeTab!=='manage');
+      $('view-manage').classList.toggle('active',activeTab==='manage');
+      if(activeTab==='manage') renderManageList();
+      else{
+        const state = filterStates[activeTab];
+        queryInput.value=state.query;activeCategory=state.category;$('matchMode').value=state.match;
+        queryInput.placeholder=activeTab==='favorites' ? 'お気に入りの中から探す' : '日本語・英語で探す';
+        queryInput.setAttribute('aria-label',activeTab==='favorites' ? 'お気に入りを検索' : '単語を検索');
+        $('categoryButton').textContent='カテゴリ：'+(activeCategory||'すべて')+' ▾';
+        renderChips();renderResults();
+      }
       window.scrollTo({top:0,behavior:'instant'});
     });
   });
@@ -16663,19 +16633,15 @@
   function renderResults(){
     resultLimit = 60;
     const q = queryInput.value.trim();
-    filteredResults = entries.filter(e=>(!activeCategory || (e.categories||[]).includes(activeCategory)) && matchesQuery(e,q));
+    filteredResults = entries.filter(e=>(activeTab !== 'favorites' || e.favorite) && (!activeCategory || (e.categories||[]).includes(activeCategory)) && matchesQuery(e,q));
     resultsList.replaceChildren();
-    emptyState.style.display = filteredResults.length ? 'none' : 'block';
-    $('resultCount').textContent = filteredResults.length.toLocaleString() + ' 件' + (q || activeCategory ? ' が見つかりました' : 'のことば');
+    updateResultStatus();
     $('clearQuery').hidden = !queryInput.value;
-    pinnedList.replaceChildren();
-    renderPinnedList(entries.filter(e=>e.pinned));
     appendResults(0);
   }
   function appendResults(start){
-    const count = entries.filter(e=>e.pinned).length;
     const fragment = document.createDocumentFragment();
-    filteredResults.slice(start,resultLimit).forEach(e=>fragment.appendChild(createResultCard(e,resultsList,count)));
+    filteredResults.slice(start,resultLimit).forEach(e=>fragment.appendChild(createResultCard(e)));
     resultsList.appendChild(fragment);
     $('loadMore').hidden = resultLimit >= filteredResults.length;
     $('loadMore').textContent = 'さらに60件表示（残り ' + Math.max(0,filteredResults.length-resultLimit) + ' 件）';
@@ -16695,7 +16661,7 @@
     return Array.from(selectedIds).map(id=>byId.get(id)).filter(Boolean);
   }
 
-  function createResultCard(entry, sourceList, pinCount){
+  function createResultCard(entry){
     const card = document.createElement('div');
     card.className = 'result-card' + (selectedIds.has(entry.id) ? ' picked' : '');
     card.dataset.entryId = entry.id;
@@ -16704,12 +16670,11 @@
       <div class="result-body">
         <div class="result-heading">
           <div class="result-phrase">${escapeHtml(entry.phrase)}</div>
-          <button type="button" class="result-pin" aria-pressed="${!!entry.pinned}"
-            aria-label="${entry.pinned ? 'ピン留めを外す' : 'ピン留めする'}：${escapeHtml(entry.phrase)}"
-            title="${entry.pinned ? 'ピン留めを外す' : pinCount >= MAX_PINS ? '最大10個です。先に1個外してください' : 'ピン留めする'}"
-            ${!entry.pinned && pinCount >= MAX_PINS ? 'disabled' : ''}>
-            <svg viewBox="0 0 24 24" fill="${entry.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <path d="M8 3h8M9 3v6l-3 4v2h12v-2l-3-4V3M12 15v6" />
+          <button type="button" class="result-favorite" aria-pressed="${!!entry.favorite}"
+            aria-label="${entry.favorite ? 'お気に入りから外す' : 'お気に入りに追加'}：${escapeHtml(entry.phrase)}"
+            title="${entry.favorite ? 'お気に入りから外す' : 'お気に入りに追加'}">
+            <svg viewBox="0 0 24 24" fill="${entry.favorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" />
             </svg>
           </button>
         </div>
@@ -16718,13 +16683,13 @@
         <div class="result-tags">${(entry.categories||[]).map(c=>`<span class="result-tag">${escapeHtml(c)}</span>`).join('')}</div>
       </div>
     `;
-    card.querySelector('.result-pin').addEventListener('click', event=>{
+    card.querySelector('.result-favorite').addEventListener('click', event=>{
       event.stopPropagation();
-      togglePin(entry, sourceList);
+      toggleFavorite(entry,card);
     });
     card.addEventListener('click', event=>{
-      // A disabled pin must not accidentally select the surrounding card.
-      if(event.target.closest('.result-pin')) return;
+      // Favoriting must not change prompt selection.
+      if(event.target.closest('.result-favorite')) return;
       if(selectedIds.has(entry.id)) selectedIds.delete(entry.id);
       else selectedIds.add(entry.id);
       syncSelection();
@@ -16900,14 +16865,13 @@
         categories: Array.isArray(e.categories) ? e.categories : [],
         keywords: e.keywords || '',
         seeded: !!e.seeded,
-        pinned: e.pinned === true
+        favorite: typeof e.favorite === 'boolean' ? e.favorite : e.pinned === true
       }));
-      const importedPinCount = entries.filter(e=>e.pinned).length;
-      normalizePins();
+      normalizeFavorites();
       selectedIds.clear();
       saveEntries();
       renderSelectedBar();
-      showToast(importedPinCount > MAX_PINS ? '読み込みました（ピン留めは先頭10個を復元）' : '読み込みました');
+      showToast('読み込みました');
       renderChips();
       renderResults();
       renderManageList();
@@ -16918,7 +16882,7 @@
 
   // ---------- init ----------
   loadEntries();
-  normalizePins();
+  if(normalizeFavorites()) saveEntries();
   renderChips();
   renderResults();
   renderManageList();
