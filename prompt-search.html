@@ -637,11 +637,43 @@
     });
   }
 
+  const CATEGORY_MERGES = {
+    '視線誘導':'視線',
+    '光':'光・ライティング','ライティング':'光・ライティング','明暗法':'光・ライティング','キラキラ':'光・ライティング',
+    '画質':'画質・完成度','完成度':'画質・完成度','描き込み':'画質・完成度',
+    'カメラ':'構図','空気遠近法':'構図',
+    '冬':'冬・雪','雪':'冬・雪','霜':'冬・雪',
+    'デザイン性':'デザイン','模様':'デザイン','構造':'デザイン',
+    'サイバー':'サイバー・機械','機械':'サイバー・機械',
+    '属性':'エフェクト','吐息':'エフェクト',
+    '建築':'背景','水面':'背景','花':'背景','足跡':'背景',
+    '羽根':'翼','天使':'翼','堕天使':'翼','悪魔':'翼','蝶':'翼','妖精':'翼'
+  };
+  function normalizeCategoryEntries(){
+    let changed = false;
+    entries.forEach(entry=>{
+      const original = entry.categories || [];
+      const categories = [...new Set(original.map(category=>CATEGORY_MERGES[category] || category))];
+      if(JSON.stringify(original) !== JSON.stringify(categories)){
+        // Preserve the specific former category names as searchable words.
+        let keywords = String(entry.keywords || '');
+        original.filter(category=>CATEGORY_MERGES[category]).forEach(category=>{
+          if(!keywords.split(/\s+/).includes(category)) keywords += (keywords ? ' ' : '') + category;
+        });
+        entry.keywords = keywords;
+        entry.categories = categories;
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
   function loadEntries(){
     let raw = null;
     try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){ /* ignore */ }
     entries = raw ? JSON.parse(raw) : [];
     normalizeGenderEntries();
+    const categoriesChanged = normalizeCategoryEntries();
 
     let storedVersion = 0;
     try{ storedVersion = parseInt(localStorage.getItem(SEED_VERSION_KEY) || '0', 10); }catch(e){ /* ignore */ }
@@ -678,12 +710,13 @@
       if(saveEntries()){
         try{ localStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION)); }catch(e){ /* ignore */ }
       }
-    } else if(raw === null){
+    } else if(raw === null || categoriesChanged){
       saveEntries();
     }
   }
   function saveEntries(){
     normalizeGenderEntries();
+    normalizeCategoryEntries();
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
       return true;
@@ -10705,7 +10738,7 @@
     "translation": "視線誘導の線を活かした構図",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "道、建築の線、光の筋などを使って注目点へ視線を導く。線が向かう対象と方向を指定すると構図を組みやすい。",
@@ -10796,7 +10829,7 @@
     "translation": "主役を明確にする",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "画面の主役がすぐ分かるように、配置や明暗、描き込みを整理する。何を主役にするかを明示すると意図を伝えやすい。",
@@ -10808,7 +10841,7 @@
     "translation": "明確な注目点を一つに絞る",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "最初に視線を集める場所を一つに絞る。ここでの焦点は構図上の注目点を指し、カメラのピントとは別に指定できる。",
@@ -10820,7 +10853,7 @@
     "translation": "キャラクターの顔を主な注目点にする",
     "categories": [
       "構図",
-      "視線誘導",
+      "視線",
       "顔"
     ],
     "keywords": "構図 視線誘導 顔 配置 レイアウト 画面構成",
@@ -10833,7 +10866,7 @@
     "translation": "瞳を主な注目点にする",
     "categories": [
       "構図",
-      "視線誘導",
+      "視線",
       "瞳"
     ],
     "keywords": "構図 視線誘導 瞳 配置 レイアウト 画面構成",
@@ -10846,7 +10879,7 @@
     "translation": "武器を主な注目点にする",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "武器の形や装飾へ視線が集まる構図にする。人物の持ち方、武器の向き、背景との対比を添えると見せ場を作れる。",
@@ -10858,7 +10891,7 @@
     "translation": "空を主な注目点にする",
     "categories": [
       "構図",
-      "視線誘導",
+      "視線",
       "背景"
     ],
     "keywords": "構図 視線誘導 背景 配置 レイアウト 画面構成",
@@ -10871,7 +10904,7 @@
     "translation": "視覚的な優先順位を明確にする",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "主役、補助要素、背景の順に見る場所が伝わるよう、明暗や大きさ、描き込みを整理する。目立たせる対象の順序を添えると具体化できる。",
@@ -10883,7 +10916,7 @@
     "translation": "注目点を整理したシンプルな構成",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "注目点の数や関係を整理し、視線の行き先が分かりやすい構成にする。主役を支える補助要素も控えめに配置できる。",
@@ -10895,7 +10928,7 @@
     "translation": "キャラクターへ向かう視線誘導の線",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "道や柱、枝などの線が人物へ向かうよう配置する。人物に視線を集めるための方向性を作る。",
@@ -10907,7 +10940,7 @@
     "translation": "顔へ向かう視線の流れ",
     "categories": [
       "構図",
-      "視線誘導",
+      "視線",
       "顔"
     ],
     "keywords": "構図 視線誘導 顔 配置 レイアウト 画面構成",
@@ -10920,7 +10953,7 @@
     "translation": "キャラクターへ視線を導く光の筋",
     "categories": [
       "構図",
-      "視線誘導",
+      "視線",
       "ライティング",
       "光"
     ],
@@ -10934,7 +10967,7 @@
     "translation": "武器を視線誘導の線として使う",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "剣や槍などの長い形を使い、注目点へ視線を導く。武器の向きと、視線を集めたい対象を指定する。",
@@ -10946,7 +10979,7 @@
     "translation": "人物の視線で見る側の目を導く",
     "categories": [
       "構図",
-      "視線誘導",
+      "視線",
       "瞳"
     ],
     "keywords": "構図 視線誘導 瞳 配置 レイアウト 画面構成",
@@ -10959,7 +10992,7 @@
     "translation": "注目点へ見る側の視線を導く構図",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "線、明暗、色、要素の配置を使って、構図上の注目点へ視線を集める。注目点を顔、手、物などで明示すると効果的。",
@@ -11053,7 +11086,7 @@
     "translation": "見やすく読み取りやすい構図",
     "categories": [
       "構図",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 視線誘導 配置 レイアウト 画面構成",
     "description": "主役の形、姿勢、要素同士の関係が読み取りやすい構図にする。輪郭や余白、明暗を整理し、画面の見せ場を明確にする。",
@@ -12951,7 +12984,7 @@
     "categories": [
       "構図",
       "画質",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 画質 視線誘導 細密 精細 細部",
     "description": "人物を細かく描き、背景の形や要素を少なくする。主役の衣装や表情を引き立てる。",
@@ -12964,7 +12997,7 @@
     "categories": [
       "構図",
       "画質",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 画質 視線誘導 細密 精細 細部",
     "description": "背景を描き込みながら、人物のシルエットは見分けやすく残す。重なりや明暗を整理する。",
@@ -12977,7 +13010,7 @@
     "categories": [
       "構図",
       "画質",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 画質 視線誘導 細密 精細 細部",
     "description": "画面で最も目を引く被写体を一つにする。周囲の要素の強さを調整して主役を見せる。",
@@ -12990,7 +13023,7 @@
     "categories": [
       "構図",
       "画質",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 画質 視線誘導 細密 精細 細部",
     "description": "主役、背景、余白の位置を整え、要素同士の関係が伝わるようにする。",
@@ -13003,7 +13036,7 @@
     "categories": [
       "構図",
       "画質",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 画質 視線誘導 筆使い 筆跡 絵の具 細密 精細 細部",
     "description": "主役、補助要素、背景の順に注目が移るよう、明暗や大きさを整理する。",
@@ -13016,7 +13049,7 @@
     "categories": [
       "構図",
       "画質",
-      "視線誘導"
+      "視線"
     ],
     "keywords": "構図 画質 視線誘導 細密 精細 細部",
     "description": "形や細部を精密に描きながら、要素の数や配置を整理する。",
