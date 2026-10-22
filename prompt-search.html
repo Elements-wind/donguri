@@ -592,7 +592,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 33; // bump when the baseline entry set changes below
+  const SEED_VERSION = 34; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   // Keep all stored and imported wording aligned with the male character setting.
@@ -647,8 +647,16 @@
           matched.add(seed);
         }
       });
-      try{ localStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION)); }catch(e){ /* ignore */ }
-      saveEntries();
+      // Consolidate the requested poster-quality duplicate, retaining its favorite flag.
+      const removedPosterEntries = entries.filter(e => e.phrase === 'quality is on par with a high-end art poster');
+      const keptPosterEntry = entries.find(e => e.phrase === 'level of craftsmanship reminiscent of high-end art posters');
+      if(keptPosterEntry && removedPosterEntries.some(e => e.favorite === true || (typeof e.favorite !== 'boolean' && e.pinned === true))){
+        keptPosterEntry.favorite = true;
+      }
+      entries = entries.filter(e => e.phrase !== 'quality is on par with a high-end art poster');
+      if(saveEntries()){
+        try{ localStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION)); }catch(e){ /* ignore */ }
+      }
     } else if(raw === null){
       saveEntries();
     }
@@ -9210,17 +9218,6 @@
     "keywords": ""
   },
   {
-    "id": "mu8d5cbn81hwu2",
-    "phrase": "quality is on par with a high-end art poster",
-    "translation": "高級アートポスターのような完成度",
-    "description": "展示や印刷用のアートポスターを思わせる、構図と細部の整った完成度を求める。文字の有無や比率は別に指定する。",
-    "categories": [
-      "画質",
-      "完成度"
-    ],
-    "keywords": ""
-  },
-  {
     "id": "mu8fmn6j0mqiyx",
     "phrase": "luminous transparency",
     "categories": [
@@ -16563,6 +16560,18 @@
     ],
     "keywords": "翼 ファンタジー 構図",
     "description": "雲や隙間を通る光の筋と翼を組み合わせる。",
+    "seeded": true
+  },
+  {
+    "id": "gaze_20261022_no_camera",
+    "phrase": "No eye contact with the camera",
+    "translation": "カメラ目線にしない",
+    "description": "人物がカメラや鑑賞者と視線を合わせないように指定する。人物同士のアイコンタクトは禁止しない。視線の向け先は場面に合わせて別に指定できる。",
+    "categories": [
+      "視線",
+      "構図"
+    ],
+    "keywords": "カメラ目線禁止 目線 視線 カメラを見ない",
     "seeded": true
   }
 ];
