@@ -535,6 +535,27 @@
 </div>
 <dialog id="categoryDialog" aria-labelledby="categoryTitle"><div class="dialog-heading"><h2 id="categoryTitle">カテゴリから探す</h2><button class="btn ghost" id="closeCategories">閉じる</button></div><input type="search" id="categorySearch" placeholder="カテゴリ名を検索" aria-label="カテゴリ名を検索"><div class="chip-row" id="categoryChips"></div><p id="categoryEmpty" hidden>一致するカテゴリがありません。</p></dialog>
 
+<dialog id="editDialog" aria-labelledby="editTitle">
+  <form id="editForm">
+    <div class="dialog-heading"><h2 id="editTitle">単語を編集</h2><button type="button" class="btn ghost" id="editCancel">閉じる</button></div>
+    <div class="form-row"><label for="editPhrase">英語フレーズ</label><textarea id="editPhrase" required rows="3"></textarea></div>
+    <div class="form-row"><label for="editTranslation">日本語訳</label><textarea id="editTranslation" rows="2"></textarea></div>
+    <div class="form-row"><label for="editDescription">説明・メモ</label><textarea id="editDescription" rows="5"></textarea></div>
+    <div class="form-row"><label for="editTags">カテゴリ（カンマ区切り）</label><input id="editTags" type="text" list="editCategoryOptions"><datalist id="editCategoryOptions"></datalist></div>
+    <div class="form-row"><label for="editKeywords">検索用の言葉</label><textarea id="editKeywords" rows="2" placeholder="例：カメラ目線禁止 カメラを見ない"></textarea></div>
+    <p id="editError" role="alert" style="color:var(--warn)"></p>
+    <div class="edit-actions"><button type="button" class="btn ghost" id="editDelete">削除</button><button type="submit" class="btn primary">保存する</button></div>
+  </form>
+</dialog>
+<style>
+  #editDialog{width:min(600px,calc(100% - 24px));max-height:88dvh;border:1px solid var(--line);border-radius:18px;padding:20px;color:var(--ink);background:var(--panel);overflow:auto;}
+  #editDialog::backdrop{background:#18333b66;}
+  #editDialog input,#editDialog textarea{font-size:16px;width:100%;line-height:1.6;}
+  #editDialog h2{font-size:18px;}
+  .edit-actions{display:flex;gap:12px;position:sticky;bottom:-20px;background:var(--panel);padding:12px 0;}
+  .edit-actions .primary{flex:1;}
+  .result-edit{font-size:12px;min-height:40px;margin-top:8px;padding:7px 12px;}
+</style>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -16690,15 +16711,19 @@
         ${entry.translation ? `<div class="result-translation">${escapeHtml(entry.translation)}</div>` : ''}
         ${entry.description ? `<div class="result-description">${escapeHtml(entry.description)}</div>` : ''}
         <div class="result-tags">${(entry.categories||[]).map(c=>`<span class="result-tag">${escapeHtml(c)}</span>`).join('')}</div>
+        <button type="button" class="btn ghost result-edit" aria-label="編集：${escapeHtml(entry.phrase)}">編集</button>
       </div>
     `;
     card.querySelector('.result-favorite').addEventListener('click', event=>{
       event.stopPropagation();
       toggleFavorite(entry,card);
     });
+    card.querySelector('.result-edit').addEventListener('click', event=>{
+      event.stopPropagation();openEditor(entry,event.currentTarget);
+    });
     card.addEventListener('click', event=>{
       // Favoriting must not change prompt selection.
-      if(event.target.closest('.result-favorite')) return;
+      if(event.target.closest('.result-favorite,.result-edit')) return;
       if(selectedIds.has(entry.id)) selectedIds.delete(entry.id);
       else selectedIds.add(entry.id);
       syncSelection();
@@ -16711,6 +16736,52 @@
   }
 
   queryInput.addEventListener('input', renderResults);
+
+  let editingEntry = null, editOrigin = null, editScroll = 0;
+  const editFields = {phrase:'editPhrase',translation:'editTranslation',description:'editDescription',categories:'editTags',keywords:'editKeywords'};
+  function openEditor(entry,origin){
+    editingEntry=entry;editOrigin=origin;editScroll=window.scrollY;
+    Object.entries(editFields).forEach(([field,id])=>{$(id).value=field==='categories' ? (entry.categories||[]).join(', ') : entry[field]||'';});
+    $('editCategoryOptions').replaceChildren(...allCategories().map(c=>{const option=document.createElement('option');option.value=c;return option;}));
+    $('editError').textContent='';$('editDialog').showModal();
+  }
+  function closeEditor(){
+    if(editorChanged() && !confirm('保存していない変更を破棄しますか？')) return;
+    $('editDialog').close();
+  }
+  function editorChanged(){
+    return editingEntry && Object.entries(editFields).some(([field,id])=>$(id).value !== (field==='categories' ? (editingEntry.categories||[]).join(', ') : editingEntry[field]||''));
+  }
+  $('editCancel').addEventListener('click',closeEditor);
+  $('editDialog').addEventListener('cancel',event=>{event.preventDefault();closeEditor();});
+  $('editDialog').addEventListener('close',()=>{
+    const id=editingEntry?.id;editingEntry=null;
+    const cards=Array.from(document.querySelectorAll('[data-entry-id]'));
+    const replacement=cards.find(card=>card.dataset.entryId===id)?.querySelector('.result-edit,.manage-edit');
+    (editOrigin?.isConnected ? editOrigin : replacement || (activeTab==='manage' ? $('manageQuery') : queryInput)).focus({preventScroll:true});
+    window.scrollTo({top:editScroll,behavior:'instant'});
+  });
+  function refreshAfterEdit(){
+    const previousLimit=resultLimit;
+    renderChips();renderResults();
+    if(previousLimit>resultLimit){const start=resultLimit;resultLimit=previousLimit;appendResults(start);}
+    renderManageList();renderSelectedBar();
+  }
+  $('editForm').addEventListener('submit',event=>{
+    event.preventDefault();if(!editingEntry)return;
+    const phrase=$('editPhrase').value.trim();
+    if(!phrase){$('editError').textContent='英語フレーズを入力してください。';return;}
+    const before={...editingEntry};
+    Object.entries(editFields).forEach(([field,id])=>{editingEntry[field]=field==='categories' ? [...new Set($(id).value.split(/[,、]+/).map(s=>s.trim()).filter(Boolean))] : $(id).value.trim();});
+    if(!saveEntries()){Object.assign(editingEntry,before);$('editError').textContent='保存できませんでした。内容を控えて、もう一度お試しください。';return;}
+    refreshAfterEdit();$('editDialog').close();showToast('変更を保存しました');
+  });
+  $('editDelete').addEventListener('click',()=>{
+    if(!editingEntry || !confirm('「'+editingEntry.phrase+'」を削除しますか？'))return;
+    const before=entries;entries=entries.filter(e=>e!==editingEntry);
+    if(!saveEntries()){entries=before;$('editError').textContent='削除を保存できませんでした。';return;}
+    selectedIds.delete(editingEntry.id);refreshAfterEdit();$('editDialog').close();showToast('削除しました');
+  });
 
   // ---------- selected bar ----------
   function updateDockHeight(){
@@ -16765,7 +16836,7 @@
   });
   $('loadMore').addEventListener('click',()=>{const start=resultLimit;resultLimit+=60;appendResults(start);resultsList.children[start]?.querySelector('.result-check').focus({preventScroll:true});});
   $('manageQuery').addEventListener('input',()=>{manageLimit=40;renderManageList();});
-  $('manageMore').addEventListener('click',()=>{const previous=manageLimit;manageLimit+=40;renderManageList(true);manageList.children[previous]?.querySelector('textarea').focus({preventScroll:true});});
+  $('manageMore').addEventListener('click',()=>{const previous=manageLimit;manageLimit+=40;renderManageList(true);manageList.children[previous]?.querySelector('.manage-edit').focus({preventScroll:true});});
 
   // ---------- add single ----------
   addOneBtn.addEventListener('click', ()=>{
@@ -16808,50 +16879,23 @@
     const start = append ? manageList.children.length : 0;
     if(!append) manageList.innerHTML = '';
     const q = $('manageQuery').value.trim().toLowerCase();
-    const ordered = entries.slice().reverse().filter(e=>!q || [e.phrase,e.translation,e.description,...(e.categories||[])].join(' ').toLowerCase().includes(q));
+    const ordered = entries.slice().reverse().filter(e=>!q || [e.phrase,e.translation,e.description,e.keywords,...(e.categories||[])].join(' ').toLowerCase().includes(q));
     $('manageStatus').textContent = ordered.length + ' 件中 ' + Math.min(manageLimit,ordered.length) + ' 件を表示';
     $('manageMore').hidden = ordered.length <= manageLimit;
     ordered.slice(start,manageLimit).forEach(entry=>{
       const card = document.createElement('div');
       card.className = 'manage-card';
+      card.dataset.entryId = entry.id;
       const tagStr = (entry.categories||[]).join(', ');
       card.innerHTML = `
         <div class="manage-phrase">${escapeHtml(entry.phrase)}</div>
-        <textarea class="manage-tag-input" data-field="translation" placeholder="日本語訳（任意）">${escapeHtml(entry.translation||'')}</textarea>
-        <textarea class="manage-tag-input" data-field="description" placeholder="意味の説明・メモ（任意・長文OK）">${escapeHtml(entry.description||'')}</textarea>
-        <input type="text" class="manage-tag-input" data-field="categories" value="${escapeHtml(tagStr)}" placeholder="カテゴリ（カンマ区切り）">
+        <div class="result-translation">${escapeHtml(entry.translation||'')}</div>
+        <div class="result-tags">${escapeHtml(tagStr)}</div>
         <div class="manage-row-actions">
-          <button class="btn ghost save-tag-btn">保存</button>
-          <button class="btn ghost delete-entry-btn">削除</button>
+          <button class="btn ghost manage-edit" style="min-height:44px;font-size:14px;">編集する</button>
         </div>
       `;
-      card.querySelectorAll('[data-field]').forEach(input=>{
-        const names={translation:'日本語訳',description:'説明・メモ',categories:'カテゴリ'};
-        input.id='edit-'+entry.id+'-'+input.dataset.field;
-        const label=document.createElement('label');label.className='manage-label';label.htmlFor=input.id;label.textContent=names[input.dataset.field];input.before(label);
-      });
-      const translationInput = card.querySelector('[data-field="translation"]');
-      const descriptionInput = card.querySelector('[data-field="description"]');
-      const tagInput = card.querySelector('[data-field="categories"]');
-      card.querySelector('.save-tag-btn').addEventListener('click', ()=>{
-        entry.translation = translationInput.value.trim();
-        entry.description = descriptionInput.value.trim();
-        entry.categories = tagInput.value.split(/[,、]+/).map(s=>s.trim()).filter(Boolean);
-        saveEntries();
-        showToast('更新しました');
-        renderChips();
-        renderResults();
-      });
-      card.querySelector('.delete-entry-btn').addEventListener('click', ()=>{
-        if(!confirm('「'+entry.phrase+'」を削除しますか？')) return;
-        entries = entries.filter(e => e.id !== entry.id);
-        selectedIds.delete(entry.id);
-        saveEntries();
-        renderChips();
-        renderResults();
-        renderSelectedBar();
-        renderManageList();
-      });
+      card.querySelector('.manage-edit').addEventListener('click',event=>openEditor(entry,event.currentTarget));
       manageList.appendChild(card);
     });
   }
