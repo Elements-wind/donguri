@@ -613,7 +613,7 @@
   }
 
   // ---------- persistence ----------
-  const SEED_VERSION = 34; // bump when the baseline entry set changes below
+  const SEED_VERSION = 35; // bump when the baseline entry set changes below
   const SEED_VERSION_KEY = 'promptWordSeedVersion_v1';
 
   // Keep all stored and imported wording aligned with the male character setting.
@@ -681,7 +681,9 @@
     if(storedVersion < SEED_VERSION){
       // Merge the complete backup; preserve separate duplicate entries and local edits.
       const previousDefaults = {"mu56kq1eesry25": {"description": "目、鼻、唇など顔の各部分を精細に描く。元の顔立ちを維持したい場合は造形の保持も指定する。", "keywords": "", "categories": ["画質"]}, "mu56kq1ezxctfg": {"description": "織り目、刺繍、革のしわなど衣服の素材を緻密に描く。布の種類や対象部位を添える。", "keywords": "", "categories": ["画質"]}, "mu56kq1eedbx3x": {"description": "霧や埃を通る光の筋に厚みを持たせ、空間の深さを見せる。", "keywords": "", "categories": ["ライティング"]}, "mu56kq1e5dyrt7": {"description": "霧や埃を通る光の筋に厚みを持たせ、空間の深さを見せる。", "keywords": "", "categories": ["ライティング"]}, "mu56kq1em567nr": {"description": "明暗や色の対比を強く調整し、画面の印象を際立たせる。暖色と寒色など狙う配色を添える。", "keywords": "", "categories": ["色彩"]}, "mu56kq1e9x7btc": {"description": "光が物体の表面から内部へ入り、散乱して外へ出る質感。肌、ろう、薄い葉などの柔らかな透過光に使う。", "keywords": "", "categories": ["画質"]}, "mu56kq1epsa897": {"description": "光の経路を計算したような自然な反射を求める指定。画像生成の文章指定だけで実際の描画方式が決まるわけではない。", "keywords": "", "categories": ["画質", "光"]}, "mu56kq1eyz51ik": {"description": "細く丁寧な筆の跡を使う。髪や布などの表面へ繊細な描き込みを加える絵画的な表現。", "keywords": "", "categories": ["スタイル"]}};
-      const seeds = defaultSeed();
+      // Version 35 adds only these two entries for existing version 34 users.
+      // Keep their deleted baseline entries deleted and their local edits intact.
+      const seeds = defaultSeed().filter(seed=>storedVersion < 34 || seed.id.startsWith('lunaria_20261023_'));
       const matched = new Set();
       seeds.forEach(seed => {
         let current = entries.find(e => !matched.has(e) && e.id === seed.id);
@@ -16626,6 +16628,24 @@
       "構図"
     ],
     "keywords": "カメラ目線禁止 目線 視線 カメラを見ない",
+    "seeded": true
+  },
+  {
+    "id": "lunaria_20261023_soft_expressions",
+    "phrase": "All three have softened expressions with just a hint of happiness.",
+    "translation": "三人とも少しだけ嬉しそうな和らいだ表情",
+    "description": "三人全員の表情を柔らかくし、嬉しさをほんの少しだけ滲ませる。大きな笑顔や誇張した喜びではなく、控えめで自然な表情を求める。",
+    "categories": ["Lunaria"],
+    "keywords": "三人 3人 trio 表情 嬉しそう 和らいだ 穏やか 微笑",
+    "seeded": true
+  },
+  {
+    "id": "lunaria_20261023_sylph_cuteness",
+    "phrase": "Preserve Sylph's cute, delicate features; never make him look overly mature or too conventionally masculine.",
+    "translation": "シルフに関しては可愛さを残し、決して青年に寄せ過ぎないこと",
+    "description": "シルフの可愛さと繊細な顔立ちを保ち、精悍さや大人びた男性らしさへ寄せ過ぎないための外見指定。年齢設定を変える指示ではない。",
+    "categories": ["Lunaria"],
+    "keywords": "シルフ Sylph 可愛さ 可愛い 繊細 中性的 顔立ち 青年 大人びすぎない",
     "seeded": true
   }
 ];
